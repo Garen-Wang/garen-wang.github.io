@@ -18,7 +18,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"121.36.2.124","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"121.36.2.124","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="Task 1 入门任务NNI 体验文档1. AutoML 工具比较机器学习算法与模型的选择，对机器学习十分重要，一个成功的选择，能够成倍提高训练效率，从而提高模型准确度，减少损失，产生更大的效益。 但算法与模型的选择并不简单。就算是数据科学家，也需要花费大量的时间用于尝试与权衡不同模型的优劣，最终才能得出理想的结果。超参的调参过程中也经常造成算力的浪费。 自动机器学习（AutoML）是一套自动化的">
@@ -29,13 +29,13 @@
 <meta property="og:description" content="Task 1 入门任务NNI 体验文档1. AutoML 工具比较机器学习算法与模型的选择，对机器学习十分重要，一个成功的选择，能够成倍提高训练效率，从而提高模型准确度，减少损失，产生更大的效益。 但算法与模型的选择并不简单。就算是数据科学家，也需要花费大量的时间用于尝试与权衡不同模型的优劣，最终才能得出理想的结果。超参的调参过程中也经常造成算力的浪费。 自动机器学习（AutoML）是一套自动化的">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://www.msra.cn/wp-content/uploads/2019/12/nni-2.png">
-<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/1.png">
-<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/4.png">
-<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/5.png">
-<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/3.png">
-<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/2.png">
-<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/6.png">
-<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/7.png">
+<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/NNI-Student-Program-2020-Task1/1.png">
+<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/NNI-Student-Program-2020-Task1/4.png">
+<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/NNI-Student-Program-2020-Task1/5.png">
+<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/NNI-Student-Program-2020-Task1/3.png">
+<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/NNI-Student-Program-2020-Task1/2.png">
+<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/NNI-Student-Program-2020-Task1/6.png">
+<meta property="og:image" content="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/NNI-Student-Program-2020-Task1/7.png">
 <meta property="article:published_time" content="2021-01-08T11:46:45.000Z">
 <meta property="article:modified_time" content="2021-01-08T12:26:45.115Z">
 <meta property="article:author" content="Garen Wang">
@@ -222,6 +222,27 @@
             </span>
 
           
+            <span id="/2021/01/08/NNI-Student-Program-2020-Task1/" class="post-meta-item leancloud_visitors" data-flag-title="NNI Student Program 2020 Task1" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/01/08/NNI-Student-Program-2020-Task1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/08/NNI-Student-Program-2020-Task1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 
         </div>
       </header>
@@ -247,7 +268,7 @@
 <p>优点：具有多平台支持，可命令行操作，支持结果可视化。内置优化算法多，扩展性强，支持远程调用进行集群训练。</p>
 <p>缺点：暂未发现</p>
 <p>更详细的对比：</p>
-<p><img src="https://www.msra.cn/wp-content/uploads/2019/12/nni-2.png" alt></p>
+<p><img data-src="https://www.msra.cn/wp-content/uploads/2019/12/nni-2.png" alt></p>
 <p>（摘自MSRA官网）</p>
 <h3 id="2-NNI-安装及使用"><a href="#2-NNI-安装及使用" class="headerlink" title="2. NNI 安装及使用"></a>2. NNI 安装及使用</h3><p>NNI的安装非常简单，只需一行命令即可安装：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pip install --upgrade nni</span><br></pre></td></tr></table></figure>
@@ -273,18 +294,18 @@
 </li>
 </ol>
 <h4 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h4><p>如图，10次trial都成功地完成，其中id为9的trial达到了最高准确率，达99.34%。</p>
-<p><img src="/2021/01/08/NNI-Student-Program-2020-Task1/1.png" alt></p>
-<p><img src="/2021/01/08/NNI-Student-Program-2020-Task1/4.png" alt></p>
-<h4 id="超参组合可视化"><a href="#超参组合可视化" class="headerlink" title="超参组合可视化"></a>超参组合可视化</h4><p><img src="/2021/01/08/NNI-Student-Program-2020-Task1/5.png" alt></p>
+<p><img data-src="./NNI-Student-Program-2020-Task1/1.png" alt></p>
+<p><img data-src="./NNI-Student-Program-2020-Task1/4.png" alt></p>
+<h4 id="超参组合可视化"><a href="#超参组合可视化" class="headerlink" title="超参组合可视化"></a>超参组合可视化</h4><p><img data-src="./NNI-Student-Program-2020-Task1/5.png" alt></p>
 <p>图中，准确率更高的组合用红线表示，而准确率低的用绿线表示。</p>
 <p>可以看出，当batch_size选择16，lr和momentum大小适中时，模型可以达到99%以上的准确率，实验效果非常理想。</p>
-<h4 id="训练结果可视化"><a href="#训练结果可视化" class="headerlink" title="训练结果可视化"></a>训练结果可视化</h4><p><img src="/2021/01/08/NNI-Student-Program-2020-Task1/3.png" alt></p>
+<h4 id="训练结果可视化"><a href="#训练结果可视化" class="headerlink" title="训练结果可视化"></a>训练结果可视化</h4><p><img data-src="./NNI-Student-Program-2020-Task1/3.png" alt></p>
 <p>Default Metric</p>
-<p><img src="/2021/01/08/NNI-Student-Program-2020-Task1/2.png" alt></p>
+<p><img data-src="./NNI-Student-Program-2020-Task1/2.png" alt></p>
 <p>Sorted Default Metric</p>
-<p><img src="/2021/01/08/NNI-Student-Program-2020-Task1/6.png" alt></p>
+<p><img data-src="./NNI-Student-Program-2020-Task1/6.png" alt></p>
 <p>Trial Duration</p>
-<p><img src="/2021/01/08/NNI-Student-Program-2020-Task1/7.png" alt></p>
+<p><img data-src="./NNI-Student-Program-2020-Task1/7.png" alt></p>
 <p>Intermediate Results</p>
 
     </div>
@@ -294,8 +315,9 @@
     
 
       <footer class="post-footer">
+          
           <div class="post-tags">
-              <a href="/tags/NNI/" rel="tag"># NNI</a>
+              <a href="/tags/NNI/" rel="tag"><i class="fa fa-tag"></i> NNI</a>
           </div>
 
         
@@ -323,6 +345,7 @@
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -454,6 +477,7 @@
   <script src="/lib/anime.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
   <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
@@ -550,6 +574,35 @@
     
 
   
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'wMExYSieDga8BTVjfcUnCRh1-gzGzoHsz',
+      appKey     : 'pYUGXalVN490u6EsT2HJA4Rj',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
 
 </body>
 </html>
