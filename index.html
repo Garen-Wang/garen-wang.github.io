@@ -179,6 +179,164 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/08/My-Hexo-Blog-Configuration/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/08/My-Hexo-Blog-Configuration/" class="post-title-link" itemprop="url">My Hexo Blog Configuration</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-01-08 22:04:28 / Modified: 23:44:23" itemprop="dateCreated datePublished" datetime="2021-01-08T22:04:28+08:00">2021-01-08</time>
+            </span>
+
+          
+            <span id="/2021/01/08/My-Hexo-Blog-Configuration/" class="post-meta-item leancloud_visitors" data-flag-title="My Hexo Blog Configuration" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/01/08/My-Hexo-Blog-Configuration/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/08/My-Hexo-Blog-Configuration/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>芜湖！起飞！今天备案终于审核通过了！捣鼓了一下，终于把博客弄得像模像样的，就顺带记录一下！</p>
+<h2 id="序幕"><a href="#序幕" class="headerlink" title="序幕"></a>序幕</h2><p>军训汇操在早上结束了，回到宿舍一打开手机就连收到三条信息，终于给爷备案好了！</p>
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/My-Hexo-Blog-Configuration/WeChat_Image_20210108221637.jpg">
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/My-Hexo-Blog-Configuration/WeChat_Image_20210108221657.jpg">
+<p>我啪的一下就开始准备我的博客了，很快啊！</p>
+<h2 id="博客框架"><a href="#博客框架" class="headerlink" title="博客框架"></a>博客框架</h2><p>博客使用Hexo搭建，用了NexT主题(NexT.Gemini)，在GitHub上就能找到这个主题。</p>
+<p>Hexo只要有npm就可以安装了，跑条命令安装一下就行。</p>
+<p>Hexo的操作可以直接看官方文档，也很容易懂，这里不赘述。</p>
+<p>GitHub Pages之前就配置好了，现在主要是需要配置到我的服务器上面去。</p>
+<h2 id="Hexo同步至服务器"><a href="#Hexo同步至服务器" class="headerlink" title="Hexo同步至服务器"></a>Hexo同步至服务器</h2><p>首先，在服务器上面安装一下git和nginx。在备案没有成功的时候，可以直接用买服务器时给的弹性公网IP直接去上，效果是一样的。</p>
+<p>按照我的印象，当没有安装nginx时，在浏览器中输入ip打开，是会出现小恐龙的，而安装了nginx之后就成了404。这说明nginx确实已经开始起作用了，安装正常。</p>
+<p>然后可以在服务器那端用ssh免密登录，粗略流程是这样的：</p>
+<ol>
+<li>在本机用<code>ssh-keygen</code>创建一个ssh公钥和私钥。</li>
+<li>在服务器的<code>.ssh</code>目录创建一个<code>authorized_keys</code>，再<code>chmod</code>一下。</li>
+<li>把ssh公钥写到<code>authorized_keys</code>上面去。</li>
+</ol>
+<p>这个时候，只要本机有私钥，服务器有公钥，我们就可以通过一个ssh命令免密远程登录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh root@&quot;your_ip&quot;</span><br></pre></td></tr></table></figure>
+<p>之后创建<code>/var/repo</code>文件夹，在里面新建一个叫blog的git仓库，新建命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git init --bare blog.git</span><br></pre></td></tr></table></figure>
+<p>之后，打开<code>blog.git/hooks/post-receive</code>，<code>chmod</code>一下，同时添加下列内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;sh</span><br><span class="line">git --work-tree&#x3D;&#x2F;var&#x2F;www&#x2F;hexo --git-dir&#x3D;&#x2F;var&#x2F;repo&#x2F;blog.git checkout -f</span><br></pre></td></tr></table></figure>
+<p>之后，在<code>var/www/hexo</code>处创建好文件夹，<code>chmod</code>一下，这样之后，服务器端的设置就完成了。</p>
+<p>最终我们想要的是：在本机输入<code>hexo d</code>时，能部署到服务器上，这时需要在根目录下的<code>_config.yml</code>下修改：</p>
+<h3 id="第一处"><a href="#第一处" class="headerlink" title="第一处"></a>第一处</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># URL</span><br><span class="line">## If your site is put in a subdirectory, set url as &#39;http:&#x2F;&#x2F;example.com&#x2F;child&#39; and root as &#39;&#x2F;child&#x2F;&#39;</span><br><span class="line">url: https:&#x2F;&#x2F;your_ip</span><br></pre></td></tr></table></figure>
+<h3 id="第二处"><a href="#第二处" class="headerlink" title="第二处"></a>第二处</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  - type: git</span><br><span class="line">    repo: git@github.com:Garen-Wang&#x2F;garen-wang.github.io.git</span><br><span class="line">    branch: master</span><br><span class="line">  - type: git</span><br><span class="line">    repo: root@your_ip:&#x2F;var&#x2F;repo&#x2F;blog.git</span><br><span class="line">    branch: master</span><br></pre></td></tr></table></figure>
+<p>这样就应该能把hexo部署到你的服务器上面去了。</p>
+<h2 id="添加备案号"><a href="#添加备案号" class="headerlink" title="添加备案号"></a>添加备案号</h2><p>网站还是得加备案号的，不过这里不用改模板，直接在NexT主题的<code>_config.yml</code>中修改：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">footer:</span><br><span class="line">  ...</span><br><span class="line">  </span><br><span class="line">  # Beian ICP and gongan information for Chinese users. See: http:&#x2F;&#x2F;www.beian.miit.gov.cn, http:&#x2F;&#x2F;www.beian.gov.cn</span><br><span class="line">  beian:</span><br><span class="line">    enable: true</span><br><span class="line">    icp: 粤ICP备2021003110号</span><br><span class="line">    # The digit in the num of gongan beian.</span><br><span class="line">    gongan_id:</span><br><span class="line">    # The full num of gongan beian.</span><br><span class="line">    gongan_num: 2021003110</span><br><span class="line">    # The icon for gongan beian. See: http:&#x2F;&#x2F;www.beian.gov.cn&#x2F;portal&#x2F;download</span><br><span class="line">    gongan_icon_url: images&#x2F;beian.png</span><br></pre></td></tr></table></figure>
+<p>在主题文件夹中的<code>source</code>中新建个<code>images</code>文件夹，可以把<a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/download">这张图片</a>下载到里面去，就可以用相对路径引用了。btw，对头像的设置也是同理。</p>
+<h2 id="mathjax支持"><a href="#mathjax支持" class="headerlink" title="mathjax支持"></a>mathjax支持</h2><p>这个东西曾经困扰了我很久，其实只要按下面的顺序，NexT主题也能用上mathjax。</p>
+<p>先更换Hexo的Markdown渲染引擎：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm uninstall hexo-renderer-marked --save</span><br><span class="line">npm install hexo-renderer-kramed --save</span><br></pre></td></tr></table></figure>
+<p>需要在<code>node_modules/kramed/lib/rules/inline.js</code>中修改两处（分别是原第11行和第20行）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;escape: &#x2F;^\\([\\&#96;*&#123;&#125;\[\]()#$+\-.!_&gt;])&#x2F;,</span><br><span class="line">escape: &#x2F;^\\([&#96;*\[\]()#$+\-.!_&gt;])&#x2F;,</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;em: &#x2F;^\b_((?:__|[\s\S])+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)&#x2F;,</span><br><span class="line">em: &#x2F;^\*((?:\*\*|[\s\S])+?)\*(?!\*)&#x2F;,</span><br></pre></td></tr></table></figure>
+<p>最后在每个需要启用mathjax的博客页面里，在一开始的Front-matter那里加上一句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mathjax: true</span><br></pre></td></tr></table></figure>
+<p>这样就可以用上LaTeX语法写行内公式和行间公式了。</p>
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/My-Hexo-Blog-Configuration/2021-01-08_23-29.png">
+<h2 id="搜索框"><a href="#搜索框" class="headerlink" title="搜索框"></a>搜索框</h2><p>搜索框也很容易实现。</p>
+<p>先用npm安装下插件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save hexo-generator-search</span><br><span class="line">$ npm install --save hexo-generator-searchdb</span><br></pre></td></tr></table></figure>
+<p>在NexT主题文件夹下的<code>_config.yml</code>下修改：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">local_search:</span><br><span class="line">  enable: true</span><br></pre></td></tr></table></figure>
+<p>重新部署一下之后，就可以看到出现了搜索框。</p>
+<h2 id="评论系统支持"><a href="#评论系统支持" class="headerlink" title="评论系统支持"></a>评论系统支持</h2><p>评论系统中，NexT主题的配置中自带对Valine的支持，我们干脆直接用它咯！</p>
+<h3 id="Valine的使用"><a href="#Valine的使用" class="headerlink" title="Valine的使用"></a>Valine的使用</h3><ol>
+<li>在LeanCloud注册</li>
+<li>创建应用，名称随意</li>
+<li>进入“设置-应用Keys”，获取App ID和AppKey</li>
+<li>在主题文件夹中的<code>_config.yml</code>修改Valine对应内容为：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">valine:</span><br><span class="line">  enable: true</span><br><span class="line">  appid: Your leancloud application appid</span><br><span class="line">  appkey: Your leancloud application appkey</span><br><span class="line">  notify: true # Mail notifier</span><br><span class="line">  verify: false # Verification code</span><br><span class="line">  placeholder: Just go go # Comment box placeholder</span><br><span class="line">  avatar: mm # Gravatar style</span><br><span class="line">  guest_info: nick,mail,link # Custom comment header</span><br><span class="line">  pageSize: 10 # Pagination size</span><br><span class="line">  language: zh-cn # Language, available values: en, zh-cn</span><br><span class="line">  visitor: true # Article reading statistic</span><br><span class="line">  comment_count: true # If false, comment count will only be displayed in post page, not in home page</span><br><span class="line">  recordIP: false # Whether to record the commenter IP</span><br><span class="line">  serverURLs: # When the custom domain name is enabled, fill it in here (it will be detected automatically by default, no need to fill in)</span><br><span class="line">  #post_meta_order: 0</span><br></pre></td></tr></table></figure>
+<p>然后在储存-结构化数据中创建两个新的Class，名称分别为<code>Comment</code>和<code>Counter</code>，分别可以用来存评论和链接访问数，非常方便。</p>
+<p>在LeanCloud后台看到的数据就是这样的：</p>
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/My-Hexo-Blog-Configuration/2021-01-08_22-44.png">
+<p>之后部署一下就可以看到效果了！</p>
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/My-Hexo-Blog-Configuration/2021-01-08_22-42.png">
+<h2 id="七牛云图床"><a href="#七牛云图床" class="headerlink" title="七牛云图床"></a>七牛云图床</h2><p>首先先在博客根目录安装一下需要的Hexo插件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save hexo-qiniu-sync</span><br></pre></td></tr></table></figure><br>在七牛云右上角的密钥管理就可以找到access key和secret key了，bucket填你自己创建时写的空间名称，在<code>_config.yml</code>里面添加这一段配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">qiniu:</span><br><span class="line">  offline: false</span><br><span class="line">  sync: true</span><br><span class="line">  bucket: &quot;your_bucket_name&quot;</span><br><span class="line">  access_key: &quot;your_access_key&quot;</span><br><span class="line">  secret_key: &quot;your_secret_key&quot;</span><br><span class="line">  dirPrefix: static</span><br><span class="line">  urlPrefix: http:&#x2F;&#x2F;&quot;your_qiniu_url&quot;&#x2F;static</span><br><span class="line">  up_host: http:&#x2F;&#x2F;upload.qiniu.com</span><br><span class="line">  local_dir: static</span><br><span class="line">  update_exist: true</span><br><span class="line">  image: </span><br><span class="line">    folder: images</span><br><span class="line">    extend: </span><br><span class="line">  js:</span><br><span class="line">    folder: js</span><br><span class="line">  css:</span><br><span class="line">    folder: css</span><br></pre></td></tr></table></figure>
+<p>在文档中，就不需要使用Markdown的插入图片格式了，使用下面的格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% qnimg test.jpg %&#125;</span><br></pre></td></tr></table></figure>
+<p>这样的语句会自动读取<code>static/images/test.jpg</code>这个路径下的图片。</p>
+<p>在更新博客时，可以先跑一下这条命令，将<code>static/images</code>下的所有图片都上传到七牛云，这样博客的外链就能访问出图片了。</p>
+<p>不过不跑似乎也没关系，在<code>hexo g</code>的时候似乎会自动帮你上传，挺贴心的。</p>
+<h2 id="小彩蛋"><a href="#小彩蛋" class="headerlink" title="小彩蛋"></a>小彩蛋</h2><h3 id="我大E了啊"><a href="#我大E了啊" class="headerlink" title="我大E了啊"></a>我大E了啊</h3><p>在配置的时候有一次跑<code>hexo g -d</code>的时候报错了，怎么改都改不好，心态差点崩了，差点要把整个博客重新弄一遍。</p>
+<p>这种情况的最好解决方法是一开始就用git维护整个仓库。最后我直接用<code>git reset</code>回滚到上次commit的时候，一切就又都回来了。我又继续无止境地配置下去了……</p>
+<h3 id="什么？DDL？"><a href="#什么？DDL？" class="headerlink" title="什么？DDL？"></a>什么？DDL？</h3><p>啊？什么？我今天没赶DDL？</p>
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/My-Hexo-Blog-Configuration/WeChat_Image_20210108221702.jpg">
+<p>其实明天是数创大作业的deadline。。。</p>
+<p>放心，明天弄得完的。deadline是第一生产力。。。</p>
+<p>熬夜继续爆肝大作业，还不如早点休息。。。</p>
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/My-Hexo-Blog-Configuration/84869490_p0.jpg">
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/as480133937/article/details/100138838">https://blog.csdn.net/as480133937/article/details/100138838</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/yexiaohhjk/article/details/82526604">https://blog.csdn.net/yexiaohhjk/article/details/82526604</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/34747279">https://zhuanlan.zhihu.com/p/34747279</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/70bf58c48010">https://www.jianshu.com/p/70bf58c48010</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -370,7 +528,7 @@
 <p>优点：具有多平台支持，可命令行操作，支持结果可视化。内置优化算法多，扩展性强，支持远程调用进行集群训练。</p>
 <p>缺点：暂未发现</p>
 <p>更详细的对比：</p>
-<p><img data-src="https://www.msra.cn/wp-content/uploads/2019/12/nni-2.png" alt=""></p>
+<p><img data-src="https://www.msra.cn/wp-content/uploads/2019/12/nni-2.png" alt></p>
 <p>（摘自MSRA官网）</p>
 <h3 id="2-NNI-安装及使用"><a href="#2-NNI-安装及使用" class="headerlink" title="2. NNI 安装及使用"></a>2. NNI 安装及使用</h3><p>NNI的安装非常简单，只需一行命令即可安装：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pip install --upgrade nni</span><br></pre></td></tr></table></figure>
@@ -417,85 +575,6 @@
 
 <p>Intermediate Results</p>
 
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/08/2021-01-08-test/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/08/2021-01-08-test/" class="post-title-link" itemprop="url">test</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-01-08 13:05:43 / Modified: 13:51:59" itemprop="dateCreated datePublished" datetime="2021-01-08T13:05:43+08:00">2021-01-08</time>
-            </span>
-
-          
-            <span id="/2021/01/08/2021-01-08-test/" class="post-meta-item leancloud_visitors" data-flag-title="test" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/01/08/2021-01-08-test/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/08/2021-01-08-test/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <script type="math/tex; mode=display">a^2 + b^2 = c^2</script>
       
     </div>
 
