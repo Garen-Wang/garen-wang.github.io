@@ -41,7 +41,7 @@
 <meta property="og:image" content="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/phase6_node.png">
 <meta property="og:image" content="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/success.png">
 <meta property="article:published_time" content="2021-01-13T15:40:47.000Z">
-<meta property="article:modified_time" content="2021-01-14T06:29:39.766Z">
+<meta property="article:modified_time" content="2021-01-14T06:39:13.351Z">
 <meta property="article:author" content="Garen Wang">
 <meta property="article:tag" content="CSAPP">
 <meta name="twitter:card" content="summary">
@@ -228,7 +228,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-01-14 14:29:39" itemprop="dateModified" datetime="2021-01-14T14:29:39+08:00">2021-01-14</time>
+                <time title="Modified: 2021-01-14 14:39:13" itemprop="dateModified" datetime="2021-01-14T14:39:13+08:00">2021-01-14</time>
               </span>
 
           
@@ -351,11 +351,11 @@
 <p>所以我们直接输入7跟0就可以了。</p>
 <p>所以最后复习下这些奇妙的汇编指令，以免我又忘了：</p>
 <ul>
-<li>imul src, dest 乘法</li>
-<li>sal  src, dest 算术左移</li>
-<li>sar  src, dest 算术右移</li>
-<li>shl  src, dest 逻辑左移</li>
-<li>shr  src, dest 逻辑右移</li>
+<li><code>imul src, dest</code> 乘法</li>
+<li><code>sal  src, dest</code> 算术左移</li>
+<li><code>sar  src, dest</code> 算术右移</li>
+<li><code>shl  src, dest</code> 逻辑左移</li>
+<li><code>shr  src, dest</code> 逻辑右移</li>
 </ul>
 <h2 id="phase-5"><a href="#phase-5" class="headerlink" title="phase 5"></a>phase 5</h2><h3 id="汇编-4"><a href="#汇编-4" class="headerlink" title="汇编"></a>汇编</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">0000000000401062 &lt;phase_5&gt;:</span><br><span class="line">  401062:	53                   	push   %rbx</span><br><span class="line">  401063:	48 83 ec 20          	sub    $0x20,%rsp</span><br><span class="line">  401067:	48 89 fb             	mov    %rdi,%rbx</span><br><span class="line">  40106a:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax</span><br><span class="line">  401071:	00 00 </span><br><span class="line">  401073:	48 89 44 24 18       	mov    %rax,0x18(%rsp)</span><br><span class="line">  401078:	31 c0                	xor    %eax,%eax</span><br><span class="line">  40107a:	e8 9c 02 00 00       	callq  40131b &lt;string_length&gt;</span><br><span class="line">  40107f:	83 f8 06             	cmp    $0x6,%eax</span><br><span class="line">  401082:	74 4e                	je     4010d2 &lt;phase_5+0x70&gt;</span><br><span class="line">  401084:	e8 b1 03 00 00       	callq  40143a &lt;explode_bomb&gt;</span><br><span class="line">  401089:	eb 47                	jmp    4010d2 &lt;phase_5+0x70&gt;</span><br><span class="line">  40108b:	0f b6 0c 03          	movzbl (%rbx,%rax,1),%ecx</span><br><span class="line">  40108f:	88 0c 24             	mov    %cl,(%rsp)</span><br><span class="line">  401092:	48 8b 14 24          	mov    (%rsp),%rdx</span><br><span class="line">  401096:	83 e2 0f             	and    $0xf,%edx</span><br><span class="line">  401099:	0f b6 92 b0 24 40 00 	movzbl 0x4024b0(%rdx),%edx</span><br><span class="line">  4010a0:	88 54 04 10          	mov    %dl,0x10(%rsp,%rax,1)</span><br><span class="line">  4010a4:	48 83 c0 01          	add    $0x1,%rax</span><br><span class="line">  4010a8:	48 83 f8 06          	cmp    $0x6,%rax</span><br><span class="line">  4010ac:	75 dd                	jne    40108b &lt;phase_5+0x29&gt;</span><br><span class="line">  4010ae:	c6 44 24 16 00       	movb   $0x0,0x16(%rsp)</span><br><span class="line">  4010b3:	be 5e 24 40 00       	mov    $0x40245e,%esi</span><br><span class="line">  4010b8:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi</span><br><span class="line">  4010bd:	e8 76 02 00 00       	callq  401338 &lt;strings_not_equal&gt;</span><br><span class="line">  4010c2:	85 c0                	test   %eax,%eax</span><br><span class="line">  4010c4:	74 13                	je     4010d9 &lt;phase_5+0x77&gt;</span><br><span class="line">  4010c6:	e8 6f 03 00 00       	callq  40143a &lt;explode_bomb&gt;</span><br><span class="line">  4010cb:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)</span><br><span class="line">  4010d0:	eb 07                	jmp    4010d9 &lt;phase_5+0x77&gt;</span><br><span class="line">  4010d2:	b8 00 00 00 00       	mov    $0x0,%eax</span><br><span class="line">  4010d7:	eb b2                	jmp    40108b &lt;phase_5+0x29&gt;</span><br><span class="line">  4010d9:	48 8b 44 24 18       	mov    0x18(%rsp),%rax</span><br><span class="line">  4010de:	64 48 33 04 25 28 00 	xor    %fs:0x28,%rax</span><br><span class="line">  4010e5:	00 00 </span><br><span class="line">  4010e7:	74 05                	je     4010ee &lt;phase_5+0x8c&gt;</span><br><span class="line">  4010e9:	e8 42 fa ff ff       	callq  400b30 &lt;__stack_chk_fail@plt&gt;</span><br><span class="line">  4010ee:	48 83 c4 20          	add    $0x20,%rsp</span><br><span class="line">  4010f2:	5b                   	pop    %rbx</span><br><span class="line">  4010f3:	c3                   	retq   </span><br></pre></td></tr></table></figure>
 <p>这个函数的stack frame是这样的：</p>
@@ -376,7 +376,7 @@
 <p>所以我们只需要去注意输入的6个字符中，每个字符的低4位在<code>array3449</code>中索引出来的值，这些值就会一个一个的，填到以<code>rsp + 0x10</code>为开始的字符串中。</p>
 <p>手动数一数下标，就可以发现，要对应弄出<code>flyers</code>，我们依次需要下标是<code>9 15 14 5 6 7</code>。</p>
 <p>所以我们只需要翻翻ASCII表，找到低4位是这些的字符，拼到一起就可以了。</p>
-<p>我最终的答案是<code>ionefg</code>。</p>
+<p>我最终的答案是<code>ionefg</code>。答案不唯一。</p>
 <h3 id="IDA-4"><a href="#IDA-4" class="headerlink" title="IDA"></a>IDA</h3><img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/phase5(IDA).png">
 <p>主要是这句代码太具有迷惑性：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v3[i] = array_3449[*(_BYTE *)(a1 + i) &amp; <span class="number">0xF</span>];</span><br></pre></td></tr></table></figure>
@@ -405,12 +405,12 @@
 <p>接下来又是一句意味深长的代码：<code>*(_QWORD *)(i + 8) = *(_QWORD *)v10;</code></p>
 <p>我们在IDA开始乱了，用gdb看一看有没有线索，毕竟还没有查过那段<code>&amp;node1</code>的奇妙地址。结果非常的意外：</p>
 <img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/phase6_node.png">
-<p>不知为什么，每一个node元素，他的第二个数字，恰好跟下一个node的地址一模一样！</p>
+<p>不知为什么，每一个node元素，他的第三个数字，恰好跟下一个node的地址一模一样！</p>
 <p>其实突破点就出来了：</p>
 <p><strong>每一个node是一个struct类型！</strong></p>
 <p><strong>node里面的第三个数字，代表着下一个元素的地址！</strong></p>
 <p><strong>这就是链表的汇编！</strong></p>
-<p>其他的数字是啥意思呢？第一个数字对应节点的值，第三个数字是地址，然后怎么有空出来的0？</p>
+<p>其他的数字是啥意思呢？第一个数字对应节点的值，第二个数字是id，第三个数字是地址，然后怎么有空出来的0？</p>
 <p>不是空出来的0，而是因为地址就是64位的！</p>
 <p>在这里，结构体内的元素顺序不同，所占用的空间也会不同，这个在CSAPP中有提到过内存对齐的概念！</p>
 <p>那为什么上面的那个伏笔，对应的下标是1呢？</p>
