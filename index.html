@@ -179,6 +179,115 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/16/First-Assignment-from-Kap0k/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/16/First-Assignment-from-Kap0k/" class="post-title-link" itemprop="url">First Assignment from Kap0k</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-01-16 00:26:45 / Modified: 00:51:00" itemprop="dateCreated datePublished" datetime="2021-01-16T00:26:45+08:00">2021-01-16</time>
+            </span>
+
+          
+            <span id="/2021/01/16/First-Assignment-from-Kap0k/" class="post-meta-item leancloud_visitors" data-flag-title="First Assignment from Kap0k" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/01/16/First-Assignment-from-Kap0k/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/16/First-Assignment-from-Kap0k/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="手撕shellcode"><a href="#手撕shellcode" class="headerlink" title="手撕shellcode"></a>手撕shellcode</h2><p>最后的结果是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\x31\xc0\x50\x68\x66\x69\x6c\x65\x68\x74\x65\x73\x74\x89\xe3\x50\x53\x31\xc9\xb1\x02\xb0\x05\xcd\x80\x89\xc3\x31\xc0\x50\x68\x6f\x72\x6c\x64\x68\x6f\x2c\x20\x77\x68\x68\x65\x6c\x6c\x89\xe1\x50\x51\x31\xd2\xb2\x0c\xb0\x04\xcd\x80\x31\xdb\x31\xc0\xb0\x01\xcd\x80</span><br></pre></td></tr></table></figure>
+<h3 id="最初的思路"><a href="#最初的思路" class="headerlink" title="最初的思路"></a>最初的思路</h3><p>查了很久资料，最后才在google上找到有用的东西。（用i386编译出来的）</p>
+<p>最简单的写法自然是这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">section .data</span><br><span class="line">    msg db &quot;Hello, world!&quot;, 0xa</span><br><span class="line">    len equ $ - msg</span><br><span class="line">    filename db &quot;sb&quot;</span><br><span class="line"></span><br><span class="line">section .text</span><br><span class="line">global _start</span><br><span class="line">_start:</span><br><span class="line">    ;xor edx, edx</span><br><span class="line">    mov ecx, 2</span><br><span class="line">    mov ebx, filename</span><br><span class="line">    mov eax, 5</span><br><span class="line">    int 0x80</span><br><span class="line">    </span><br><span class="line">    mov ebx, eax</span><br><span class="line">    mov ecx, msg</span><br><span class="line">    mov edx, 12</span><br><span class="line">    mov eax, 4</span><br><span class="line">    int 0x80</span><br><span class="line"></span><br><span class="line">    mov ebx, 0</span><br><span class="line">    mov eax, 1</span><br><span class="line">    int 0x80</span><br></pre></td></tr></table></figure>
+<p>这里所运用到的是linux kernel里面的syscall指令，通过<code>int 0x80</code>的软中断来执行底层函数。</p>
+<p>我们用到的有<code>sys_open</code>和<code>sys_write</code>两个函数，他们的用法如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">4.</span> sys_write</span><br><span class="line">Syntax: <span class="function"><span class="keyword">ssize_t</span> <span class="title">sys_write</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> fd, <span class="keyword">const</span> <span class="keyword">char</span> * buf, <span class="keyword">size_t</span> count)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line">Source: fs/read_write.c</span><br><span class="line"></span><br><span class="line">Action: write to a file descriptor</span><br><span class="line"></span><br><span class="line">Details:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="number">5.</span> sys_open</span><br><span class="line">Syntax: <span class="function"><span class="keyword">int</span> <span class="title">sys_open</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> * filename, <span class="keyword">int</span> flags, <span class="keyword">int</span> mode)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line">Source: fs/open.c</span><br><span class="line"></span><br><span class="line">Action: open <span class="keyword">and</span> possibly create a file <span class="keyword">or</span> device</span><br><span class="line"></span><br><span class="line">Details:</span><br></pre></td></tr></table></figure>
+<p><code>sys_open</code>的第二个参数<code>flags</code>中，<code>0</code>代表只读，<code>1</code>代表只写，<code>2</code>代表可读写。</p>
+<p>这里试了一下，第三个参数可以不用去控制，默认留0没问题。</p>
+<p>然后<code>sys_open</code>的返回值是一个文件描述数字，这个概念可以参考stdin是0，stdout是1，反正就是一个在<code>sys_write</code>调用的时候，第一个参数填的值。</p>
+<p>然后就是照着规定填好寄存器，最后<code>int 0x80</code>调用一下就可以执行函数了。最后再<code>sys_exit</code>退出就可以了。</p>
+<p>编译命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ nasm -f elf helloworld.asm</span><br><span class="line">$ ld -m elf_i386 -s -o shellcode helloworld.o</span><br></pre></td></tr></table></figure>
+<p>不过这样编译过后会发现机器码里面一大堆都是<code>\x00</code>，不符合要求；并且存在常量字符串，没法在shellcode中跳到里面的奇妙地址来读取字符串。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><h4 id="去除-x00"><a href="#去除-x00" class="headerlink" title="去除\x00"></a>去除\x00</h4><p>我们通过几个技巧来实现：</p>
+<ol>
+<li><code>mov eax, 0</code>转而通过<code>mov eax, eax</code>来实现。</li>
+<li><code>mov eax, 1</code>转而通过<code>mov al, 1</code>来实现。（前提是eax高位也没问题）</li>
+</ol>
+<h4 id="在shellcode中注入常量字符串"><a href="#在shellcode中注入常量字符串" class="headerlink" title="在shellcode中注入常量字符串"></a>在shellcode中注入常量字符串</h4><p>我们没法把我们想要的字符串在被注入的程序中找到，所以还是得存在栈里面。</p>
+<p>不过怎么存呢？通过push来存。</p>
+<p>然后就有非常强的技巧：将字符串翻转后变成十六进制编码，每8位每8位的push进去，最后从栈顶开始的字符串就是我们想要的字符串。</p>
+<p>但是又有问题：这样会不会又产生<code>\x00</code>？</p>
+<p>其实有可能，所以我们无论如何，长度都补齐到4的整数倍。这样就可以保证没有<code>\x00</code>了。</p>
+<p>最终我的shellcode输出至名字为<code>testfile</code>的文件中，输入内容为<code>hello, world</code>。</p>
+<p>缺点是<code>testfile</code>必须要先存在然后才能写进去，这应该和我在<code>sys_open</code>的时候，<code>flags</code>的取值有关系。有时间的话再去探究这个参数到底该怎么取。</p>
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/First-Assignment-From-Kap0k/objdump.png">
+<p>最后通过一个在网上找到的命令，直接提取出了机器码，生成了shellcode：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ objdump -d .&#x2F;shellcode|grep &#39;[0-9a-f]:&#39;|grep -v &#39;file&#39;|cut -f2 -d:|cut -f1-6 -d&#39; &#39;|tr -s &#39; &#39;|tr &#39;\t&#39; &#39; &#39;|sed &#39;s&#x2F; $&#x2F;&#x2F;g&#39;|sed &#39;s&#x2F; &#x2F;\\x&#x2F;g&#39;|paste -d &#39;&#39; -s |sed &#39;s&#x2F;^&#x2F;&quot;&#x2F;&#39;|sed &#39;s&#x2F;$&#x2F;&quot;&#x2F;g&#39;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/14/Jan-14-Writeup/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -202,10 +311,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-01-14 15:15:17 / Modified: 15:35:36" itemprop="dateCreated datePublished" datetime="2021-01-14T15:15:17+08:00">2021-01-14</time>
+              <time title="Created: 2021-01-14 15:15:17" itemprop="dateCreated datePublished" datetime="2021-01-14T15:15:17+08:00">2021-01-14</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-16 00:26:04" itemprop="dateModified" datetime="2021-01-16T00:26:04+08:00">2021-01-16</time>
+              </span>
 
           
             <span id="/2021/01/14/Jan-14-Writeup/" class="post-meta-item leancloud_visitors" data-flag-title="Jan 14 Writeup" title="Views">
@@ -1300,12 +1415,12 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
