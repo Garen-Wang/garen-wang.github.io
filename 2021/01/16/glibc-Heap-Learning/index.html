@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"121.36.2.124","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="学了好几天的堆，今晚把已经看过的堆的知识记录一下。 什么是堆系统用堆(Heap)来动态管理内存，堆从低地址向高地址生长。 一直听到堆栈的说法，其实堆跟栈区别真的很大的好吧：比如栈从高地址向低地址生长，内存较为固定，地址一直是0x7ffff...开头的，不能跟堆混为一谈吧。 堆的实现就是时间与空间达到权衡(trade off)的生动案例。后面我们会体会到。 堆想要效率高，就应该提高单次分配和释放的速">
+<meta property="og:type" content="article">
+<meta property="og:title" content="glibc Heap Learning">
+<meta property="og:url" content="https://121.36.2.124/2021/01/16/glibc-Heap-Learning/index.html">
+<meta property="og:site_name" content="Garen Wang&#39;s Blog">
+<meta property="og:description" content="学了好几天的堆，今晚把已经看过的堆的知识记录一下。 什么是堆系统用堆(Heap)来动态管理内存，堆从低地址向高地址生长。 一直听到堆栈的说法，其实堆跟栈区别真的很大的好吧：比如栈从高地址向低地址生长，内存较为固定，地址一直是0x7ffff...开头的，不能跟堆混为一谈吧。 堆的实现就是时间与空间达到权衡(trade off)的生动案例。后面我们会体会到。 堆想要效率高，就应该提高单次分配和释放的速">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-16T14:18:04.000Z">
+<meta property="article:modified_time" content="2021-01-16T15:57:22.952Z">
+<meta property="article:author" content="Garen Wang">
+<meta property="article:tag" content="pwn">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://121.36.2.124/2021/01/16/glibc-Heap-Learning/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>glibc Heap Learning | Garen Wang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Garen Wang's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/16/glibc-Heap-Learning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          glibc Heap Learning
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-01-16 22:18:04 / Modified: 23:57:22" itemprop="dateCreated datePublished" datetime="2021-01-16T22:18:04+08:00">2021-01-16</time>
+            </span>
+
+          
+            <span id="/2021/01/16/glibc-Heap-Learning/" class="post-meta-item leancloud_visitors" data-flag-title="glibc Heap Learning" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/01/16/glibc-Heap-Learning/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/16/glibc-Heap-Learning/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>学了好几天的堆，今晚把已经看过的堆的知识记录一下。</p>
+<h2 id="什么是堆"><a href="#什么是堆" class="headerlink" title="什么是堆"></a>什么是堆</h2><p>系统用堆(Heap)来动态管理内存，堆从低地址向高地址生长。</p>
+<p>一直听到堆栈的说法，其实堆跟栈区别真的很大的好吧：比如栈从高地址向低地址生长，内存较为固定，地址一直是<code>0x7ffff...</code>开头的，不能跟堆混为一谈吧。</p>
+<p>堆的实现就是时间与空间达到权衡(trade off)的生动案例。后面我们会体会到。</p>
+<p>堆想要效率高，就应该提高单次分配和释放的速率，同时也要减少内存空间利用的碎片化。</p>
+<p>glibc中堆的管理器是ptmalloc2。我们在pwn学堆的时候，就学习ptmalloc2的堆管理。</p>
+<h2 id="堆的两个C语言高级函数"><a href="#堆的两个C语言高级函数" class="headerlink" title="堆的两个C语言高级函数"></a>堆的两个C语言高级函数</h2><p>在C++里面是<code>new</code>跟<code>delete</code>，而在C语言里面是<code>malloc</code>跟<code>free</code>。</p>
+<h3 id="malloc"><a href="#malloc" class="headerlink" title="malloc"></a>malloc</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">void* malloc(size_t n);</span><br><span class="line">return a pointer to the newly-allocated chunk.</span><br></pre></td></tr></table></figure>
+<h3 id="free"><a href="#free" class="headerlink" title="free"></a>free</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">void free(void* p);</span><br><span class="line">release the chunk pointed by the pointer p</span><br></pre></td></tr></table></figure>
+<h2 id="堆底层的常用概念"><a href="#堆底层的常用概念" class="headerlink" title="堆底层的常用概念"></a>堆底层的常用概念</h2><h3 id="arena"><a href="#arena" class="headerlink" title="arena"></a>arena</h3><p>arena可以理解为一个区域内的内存集合，可以看作是一片连续的内存空间。</p>
+<p>在多线程中，每个线程都有一个专属的arena，主线程的arena就叫<code>main_arena</code>，后续做题经常见到。</p>
+<p>主线程的arena通过系统调用<code>sbrk</code>创建，通过<code>brk</code>进行伸缩，其他线程的arena通过<code>mmap</code>来创建。</p>
+<p><code>main_arena</code>其实是由一个<code>struct malloc_state</code>来组织的，这个结构体里面储存了多种类型的bin和top chunk等内容。</p>
+<h3 id="chunk"><a href="#chunk" class="headerlink" title="chunk"></a>chunk</h3><p>chunk即是<code>malloc</code>和<code>free</code>操作时，内存块的基本单位。</p>
+<h4 id="free-chunk的结构"><a href="#free-chunk的结构" class="headerlink" title="free chunk的结构"></a>free chunk的结构</h4><p>一个空闲的chunk不是都是unused area，而是在chunk的头部储存了很多信息，具体是这么储存的：</p>
+<ul>
+<li>prev_size：储存上一个chunk的size</li>
+<li>size：储存当前free chunk的size</li>
+<li>fd：下一个free chunk</li>
+<li>bk：上一个free chunk</li>
+<li>unused area</li>
+</ul>
+<p>另外，注意到x86-64平台下，chunk都是每8个字节对齐的，所以chunk的大小也一定是8个字节的倍数，所以上面用来表示size的8个字节，就可以保证二进制表示下最后必有3个0。</p>
+<p>而这3个0的位置，就被设计来分别储存3个信息：</p>
+<ul>
+<li>N：NON_MAIN_ARENA，1表示不是main_arena的，0代表是main_arena的。</li>
+<li>M：IS_MMAPPED，1代表该chunk是<code>mmap</code>出来的，0则不是。</li>
+<li>P：PREV_INUSE，1代表前面的chunk正在被使用，0则代表前面的chunk是空闲的。</li>
+</ul>
+<h4 id="allocated-chunk的结构"><a href="#allocated-chunk的结构" class="headerlink" title="allocated chunk的结构"></a>allocated chunk的结构</h4><p>allocated chunk的结构跟free chunk大体相似，不过也有不同：</p>
+<ul>
+<li>prev_size、size、NMP这前两个字段都是跟free chunk一样的。</li>
+<li>没有fd和bk，从第三个字段开始即可开始储存数据。</li>
+</ul>
+<p>注意一下，prev_size到底什么时候有必要？当可以与前面的chunk合并时有必要存在。</p>
+<p>什么时候allocated chunk可以省去prev_size这一个字段的空间？当前面的chunk也是allocated的。</p>
+<p>所以，在设计之中，allocated chunk之间是可以把prev_size那8个字节也用来存入数据，这样能多出8个字节的存储空间。</p>
+<h3 id="top-chunk"><a href="#top-chunk" class="headerlink" title="top chunk"></a>top chunk</h3><p>top chunk就是一个arena里面最后的那块chunk，不管怎样都会存在，作为一个arena的结束，不输入任何一个bin。</p>
+<p>top chunk可以通过系统调用<code>brk</code>来变长变短，也可以在<code>malloc</code>过程中被切出一块去用，但是一直会存在。</p>
+<h3 id="bin"><a href="#bin" class="headerlink" title="bin"></a>bin</h3><p>bin是用来管理<strong>空闲的chunk</strong>的一个数据结构，通过单向或双向链表来进行组织。</p>
+<p>通过将不同类型的chunk放进不同的bin中进行管理，能够提高<code>malloc</code>过程找到合适的chunk的速率。</p>
+<h4 id="fast-bin"><a href="#fast-bin" class="headerlink" title="fast bin"></a>fast bin</h4><p>fast bin维护小型的内存块，将这些小内存块用于系统频繁的小型内存申请调用。</p>
+<p>fast bin只有1组，也就是只有一条单向链表来维护。</p>
+<p>fast bin中的free chunk有这么几个特点：</p>
+<ol>
+<li>不与其他的free chunk合并</li>
+<li>使用singly linked list进行组织</li>
+<li>采用Last In First Out Policy</li>
+<li>申请小内存时，最先在fast bin中寻找</li>
+<li>当被free时，不会将P位置0（PREV_INUSE）</li>
+</ol>
+<p>一般0x20到0x7f大小的chunk，在free后并且分类后，会被丢进fast bin进行维护。</p>
+<h4 id="small-bins"><a href="#small-bins" class="headerlink" title="small bins"></a>small bins</h4><p>small bins有62组链表，负责维护相对较小的chunk。</p>
+<p>small bins的free chunk就跟fast bin不同了：</p>
+<ol>
+<li>相同大小的chunk就会被放在同一组small bin之中</li>
+<li>使用doubly linked list维护</li>
+<li>First In First Out</li>
+<li>当被free时，会诚实地记录P位</li>
+<li>并且，有条件时，会主动地合并成一个更大的free chunk</li>
+</ol>
+<p>大小从0x80到0x400的chunk最后会被丢到small bins去维护。（大小小于1M）</p>
+<h4 id="large-bins"><a href="#large-bins" class="headerlink" title="large bins"></a>large bins</h4><p>large bins共有63组。每一组large bin储存的不是特定大小的chunk，而是大小处在一定范围的chunk。</p>
+<p>记录的方法与small bin几乎相同。一样是FIFO，一样是双向链表，一样会主动合并。</p>
+<p>不过有一点特殊：large bin中的chunk是按照从大到小进行排序的。</p>
+<p>大于0x400即1M的chunk就会被安排到large bin里面去。</p>
+<h4 id="unsorted-bin"><a href="#unsorted-bin" class="headerlink" title="unsorted bin"></a>unsorted bin</h4><p>unsorted bin可以通俗想象成是chunk的“垃圾桶”，任何大于0x80的chunk都会被丢进unsorted bin里面去。（太小的直接丢进fast bin里面维护）</p>
+<p>unsorted bin中的chunk没有大小规定，也没有大小顺序，一切都是待整理状态。</p>
+<p>在里面的chunk会通过后续的“捡垃圾”（即chunk维护整理工作）进入到专属的chunk。</p>
+<p>与fast bin一样，unsorted bin也只有一组。也只是一个暂存的缓冲区域，该挑合适的chunk，还是去规定的bin找，万不得已最后才来搜垃圾堆嘛。。。</p>
+<h3 id="小知识"><a href="#小知识" class="headerlink" title="小知识"></a>小知识</h3><p>有一个原则：任意两个物理相邻的空闲chunk不能排在一起。（不过fast bin还是得除外的）</p>
+<h2 id="堆的工作流程"><a href="#堆的工作流程" class="headerlink" title="堆的工作流程"></a>堆的工作流程</h2><h3 id="malloc的工作流程"><a href="#malloc的工作流程" class="headerlink" title="malloc的工作流程"></a>malloc的工作流程</h3><h3 id="free的工作流程"><a href="#free的工作流程" class="headerlink" title="free的工作流程"></a>free的工作流程</h3><h2 id="堆有关的攻击手段"><a href="#堆有关的攻击手段" class="headerlink" title="堆有关的攻击手段"></a>堆有关的攻击手段</h2><h3 id="UAF"><a href="#UAF" class="headerlink" title="UAF"></a>UAF</h3><h3 id="Heap-Overflow"><a href="#Heap-Overflow" class="headerlink" title="Heap Overflow"></a>Heap Overflow</h3><h3 id="Unlink"><a href="#Unlink" class="headerlink" title="Unlink"></a>Unlink</h3><h3 id="Fastbin-Attack"><a href="#Fastbin-Attack" class="headerlink" title="Fastbin Attack"></a>Fastbin Attack</h3>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/pwn/" rel="tag"><i class="fa fa-tag"></i> pwn</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/16/First-Assignment-from-Kap0k/" rel="prev" title="First Assignment from Kap0k">
+      <i class="fa fa-chevron-left"></i> First Assignment from Kap0k
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%A0%86"><span class="nav-number">1.</span> <span class="nav-text">什么是堆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E7%9A%84%E4%B8%A4%E4%B8%AAC%E8%AF%AD%E8%A8%80%E9%AB%98%E7%BA%A7%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">堆的两个C语言高级函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#malloc"><span class="nav-number">2.1.</span> <span class="nav-text">malloc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#free"><span class="nav-number">2.2.</span> <span class="nav-text">free</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E5%BA%95%E5%B1%82%E7%9A%84%E5%B8%B8%E7%94%A8%E6%A6%82%E5%BF%B5"><span class="nav-number">3.</span> <span class="nav-text">堆底层的常用概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#arena"><span class="nav-number">3.1.</span> <span class="nav-text">arena</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#chunk"><span class="nav-number">3.2.</span> <span class="nav-text">chunk</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#free-chunk%E7%9A%84%E7%BB%93%E6%9E%84"><span class="nav-number">3.2.1.</span> <span class="nav-text">free chunk的结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#allocated-chunk%E7%9A%84%E7%BB%93%E6%9E%84"><span class="nav-number">3.2.2.</span> <span class="nav-text">allocated chunk的结构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#top-chunk"><span class="nav-number">3.3.</span> <span class="nav-text">top chunk</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bin"><span class="nav-number">3.4.</span> <span class="nav-text">bin</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#fast-bin"><span class="nav-number">3.4.1.</span> <span class="nav-text">fast bin</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#small-bins"><span class="nav-number">3.4.2.</span> <span class="nav-text">small bins</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#large-bins"><span class="nav-number">3.4.3.</span> <span class="nav-text">large bins</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#unsorted-bin"><span class="nav-number">3.4.4.</span> <span class="nav-text">unsorted bin</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%8F%E7%9F%A5%E8%AF%86"><span class="nav-number">3.5.</span> <span class="nav-text">小知识</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">堆的工作流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#malloc%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">4.1.</span> <span class="nav-text">malloc的工作流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#free%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">4.2.</span> <span class="nav-text">free的工作流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E6%9C%89%E5%85%B3%E7%9A%84%E6%94%BB%E5%87%BB%E6%89%8B%E6%AE%B5"><span class="nav-number">5.</span> <span class="nav-text">堆有关的攻击手段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UAF"><span class="nav-number">5.1.</span> <span class="nav-text">UAF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Heap-Overflow"><span class="nav-number">5.2.</span> <span class="nav-text">Heap Overflow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unlink"><span class="nav-number">5.3.</span> <span class="nav-text">Unlink</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fastbin-Attack"><span class="nav-number">5.4.</span> <span class="nav-text">Fastbin Attack</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Garen Wang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Garen Wang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Garen-Wang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Garen-Wang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:garen-wang@qq.com" title="E-Mail → mailto:garen-wang@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">粤ICP备2021003110号 </a>
+      <img src="/images/beian.png" style="display: inline-block;">
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Garen Wang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'wMExYSieDga8BTVjfcUnCRh1-gzGzoHsz',
+      appKey     : 'pYUGXalVN490u6EsT2HJA4Rj',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

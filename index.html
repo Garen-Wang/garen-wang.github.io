@@ -179,6 +179,156 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/16/glibc-Heap-Learning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/16/glibc-Heap-Learning/" class="post-title-link" itemprop="url">glibc Heap Learning</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-01-16 22:18:04 / Modified: 23:57:22" itemprop="dateCreated datePublished" datetime="2021-01-16T22:18:04+08:00">2021-01-16</time>
+            </span>
+
+          
+            <span id="/2021/01/16/glibc-Heap-Learning/" class="post-meta-item leancloud_visitors" data-flag-title="glibc Heap Learning" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/01/16/glibc-Heap-Learning/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/16/glibc-Heap-Learning/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>学了好几天的堆，今晚把已经看过的堆的知识记录一下。</p>
+<h2 id="什么是堆"><a href="#什么是堆" class="headerlink" title="什么是堆"></a>什么是堆</h2><p>系统用堆(Heap)来动态管理内存，堆从低地址向高地址生长。</p>
+<p>一直听到堆栈的说法，其实堆跟栈区别真的很大的好吧：比如栈从高地址向低地址生长，内存较为固定，地址一直是<code>0x7ffff...</code>开头的，不能跟堆混为一谈吧。</p>
+<p>堆的实现就是时间与空间达到权衡(trade off)的生动案例。后面我们会体会到。</p>
+<p>堆想要效率高，就应该提高单次分配和释放的速率，同时也要减少内存空间利用的碎片化。</p>
+<p>glibc中堆的管理器是ptmalloc2。我们在pwn学堆的时候，就学习ptmalloc2的堆管理。</p>
+<h2 id="堆的两个C语言高级函数"><a href="#堆的两个C语言高级函数" class="headerlink" title="堆的两个C语言高级函数"></a>堆的两个C语言高级函数</h2><p>在C++里面是<code>new</code>跟<code>delete</code>，而在C语言里面是<code>malloc</code>跟<code>free</code>。</p>
+<h3 id="malloc"><a href="#malloc" class="headerlink" title="malloc"></a>malloc</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">void* malloc(size_t n);</span><br><span class="line">return a pointer to the newly-allocated chunk.</span><br></pre></td></tr></table></figure>
+<h3 id="free"><a href="#free" class="headerlink" title="free"></a>free</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">void free(void* p);</span><br><span class="line">release the chunk pointed by the pointer p</span><br></pre></td></tr></table></figure>
+<h2 id="堆底层的常用概念"><a href="#堆底层的常用概念" class="headerlink" title="堆底层的常用概念"></a>堆底层的常用概念</h2><h3 id="arena"><a href="#arena" class="headerlink" title="arena"></a>arena</h3><p>arena可以理解为一个区域内的内存集合，可以看作是一片连续的内存空间。</p>
+<p>在多线程中，每个线程都有一个专属的arena，主线程的arena就叫<code>main_arena</code>，后续做题经常见到。</p>
+<p>主线程的arena通过系统调用<code>sbrk</code>创建，通过<code>brk</code>进行伸缩，其他线程的arena通过<code>mmap</code>来创建。</p>
+<p><code>main_arena</code>其实是由一个<code>struct malloc_state</code>来组织的，这个结构体里面储存了多种类型的bin和top chunk等内容。</p>
+<h3 id="chunk"><a href="#chunk" class="headerlink" title="chunk"></a>chunk</h3><p>chunk即是<code>malloc</code>和<code>free</code>操作时，内存块的基本单位。</p>
+<h4 id="free-chunk的结构"><a href="#free-chunk的结构" class="headerlink" title="free chunk的结构"></a>free chunk的结构</h4><p>一个空闲的chunk不是都是unused area，而是在chunk的头部储存了很多信息，具体是这么储存的：</p>
+<ul>
+<li>prev_size：储存上一个chunk的size</li>
+<li>size：储存当前free chunk的size</li>
+<li>fd：下一个free chunk</li>
+<li>bk：上一个free chunk</li>
+<li>unused area</li>
+</ul>
+<p>另外，注意到x86-64平台下，chunk都是每8个字节对齐的，所以chunk的大小也一定是8个字节的倍数，所以上面用来表示size的8个字节，就可以保证二进制表示下最后必有3个0。</p>
+<p>而这3个0的位置，就被设计来分别储存3个信息：</p>
+<ul>
+<li>N：NON_MAIN_ARENA，1表示不是main_arena的，0代表是main_arena的。</li>
+<li>M：IS_MMAPPED，1代表该chunk是<code>mmap</code>出来的，0则不是。</li>
+<li>P：PREV_INUSE，1代表前面的chunk正在被使用，0则代表前面的chunk是空闲的。</li>
+</ul>
+<h4 id="allocated-chunk的结构"><a href="#allocated-chunk的结构" class="headerlink" title="allocated chunk的结构"></a>allocated chunk的结构</h4><p>allocated chunk的结构跟free chunk大体相似，不过也有不同：</p>
+<ul>
+<li>prev_size、size、NMP这前两个字段都是跟free chunk一样的。</li>
+<li>没有fd和bk，从第三个字段开始即可开始储存数据。</li>
+</ul>
+<p>注意一下，prev_size到底什么时候有必要？当可以与前面的chunk合并时有必要存在。</p>
+<p>什么时候allocated chunk可以省去prev_size这一个字段的空间？当前面的chunk也是allocated的。</p>
+<p>所以，在设计之中，allocated chunk之间是可以把prev_size那8个字节也用来存入数据，这样能多出8个字节的存储空间。</p>
+<h3 id="top-chunk"><a href="#top-chunk" class="headerlink" title="top chunk"></a>top chunk</h3><p>top chunk就是一个arena里面最后的那块chunk，不管怎样都会存在，作为一个arena的结束，不输入任何一个bin。</p>
+<p>top chunk可以通过系统调用<code>brk</code>来变长变短，也可以在<code>malloc</code>过程中被切出一块去用，但是一直会存在。</p>
+<h3 id="bin"><a href="#bin" class="headerlink" title="bin"></a>bin</h3><p>bin是用来管理<strong>空闲的chunk</strong>的一个数据结构，通过单向或双向链表来进行组织。</p>
+<p>通过将不同类型的chunk放进不同的bin中进行管理，能够提高<code>malloc</code>过程找到合适的chunk的速率。</p>
+<h4 id="fast-bin"><a href="#fast-bin" class="headerlink" title="fast bin"></a>fast bin</h4><p>fast bin维护小型的内存块，将这些小内存块用于系统频繁的小型内存申请调用。</p>
+<p>fast bin只有1组，也就是只有一条单向链表来维护。</p>
+<p>fast bin中的free chunk有这么几个特点：</p>
+<ol>
+<li>不与其他的free chunk合并</li>
+<li>使用singly linked list进行组织</li>
+<li>采用Last In First Out Policy</li>
+<li>申请小内存时，最先在fast bin中寻找</li>
+<li>当被free时，不会将P位置0（PREV_INUSE）</li>
+</ol>
+<p>一般0x20到0x7f大小的chunk，在free后并且分类后，会被丢进fast bin进行维护。</p>
+<h4 id="small-bins"><a href="#small-bins" class="headerlink" title="small bins"></a>small bins</h4><p>small bins有62组链表，负责维护相对较小的chunk。</p>
+<p>small bins的free chunk就跟fast bin不同了：</p>
+<ol>
+<li>相同大小的chunk就会被放在同一组small bin之中</li>
+<li>使用doubly linked list维护</li>
+<li>First In First Out</li>
+<li>当被free时，会诚实地记录P位</li>
+<li>并且，有条件时，会主动地合并成一个更大的free chunk</li>
+</ol>
+<p>大小从0x80到0x400的chunk最后会被丢到small bins去维护。（大小小于1M）</p>
+<h4 id="large-bins"><a href="#large-bins" class="headerlink" title="large bins"></a>large bins</h4><p>large bins共有63组。每一组large bin储存的不是特定大小的chunk，而是大小处在一定范围的chunk。</p>
+<p>记录的方法与small bin几乎相同。一样是FIFO，一样是双向链表，一样会主动合并。</p>
+<p>不过有一点特殊：large bin中的chunk是按照从大到小进行排序的。</p>
+<p>大于0x400即1M的chunk就会被安排到large bin里面去。</p>
+<h4 id="unsorted-bin"><a href="#unsorted-bin" class="headerlink" title="unsorted bin"></a>unsorted bin</h4><p>unsorted bin可以通俗想象成是chunk的“垃圾桶”，任何大于0x80的chunk都会被丢进unsorted bin里面去。（太小的直接丢进fast bin里面维护）</p>
+<p>unsorted bin中的chunk没有大小规定，也没有大小顺序，一切都是待整理状态。</p>
+<p>在里面的chunk会通过后续的“捡垃圾”（即chunk维护整理工作）进入到专属的chunk。</p>
+<p>与fast bin一样，unsorted bin也只有一组。也只是一个暂存的缓冲区域，该挑合适的chunk，还是去规定的bin找，万不得已最后才来搜垃圾堆嘛。。。</p>
+<h3 id="小知识"><a href="#小知识" class="headerlink" title="小知识"></a>小知识</h3><p>有一个原则：任意两个物理相邻的空闲chunk不能排在一起。（不过fast bin还是得除外的）</p>
+<h2 id="堆的工作流程"><a href="#堆的工作流程" class="headerlink" title="堆的工作流程"></a>堆的工作流程</h2><h3 id="malloc的工作流程"><a href="#malloc的工作流程" class="headerlink" title="malloc的工作流程"></a>malloc的工作流程</h3><h3 id="free的工作流程"><a href="#free的工作流程" class="headerlink" title="free的工作流程"></a>free的工作流程</h3><h2 id="堆有关的攻击手段"><a href="#堆有关的攻击手段" class="headerlink" title="堆有关的攻击手段"></a>堆有关的攻击手段</h2><h3 id="UAF"><a href="#UAF" class="headerlink" title="UAF"></a>UAF</h3><h3 id="Heap-Overflow"><a href="#Heap-Overflow" class="headerlink" title="Heap Overflow"></a>Heap Overflow</h3><h3 id="Unlink"><a href="#Unlink" class="headerlink" title="Unlink"></a>Unlink</h3><h3 id="Fastbin-Attack"><a href="#Fastbin-Attack" class="headerlink" title="Fastbin Attack"></a>Fastbin Attack</h3>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/16/First-Assignment-from-Kap0k/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1426,7 +1576,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
