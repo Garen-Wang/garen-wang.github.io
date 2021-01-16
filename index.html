@@ -204,7 +204,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-01-16 00:26:45 / Modified: 15:40:11" itemprop="dateCreated datePublished" datetime="2021-01-16T00:26:45+08:00">2021-01-16</time>
+              <time title="Created: 2021-01-16 00:26:45 / Modified: 15:42:37" itemprop="dateCreated datePublished" datetime="2021-01-16T00:26:45+08:00">2021-01-16</time>
             </span>
 
           
@@ -269,7 +269,7 @@
 <p>其实有可能，所以我们无论如何，长度都补齐到4的整数倍。这样就可以保证没有<code>\x00</code>了。</p>
 <p>最终我的shellcode输出至名字为<code>testfile</code>的文件中，输入内容为<code>hello, world</code>。</p>
 <p>缺点是<code>testfile</code>必须要先存在然后才能写进去，这应该和我在<code>sys_open</code>的时候，<code>flags</code>的取值有关系。有时间的话再去探究这个参数到底该怎么取。</p>
-<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/First-Assignment-From-Kap0k/objdump.png">
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/First-Assignment-from-Kap0k/objdump.png">
 <p>最后通过一个在网上找到的命令，直接提取出了机器码，生成了shellcode，省去了一个字节一个字节手抄出来的麻烦：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ objdump -d .&#x2F;shellcode|grep &#39;[0-9a-f]:&#39;|grep -v &#39;file&#39;|cut -f2 -d:|cut -f1-6 -d&#39; &#39;|tr -s &#39; &#39;|tr &#39;\t&#39; &#39; &#39;|sed &#39;s&#x2F; $&#x2F;&#x2F;g&#39;|sed &#39;s&#x2F; &#x2F;\\x&#x2F;g&#39;|paste -d &#39;&#39; -s |sed &#39;s&#x2F;^&#x2F;&quot;&#x2F;&#39;|sed &#39;s&#x2F;$&#x2F;&quot;&#x2F;g&#39;</span><br></pre></td></tr></table></figure>
 <h2 id="汇编快排"><a href="#汇编快排" class="headerlink" title="汇编快排"></a>汇编快排</h2><p>直接用汇编写出快排我做不到，就先写个c出来吧。</p>
