@@ -30,7 +30,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/phase1.png">
 <meta property="og:image" content="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/phase1(IDA).png">
-<meta property="og:image" content="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/qnimg">
+<meta property="og:image" content="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/phase2(IDA).png">
 <meta property="og:image" content="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/phase3(IDA).png">
 <meta property="og:image" content="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/phase3_disass.png">
 <meta property="og:image" content="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/phase3_switch.png">
@@ -49,7 +49,7 @@
 <meta property="og:image" content="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/success1.png">
 <meta property="og:image" content="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/success2.png">
 <meta property="article:published_time" content="2021-01-13T15:40:47.000Z">
-<meta property="article:modified_time" content="2021-01-15T05:34:54.981Z">
+<meta property="article:modified_time" content="2021-01-16T01:29:59.408Z">
 <meta property="article:author" content="Garen Wang">
 <meta property="article:tag" content="CSAPP">
 <meta name="twitter:card" content="summary">
@@ -236,7 +236,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-01-15 13:34:54" itemprop="dateModified" datetime="2021-01-15T13:34:54+08:00">2021-01-15</time>
+                <time title="Modified: 2021-01-16 09:29:59" itemprop="dateModified" datetime="2021-01-16T09:29:59+08:00">2021-01-16</time>
               </span>
 
           
@@ -293,7 +293,7 @@
 <p>我们需要满足的是两倍的rax等于rbx，也就是我们输入的数列是成倍增长的。</p>
 <p>还有一个条件：读入到<code>rsp - 0x20</code>，也就是第一个数字，必须是1。</p>
 <p>所以最终的输入就是<code>1 2 4 8 16 32</code>。</p>
-<h3 id="IDA-1"><a href="#IDA-1" class="headerlink" title="IDA"></a>IDA</h3><img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/qnimg">
+<h3 id="IDA-1"><a href="#IDA-1" class="headerlink" title="IDA"></a>IDA</h3><img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/phase2(IDA).png">
 <p>输入六个整数，需要符合里面的这个规则：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">do</span></span><br><span class="line">&#123;</span><br><span class="line">  result = (<span class="keyword">unsigned</span> <span class="keyword">int</span>)(<span class="number">2</span> * *((_DWORD *)v2 - <span class="number">1</span>));</span><br><span class="line">  <span class="keyword">if</span> ( *(_DWORD *)v2 != (_DWORD)result )</span><br><span class="line">    explode_bomb();</span><br><span class="line">  v2 += <span class="number">4</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">while</span>(v2 != v5);</span><br></pre></td></tr></table></figure><br>这里需要注意：在第三行的代码里，<code>v2</code>先被强制类型转换为<code>DWORD*</code>，然后再执行减1的操作。</p>
 <p>因为<code>v2</code>的指针类型在减1之前已经确定，所以实际上<code>*((_DWORD *)v2 - 1)</code>就相当于<code>*(_DWORD *)(v2 - 4)</code>，也就是数组里面的上一个元素。</p>
 <p>所以六个整数，只需要满足后一个是前一个的两倍，就可以了。</p>
@@ -454,6 +454,7 @@
 <img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/success.png">
 <img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/success1.png">
 <img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Bomb-Lab-Writeup/success2.png">
+
     </div>
 
     
