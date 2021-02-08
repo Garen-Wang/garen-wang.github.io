@@ -28,13 +28,13 @@
 <meta property="og:site_name" content="Garen Wang&#39;s Blog">
 <meta property="og:description" content="手撕shellcode最后的结果是： 1\x31\xc0\x50\x68\x66\x69\x6c\x65\x68\x74\x65\x73\x74\x89\xe3\x50\x53\x31\xc9\xb1\x02\xb0\x05\xcd\x80\x89\xc3\x31\xc0\x50\x68\x6f\x72\x6c\x64\x68\x6f\x2c\x20\x77\x68\x68\x65\x6c\x6c">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://121.36.2.124/2021/01/16/First-Assignment-from-Kap0k/qiniu.garen-wang.cn/static/images/First-Assignment-from-Kap0k/objdump.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/First-Assignment-from-Kap0k/objdump.png">
 <meta property="article:published_time" content="2021-01-15T16:26:45.000Z">
 <meta property="article:modified_time" content="2021-01-25T05:00:55.193Z">
 <meta property="article:author" content="Garen Wang">
 <meta property="article:tag" content="Kap0k pwn">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://121.36.2.124/2021/01/16/First-Assignment-from-Kap0k/qiniu.garen-wang.cn/static/images/First-Assignment-from-Kap0k/objdump.png">
+<meta name="twitter:image" content="http://qiniu.garen-wang.cn/static/images/First-Assignment-from-Kap0k/objdump.png">
 
 <link rel="canonical" href="https://121.36.2.124/2021/01/16/First-Assignment-from-Kap0k/">
 
@@ -282,7 +282,7 @@
 <p>其实有可能，所以我们无论如何，长度都补齐到4的整数倍。这样就可以保证没有<code>\x00</code>了。</p>
 <p>最终我的shellcode输出至名字为<code>testfile</code>的文件中，输入内容为<code>hello, world</code>。</p>
 <p>缺点是<code>testfile</code>必须要先存在然后才能写进去，这应该和我在<code>sys_open</code>的时候，<code>flags</code>的取值有关系。有时间的话再去探究这个参数到底该怎么取。</p>
-<img data-src="qiniu.garen-wang.cn/static/images/First-Assignment-from-Kap0k/objdump.png">
+<img data-src="http://qiniu.garen-wang.cn/static/images/First-Assignment-from-Kap0k/objdump.png">
 <p>最后通过一个在网上找到的命令，直接提取出了机器码，生成了shellcode，省去了一个字节一个字节手抄出来的麻烦：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ objdump -d .&#x2F;shellcode|grep &#39;[0-9a-f]:&#39;|grep -v &#39;file&#39;|cut -f2 -d:|cut -f1-6 -d&#39; &#39;|tr -s &#39; &#39;|tr &#39;\t&#39; &#39; &#39;|sed &#39;s&#x2F; $&#x2F;&#x2F;g&#39;|sed &#39;s&#x2F; &#x2F;\\x&#x2F;g&#39;|paste -d &#39;&#39; -s |sed &#39;s&#x2F;^&#x2F;&quot;&#x2F;&#39;|sed &#39;s&#x2F;$&#x2F;&quot;&#x2F;g&#39;</span><br></pre></td></tr></table></figure>
 <h2 id="汇编快排"><a href="#汇编快排" class="headerlink" title="汇编快排"></a>汇编快排</h2><p>直接用汇编写出快排我做不到，就先写个c出来吧。</p>
