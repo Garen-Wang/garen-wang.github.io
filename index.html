@@ -293,10 +293,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-03-01 22:08:57 / Modified: 23:30:33" itemprop="dateCreated datePublished" datetime="2021-03-01T22:08:57+08:00">2021-03-01</time>
+              <time title="Created: 2021-03-01 22:08:57" itemprop="dateCreated datePublished" datetime="2021-03-01T22:08:57+08:00">2021-03-01</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-03 20:37:32" itemprop="dateModified" datetime="2021-03-03T20:37:32+08:00">2021-03-03</time>
+              </span>
 
           
             <span id="/2021/03/01/DARTS-Learning-Note/" class="post-meta-item leancloud_visitors" data-flag-title="DARTS Learning Note" title="Views">
@@ -345,7 +351,7 @@
 <script type="math/tex; mode=display">\overline o^{(i,j)}(x) = \sum_{o\in \mathcal{O}}\frac{\exp(\alpha_o^{(i,j)})}{\sum_{o'\in \mathcal{O}} \exp(\alpha_{o'}^{(i,j)})}o(x)</script><p>$\overline o^{(i,j)}(x)$最终最可能会选中得分最高的架构，即：</p>
 <script type="math/tex; mode=display">o^{(i,j)}=\argmax_{o\in \mathcal{O}}\alpha_o^{(i,j)}</script><p>最终我们所求的是集合$\alpha=\{\alpha^{(i,j)}\}$。</p>
 <p>如何求得$\alpha$？我们需要训练集和验证集的协助。</p>
-<p>设训练集和验证集的loss分别为$\mathcal L_{train}$和$\mathcal L_{val}$。我们要求$\alpha$，最理想的状况是存在最优架构$\alpha^<em>$, 能够使得$\mathcal L_{val}(w^</em>, \alpha^<em>)$达到最小。而最优参数$w^</em>$是通过训练集不断地训练出来的。也就是$w^<em>=\argmin_w \mathcal L_{train}(w, \alpha^</em>)$。</p>
+<p>设训练集和验证集的loss分别为$\mathcal{L}_{train}$和$\mathcal{L}_{val}$。我们要求$\alpha$，最理想的状况是存在最优架构$\alpha^\star$, 能够使得$\mathcal L_{val}(w^\star, \alpha^\star)$达到最小。而最优参数$w^\star$是通过训练集不断地训练出来的。也就是$w^\star= \argmin _w \mathcal{L}_{train}(w, \alpha^\star)$。</p>
 <p>这样就需要解决一个双优化问题：</p>
 <script type="math/tex; mode=display">\begin{aligned}
     & \min_\alpha \mathcal L_{val}(w^*, \alpha^*) \\
