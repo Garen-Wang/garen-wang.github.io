@@ -202,10 +202,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-03-01 22:09:27 / Modified: 23:45:39" itemprop="dateCreated datePublished" datetime="2021-03-01T22:09:27+08:00">2021-03-01</time>
+              <time title="Created: 2021-03-01 22:09:27" itemprop="dateCreated datePublished" datetime="2021-03-01T22:09:27+08:00">2021-03-01</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-03 21:39:49" itemprop="dateModified" datetime="2021-03-03T21:39:49+08:00">2021-03-03</time>
+              </span>
 
           
             <span id="/2021/03/01/NNI-Student-Program-Task3-2/" class="post-meta-item leancloud_visitors" data-flag-title="NNI Student Program Task3.2" title="Views">
@@ -239,18 +245,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Task-3-2-进阶任务实验报告"><a href="#Task-3-2-进阶任务实验报告" class="headerlink" title="Task 3.2 进阶任务实验报告"></a>Task 3.2 进阶任务实验报告</h1><h2 id="Task-3-2-1-表格型数据的进阶任务"><a href="#Task-3-2-1-表格型数据的进阶任务" class="headerlink" title="Task 3.2.1 表格型数据的进阶任务"></a>Task 3.2.1 表格型数据的进阶任务</h2><h3 id="电影票房预测：TMDB-Box-Office-Prediction"><a href="#电影票房预测：TMDB-Box-Office-Prediction" class="headerlink" title="电影票房预测：TMDB Box Office Prediction"></a>电影票房预测：TMDB Box Office Prediction</h3><h4 id="原始特征"><a href="#原始特征" class="headerlink" title="原始特征"></a>原始特征</h4><p>poster-path、imdb-id特征一个是图片链接，一个是id，对模型没有任何直接关系，直接删去。</p>
-<p>revenue和budget的分布比较不均匀，可以通过<code>np.log1p</code>进行平滑处理，这样的预测结果比较符合正态分布，预测准确度能够提高。</p>
-<p>cast，crew，belongs-to-collection等特征是以json格式存储的，对数据中json的解析，<code>ast.literal_eval</code>能比较方便地完成解析任务。</p>
-<h4 id="特征处理"><a href="#特征处理" class="headerlink" title="特征处理"></a>特征处理</h4><h4 id="人工构造特征"><a href="#人工构造特征" class="headerlink" title="人工构造特征"></a>人工构造特征</h4><h4 id="自动特征工程"><a href="#自动特征工程" class="headerlink" title="自动特征工程"></a>自动特征工程</h4><h4 id="最终结果"><a href="#最终结果" class="headerlink" title="最终结果"></a>最终结果</h4><h3 id="旧金山犯罪分类：San-Francisco-Crime-Classification"><a href="#旧金山犯罪分类：San-Francisco-Crime-Classification" class="headerlink" title="旧金山犯罪分类：San Francisco Crime Classification"></a>旧金山犯罪分类：San Francisco Crime Classification</h3><h4 id="原始特征-1"><a href="#原始特征-1" class="headerlink" title="原始特征"></a>原始特征</h4><h4 id="特征处理-1"><a href="#特征处理-1" class="headerlink" title="特征处理"></a>特征处理</h4><h4 id="人工构造特征-1"><a href="#人工构造特征-1" class="headerlink" title="人工构造特征"></a>人工构造特征</h4><p>对时间序列特征，提取出年、月、日、季度，星期等子特征。并使用onehot编码展开。</p>
-<p>经纬度坐标中，在测试集发现经度为-120.5，纬度为90的异常特征，分别使用经纬度的中位数进行填补。</p>
+          <h1 id="Task-3-2-进阶任务实验报告"><a href="#Task-3-2-进阶任务实验报告" class="headerlink" title="Task 3.2 进阶任务实验报告"></a>Task 3.2 进阶任务实验报告</h1><h2 id="Task-3-2-1-表格型数据的进阶任务"><a href="#Task-3-2-1-表格型数据的进阶任务" class="headerlink" title="Task 3.2.1 表格型数据的进阶任务"></a>Task 3.2.1 表格型数据的进阶任务</h2><h3 id="电影票房预测：TMDB-Box-Office-Prediction"><a href="#电影票房预测：TMDB-Box-Office-Prediction" class="headerlink" title="电影票房预测：TMDB Box Office Prediction"></a>电影票房预测：TMDB Box Office Prediction</h3><h4 id="特征处理"><a href="#特征处理" class="headerlink" title="特征处理"></a>特征处理</h4><p>首先，可以发现<code>belongs-to-collection</code>，<code>homepage</code>等特征存在缺失值，可根据具体数据类型使用不同策略填补缺失值，例如json数据填补<code>&#39;[]&#39;</code>，<code>runtime</code>用中位数填补等等。</p>
+<p>其次，数据中存在异常值，需要人工删去异常数据或对异常数据进行填补。<code>budget</code>特征中，前25%的数据均是0，必然是异常数据，解决方案之一是用剩余<code>budget</code>数据的中位数来对其进行填补。</p>
+<p><code>poster-path</code>、<code>imdb-id</code>特征一个是图片链接，一个是id，对模型没有任何直接关系，直接删去。</p>
+<p>在两个数据中，<code>status</code>特征99.8%的数据都是Released，那么这个特征根本不能提高分类精确度，因此可以直接删去。</p>
+<p><code>release-date</code>为常见的时间序列特征，通过<code>pd.DatetimeIndex</code>可以方便地提取年、月、日等新特征。</p>
+<p>在直方图中可以观察出<code>revenue</code>和<code>budget</code>数据的分布不均匀，可以通过<code>np.log1p</code>进行平滑处理，这样的预测结果比较符合正态分布，预测准确度能够提高。最终预测的<code>log-revenue</code>通过<code>np.exp1m</code>可还原回正常数据。</p>
+<p><code>cast</code>，<code>crew</code>，<code>belongs-to-collection</code>等特征是以json格式存储的，对数据中json的解析，<code>ast.literal_eval</code>能比较方便地完成解析任务。<a target="_blank" rel="noopener" href="https://www.kaggle.com/c/tmdb-box-office-prediction/discussion/80045">参考链接</a></p>
+<h4 id="人工构造特征"><a href="#人工构造特征" class="headerlink" title="人工构造特征"></a>人工构造特征</h4><p>基于先验知识，大制片厂参与制作，有明星演员，有明星导演的电影，票房一般会比较高。我们可以预先统计出演员、导演、制片厂的排名榜，然后通过这些关键要素的计数多少或存在与否构建新特征。</p>
+<p>很多特征中，特征中所包含的元素越多，票房有比较大的几率倾向于越高，如<code>spoken-languages</code>，<code>genres</code>等特征。我们便可以构造count类型的新特征。</p>
+<p>更多详细特征工程内容可查看<a href="tmdb-box-office-prediction.ipynb">该题目的jupyter notebook</a>。</p>
+<p>最终提交结果的loss是2.11(656/1395)，误差可接受，但有待进一步优化。</p>
+<h4 id="自动特征工程"><a href="#自动特征工程" class="headerlink" title="自动特征工程"></a>自动特征工程</h4><h4 id="最终结果"><a href="#最终结果" class="headerlink" title="最终结果"></a>最终结果</h4><h3 id="旧金山犯罪分类：San-Francisco-Crime-Classification"><a href="#旧金山犯罪分类：San-Francisco-Crime-Classification" class="headerlink" title="旧金山犯罪分类：San Francisco Crime Classification"></a>旧金山犯罪分类：San Francisco Crime Classification</h3><h4 id="原始特征"><a href="#原始特征" class="headerlink" title="原始特征"></a>原始特征</h4><p>该数据的特征相对较少，特征的处理也相对比较方便。</p>
+<h4 id="特征处理-1"><a href="#特征处理-1" class="headerlink" title="特征处理"></a>特征处理</h4><p><code>X</code>，<code>Y</code>两个特征中，在测试集发现经度为-120.5，纬度为90的异常特征，我们分别使用经纬度的中位数进行替换。替换后可对数据进行标准化。</p>
+<h4 id="人工构造特征-1"><a href="#人工构造特征-1" class="headerlink" title="人工构造特征"></a>人工构造特征</h4><p>对时间序列特征，提取出年、月、日、季度、小时、星期等子特征。并使用onehot编码展开。</p>
 <p>发现地址中具有规律，可根据地址最后两个字母的不同，构造特征。</p>
-<p>使用随机森林进行回归，准确率为27.5%左右，有待提高。</p>
+<p>最终使用随机森林进行回归，准确率为27.5%左右，有待提高。</p>
 <h4 id="使用NNI"><a href="#使用NNI" class="headerlink" title="使用NNI"></a>使用NNI</h4><h4 id="最终结果-1"><a href="#最终结果-1" class="headerlink" title="最终结果"></a>最终结果</h4><p>使用LightGBM算法，在验证集上的结果是2.35，达到了top25%左右的水平。</p>
 <p>在测试集上的结果是</p>
 <h3 id="土壤属性预测：Africa-Soil-Property-Prediction-Challenge"><a href="#土壤属性预测：Africa-Soil-Property-Prediction-Challenge" class="headerlink" title="土壤属性预测：Africa Soil Property Prediction Challenge"></a>土壤属性预测：Africa Soil Property Prediction Challenge</h3><p>multi-label的回归任务其实可以拆分为多个单label的回归任务，通过多次构建模型进行回归来预测各个label的值。</p>
-<h4 id="原始特征-2"><a href="#原始特征-2" class="headerlink" title="原始特征"></a>原始特征</h4><p>原始特征均进行过标准化处理，除了<code>Depth</code>特征可以将字符串变化为01编码，其他特征无需进一步处理。</p>
-<h4 id="建立模型"><a href="#建立模型" class="headerlink" title="建立模型"></a>建立模型</h4><p>使用了sklearn中贝叶斯线性回归模型（BayesianRidge），最终loss为0.46489，拟合效果很好。</p>
+<h4 id="原始特征-1"><a href="#原始特征-1" class="headerlink" title="原始特征"></a>原始特征</h4><p>原始特征均进行过标准化处理，除了<code>Depth</code>特征可以将字符串变化为01编码，其他特征无需进一步处理。</p>
+<h4 id="手动选择建立模型"><a href="#手动选择建立模型" class="headerlink" title="手动选择建立模型"></a>手动选择建立模型</h4><p>使用了sklearn中贝叶斯线性回归模型（BayesianRidge），通过做5次模型的回归，最终kaggle上的loss为0.46489，拟合效果很好。</p>
+<h4 id="使用NNI-AutoFE工具"><a href="#使用NNI-AutoFE工具" class="headerlink" title="使用NNI AutoFE工具"></a>使用NNI AutoFE工具</h4><p>由于原代码只支持二分类任务，这里为了实现multi-label的回归任务，使用了以<code>lightgbm.LGBMRegressor</code>为内置结构的<code>sklearn.multioutput.MultiOutputRegressor</code>。<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/52648383/how-to-get-coefficients-and-feature-importances-from-multioutputregressor">参考链接</a></p>
+<p>由于特征数较多，特征的搜索空间较难填写。</p>
 <h2 id="Task-3-2-2-复杂型数据的探究任务"><a href="#Task-3-2-2-复杂型数据的探究任务" class="headerlink" title="Task 3.2.2 复杂型数据的探究任务"></a>Task 3.2.2 复杂型数据的探究任务</h2>
       
     </div>
