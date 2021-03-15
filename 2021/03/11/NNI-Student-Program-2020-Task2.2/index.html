@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"121.36.2.124","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Task2.2 实验报告超参调优NNI支持通过配置搜索空间自定义搜索结构，不仅能够运用SOTA的高效率算法进行自动超参调优，更能够在多个模型与超参中选择出性能更优的组合，从而提高模型准确率。 搜索空间配置文件如下： 12345&amp;#123;    &quot;lr&quot;:&amp;#123;&quot;_type&quot;:&quot;choice&quot;, &quot;_value&quot;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NNI Student Program 2020 Task2.2">
+<meta property="og:url" content="https://121.36.2.124/2021/03/11/NNI-Student-Program-2020-Task2.2/index.html">
+<meta property="og:site_name" content="Garen Wang&#39;s Blog">
+<meta property="og:description" content="Task2.2 实验报告超参调优NNI支持通过配置搜索空间自定义搜索结构，不仅能够运用SOTA的高效率算法进行自动超参调优，更能够在多个模型与超参中选择出性能更优的组合，从而提高模型准确率。 搜索空间配置文件如下： 12345&amp;#123;    &quot;lr&quot;:&amp;#123;&quot;_type&quot;:&quot;choice&quot;, &quot;_value&quot;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task2.2/capture.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task2.2/capture2.png">
+<meta property="article:published_time" content="2021-03-11T12:08:57.000Z">
+<meta property="article:modified_time" content="2021-03-15T11:28:02.170Z">
+<meta property="article:author" content="Garen Wang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task2.2/capture.png">
+
+<link rel="canonical" href="https://121.36.2.124/2021/03/11/NNI-Student-Program-2020-Task2.2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>NNI Student Program 2020 Task2.2 | Garen Wang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Garen Wang's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/03/11/NNI-Student-Program-2020-Task2.2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          NNI Student Program 2020 Task2.2
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-11 20:08:57" itemprop="dateCreated datePublished" datetime="2021-03-11T20:08:57+08:00">2021-03-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-15 19:28:02" itemprop="dateModified" datetime="2021-03-15T19:28:02+08:00">2021-03-15</time>
+              </span>
+
+          
+            <span id="/2021/03/11/NNI-Student-Program-2020-Task2.2/" class="post-meta-item leancloud_visitors" data-flag-title="NNI Student Program 2020 Task2.2" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/03/11/NNI-Student-Program-2020-Task2.2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/11/NNI-Student-Program-2020-Task2.2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Task2-2-实验报告"><a href="#Task2-2-实验报告" class="headerlink" title="Task2.2 实验报告"></a>Task2.2 实验报告</h1><h2 id="超参调优"><a href="#超参调优" class="headerlink" title="超参调优"></a>超参调优</h2><p>NNI支持通过配置搜索空间自定义搜索结构，不仅能够运用SOTA的高效率算法进行自动超参调优，更能够在多个模型与超参中选择出性能更优的组合，从而提高模型准确率。</p>
+<p>搜索空间配置文件如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;lr&quot;</span>:&#123;<span class="attr">&quot;_type&quot;</span>:<span class="string">&quot;choice&quot;</span>, <span class="attr">&quot;_value&quot;</span>:[<span class="number">0.01</span>, <span class="number">0.001</span>]&#125;,</span><br><span class="line">    <span class="attr">&quot;optimizer&quot;</span>:&#123;<span class="attr">&quot;_type&quot;</span>:<span class="string">&quot;choice&quot;</span>, <span class="attr">&quot;_value&quot;</span>:[<span class="string">&quot;Adadelta&quot;</span>, <span class="string">&quot;Adagrad&quot;</span>, <span class="string">&quot;Adam&quot;</span>, <span class="string">&quot;Adamax&quot;</span>]&#125;,</span><br><span class="line">    <span class="attr">&quot;model&quot;</span>:&#123;<span class="attr">&quot;_type&quot;</span>:<span class="string">&quot;choice&quot;</span>, <span class="attr">&quot;_value&quot;</span>:[<span class="string">&quot;vgg&quot;</span>, <span class="string">&quot;resnet18&quot;</span>, <span class="string">&quot;googlenet&quot;</span>, <span class="string">&quot;densenet121&quot;</span>, <span class="string">&quot;mobilenet&quot;</span>, <span class="string">&quot;dpn92&quot;</span>, <span class="string">&quot;shufflenetg2&quot;</span>,<span class="string">&quot;senet18&quot;</span>]&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在代码中，当前trial的超参组合可从<code>nni.get_next_parameter()</code>获得，并以dict的形式保存。</p>
+<h3 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h3><p>由于设备性能有限，在进行NNI的HPO实验时每个trial的epoch数并没能设定得足够多，这极有可能会导致最终的实验结果与retrain的性能不相符。我们训练了HPO实验中metric最优的超参组合，后续效果却不尽人意。反而是在非最优的超参组合中，我们训练出了较好的效果。</p>
+<p>最终我们选定了学习率为0.01，优化器为Adamax，神经网络模型为mobilenet的组合，并在重训练了200个epoch后取得了96.66%的准确率。</p>
+<h2 id="Classic-NAS"><a href="#Classic-NAS" class="headerlink" title="Classic NAS"></a>Classic NAS</h2><p>通过上一步得到的模型与参数的组合，我们尝试在搜索空间上定义随机结构，测试模型的性能。</p>
+<p>神经网络的随机结构可以借助NNI的经典NAS算法来实现，随机架构的搜索tuner可以在NNI的example中找到。</p>
+<p>编写随机结构的搜索空间时，可以使用<code>nni.nas.pytorch.mutables</code>中的<code>LayerChoice</code>和<code>Inputchoice</code>来进行实现。</p>
+<p>这两种定义待选连接的方式都很方便。<code>LayerChoice</code>在代码使用上可视作与其他普通神经网络等同，而要实现<code>InputChoice</code>所代表的跳过连接，则与<code>InputChoice</code>的输出进行concat操作即可。</p>
+<p>这里定义了MobileNet的随机结构，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Block</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, in_channels, out_channels, stride</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(Block, self).__init__()</span><br><span class="line">        self.in_channels = in_channels</span><br><span class="line">        self.out_channels = out_channels</span><br><span class="line">        self.conv1 = nn.Conv2d(in_channels, in_channels, <span class="number">3</span>, stride, <span class="number">1</span>, bias=<span class="literal">False</span>, groups=in_channels)</span><br><span class="line">        self.bn1 = nn.BatchNorm2d(in_channels)</span><br><span class="line">        self.conv2 = nn.Conv2d(in_channels, out_channels, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, bias=<span class="literal">False</span>)</span><br><span class="line">        self.bn2 = nn.BatchNorm2d(out_channels)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        x = F.relu(self.bn1(self.conv1(x)))</span><br><span class="line">        x = F.relu(self.bn2(self.conv2(x)))</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_make_mobilenet_layers</span>(<span class="params">in_channels</span>):</span></span><br><span class="line">    cfg = [<span class="number">64</span>, (<span class="number">128</span>, <span class="number">2</span>), <span class="number">128</span>, <span class="number">128</span>, (<span class="number">256</span>, <span class="number">2</span>), <span class="number">256</span>, <span class="number">256</span>, (<span class="number">512</span>, <span class="number">2</span>), <span class="number">512</span>, <span class="number">512</span>, <span class="number">512</span>, <span class="number">512</span>, <span class="number">512</span>, <span class="number">512</span>, (<span class="number">1024</span>, <span class="number">2</span>), <span class="number">1024</span>, <span class="number">1024</span>]</span><br><span class="line">    layers = nn.ModuleList()</span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> cfg:</span><br><span class="line">        out_channels = x <span class="keyword">if</span> <span class="built_in">isinstance</span>(x, <span class="built_in">int</span>) <span class="keyword">else</span> x[<span class="number">0</span>]</span><br><span class="line">        stride = <span class="number">1</span> <span class="keyword">if</span> <span class="built_in">isinstance</span>(x, <span class="built_in">int</span>) <span class="keyword">else</span> x[<span class="number">1</span>]</span><br><span class="line">        layers.append(Block(in_channels, out_channels, stride))</span><br><span class="line">        in_channels = out_channels</span><br><span class="line">    <span class="keyword">return</span> layers</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MobileNet</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(MobileNet, self).__init__()</span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">3</span>, <span class="number">32</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">1</span>, bias=<span class="literal">False</span>)</span><br><span class="line">        self.bn1 = nn.BatchNorm2d(<span class="number">32</span>)</span><br><span class="line">        self.layers = _make_mobilenet_layers(<span class="number">32</span>)</span><br><span class="line">        self.pool = nn.AvgPool2d(<span class="number">2</span>)</span><br><span class="line">        self.linear = nn.Linear(<span class="number">1024</span>, <span class="number">10</span>)</span><br><span class="line">        self.skipconnect1 = InputChoice(n_candidates=<span class="number">2</span>, n_chosen=<span class="number">1</span>, key=<span class="string">&#x27;skip1&#x27;</span>)</span><br><span class="line">        self.skipconnect2 = InputChoice(n_candidates=<span class="number">2</span>, n_chosen=<span class="number">1</span>, key=<span class="string">&#x27;skip2&#x27;</span>)</span><br><span class="line">        self.skipconnect3 = InputChoice(n_candidates=<span class="number">2</span>, n_chosen=<span class="number">1</span>, key=<span class="string">&#x27;skip3&#x27;</span>)</span><br><span class="line">        self.skipconnect4 = InputChoice(n_candidates=<span class="number">2</span>, n_chosen=<span class="number">1</span>, key=<span class="string">&#x27;skip4&#x27;</span>)</span><br><span class="line">        self.skipconnect5 = InputChoice(n_candidates=<span class="number">2</span>, n_chosen=<span class="number">1</span>, key=<span class="string">&#x27;skip5&#x27;</span>)</span><br><span class="line">        self.skipconnect6 = InputChoice(n_candidates=<span class="number">2</span>, n_chosen=<span class="number">1</span>, key=<span class="string">&#x27;skip6&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        x = F.relu(self.bn1(self.conv1(x)))</span><br><span class="line">        i = <span class="number">0</span></span><br><span class="line">        cnt = <span class="number">1</span></span><br><span class="line">        <span class="keyword">for</span> block <span class="keyword">in</span> self.layers:</span><br><span class="line">            old_x = x</span><br><span class="line">            x = block(x)</span><br><span class="line">            <span class="keyword">if</span> block.in_channels == block.out_channels:</span><br><span class="line">                i += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                i = <span class="number">0</span></span><br><span class="line">            <span class="keyword">if</span> i &gt;= <span class="number">2</span> <span class="keyword">and</span> i % <span class="number">2</span> == <span class="number">0</span>:</span><br><span class="line">                zero_x = torch.zeros_like(old_x)</span><br><span class="line">                skipconnect = <span class="built_in">eval</span>(<span class="string">&#x27;self.skipconnect&#123;&#125;&#x27;</span>.<span class="built_in">format</span>(cnt))</span><br><span class="line">                skip_x = skipconnect([zero_x, old_x])</span><br><span class="line">                x = torch.add(x, skip_x)</span><br><span class="line">                cnt += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        x = self.pool(x)</span><br><span class="line">        x = x.view(x.size(<span class="number">0</span>), -<span class="number">1</span>)</span><br><span class="line">        x = self.linear(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<h3 id="最终结果"><a href="#最终结果" class="headerlink" title="最终结果"></a>最终结果</h3><img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task2.2/capture.png">
+<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task2.2/capture2.png">
+<h2 id="One-Shot-NAS"><a href="#One-Shot-NAS" class="headerlink" title="One-Shot NAS"></a>One-Shot NAS</h2><p>上一步的经典NAS算法对原始模型的改动较小，也得不到较大的优化效果。并且，在6层可选跳过的情况下，神经网络的深度会下降，挖掘深层特征的潜力也会有所降低，所以最后准确率不仅没有升高，反而效果不尽人意。</p>
+<p>在这一步，我们尝试One-Shot NAS，通过定义DARTS的搜索空间，大幅度改变原有模型，尝试真正意义上提高预测的精确度至97%以上。</p>
+<h3 id="DARTS原理简要分析"><a href="#DARTS原理简要分析" class="headerlink" title="DARTS原理简要分析"></a>DARTS原理简要分析</h3><p>DARTS全称Differentiable Architecture Search，是NAS领域中著名的算法之一。该算法的特色是将若干个待搜索的架构从互不关联的“黑箱优化”问题变成可松弛的连续优化问题，通过梯度下降来进行更新。</p>
+<p>由于需求只是构造MobileNet的搜索空间，这里只对CNN的DARTS进行分析。</p>
+<p>首先，如果将一个状态看作一个节点，把一种操作看作一条边，那么CNN的网络模型就可以抽象成一个有向无环图（DAG）。</p>
+<p>而在我们进行搜索的过程中，两点之间其实包含有“重边”。这些“重边”虽然两端节点相同，但各代表着不同的操作。我们需要做的，就是在这些待选边中找出整体最适合的一条边来成为DAG的一部分，实现架构的搜索。</p>
+<p>我们首先给cell下定义。一个cell是一个包含了$N$个节点的有向无环图。其中编号为$i$的节点$x^{(i)}$代表着特征所存在着的状态，而从$i$到$j$的一条有向边就代表着一种操作，这种操作记为$o^{(i,j)}$。</p>
+<p>接下来定义cell的输入与输出。一个cell会有两个输入，而只会有一个输出。这个cell的输出是将所有前面节点的操作concat起来的结果。用公式写出来就是：</p>
+<script type="math/tex; mode=display">x^{(j)} = \int_{i<j} o^{(i, j)}(x^{(i)})</script><p>这里$o^{(i,j)}(x)$代表着将$x$所代表的状态经过$(i,j)$这条有向边所代表的操作后所得到的新状态。正如直观感觉一般，也就是可以抽象成一个函数。</p>
+<p>一条边所代表的，可以是一个池化层，可以是标准的Conv+BatchNorm组合，也可以是SkipConnect等其他的子模型。</p>
+<p>定义的这些模型只需要满足一个共性：需要满足原数据的width和height不能改变。也就是类似于：</p>
+<p>当卷积核size为3x3时，padding为1；当kernal size为5x5时，padding为2；当kernal size为1x1时，padding为0…</p>
+<p>接下来令$x^{(i)}$和$x^{(j)}$这两点之间的$n$条所有候选边的集合为$\mathcal{O}$，$\alpha_o^{(i,j)}$是一个$n$维的向量，分别代表着每一个待选操作的得分。将这些得分进行softmax运算进行松弛，公式如下：</p>
+<script type="math/tex; mode=display">\overline o^{(i,j)}(x) = \sum_{o\in \mathcal{O}}\frac{\exp(\alpha_o^{(i,j)})}{\sum_{o'\in \mathcal{O}} \exp(\alpha_{o'}^{(i,j)})}o(x)</script><p>$\overline o^{(i,j)}(x)$最终最可能会选中得分最高的架构，即：</p>
+<script type="math/tex; mode=display">o^{(i,j)}=\argmax_{o\in \mathcal{O}}\alpha_o^{(i,j)}</script><p>最终我们所求的是集合$\alpha=\{\alpha^{(i,j)}\}$。</p>
+<p>如何求得$\alpha$？我们需要训练集和验证集的协助。</p>
+<p>设训练集和验证集的loss分别为$\mathcal{L}_{train}$和$\mathcal{L}_{val}$。我们要求$\alpha$，最理想的状况是存在最优架构$\alpha^\star$, 能够使得$\mathcal L_{val}(w^\star, \alpha^\star)$达到最小。而最优参数$w^\star$是通过训练集不断地训练出来的。也就是$w^\star= \argmin _w \mathcal{L}_{train}(w, \alpha^\star)$。</p>
+<p>这样就需要解决一个双优化问题：</p>
+<script type="math/tex; mode=display">\begin{aligned}
+    & \min_\alpha \mathcal L_{val}(w^*, \alpha^*) \\
+    &s. t. \quad w^*=\argmin_w \mathcal L_{train}(w, \alpha^*)
+\end{aligned}</script><p>求解这个双优化问题的算法大体的思路是：固定架构参数，用训练数据集训练模型参数，再固定模型参数，用验证数据集训练架构参数。</p>
+<p>DARTS算法将动辄耗费上千个GPU天的神经网络架构搜索缩短至1至4个GPU天，使得NAS应用的门槛和成本大幅度降低。</p>
+<h2 id="代码实现部分"><a href="#代码实现部分" class="headerlink" title="代码实现部分"></a>代码实现部分</h2><p>由于NNI中对DARTS的基本单位cell做了封装，候选边已经包含了常见的SepConv3x3、SepConv5x5、DilConv3x3、DivConv5x5、平均池化层、最大池化层、跳过连接层等候选架构，可以通过调用<code>nni.nas.pytorch.search_space_zoo.DartsCell</code>直接使用默认cell结构。</p>
+<p>最终待搜索的模型可以基于<code>DartsCell</code>来构造：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DartsStackedCells</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">drop_path_probability</span>(<span class="params">self, p</span>):</span></span><br><span class="line">        <span class="keyword">for</span> module <span class="keyword">in</span> self.modules():</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">isinstance</span>(module, DropPath):</span><br><span class="line">                module.p = p</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, in_channels, channels, n_classes, n_layers, n_nodes=<span class="number">4</span>, stem_multiplier=<span class="number">2</span></span>):</span></span><br><span class="line">        <span class="built_in">super</span>(DartsStackedCells, self).__init__()</span><br><span class="line">        self.in_channels = in_channels</span><br><span class="line">        self.channels = channels</span><br><span class="line">        self.n_classes = n_classes</span><br><span class="line">        self.n_layers = n_layers</span><br><span class="line">        cur_channels = stem_multiplier * self.channels</span><br><span class="line">        self.stem = nn.Sequential(</span><br><span class="line">            nn.Conv2d(in_channels, cur_channels, <span class="number">3</span>, <span class="number">1</span>, <span class="number">1</span>, bias=<span class="literal">False</span>),</span><br><span class="line">            nn.BatchNorm2d(cur_channels)</span><br><span class="line">        )</span><br><span class="line">        pp_channels, p_channels, cur_channels = cur_channels, cur_channels, channels</span><br><span class="line">        self.cells = nn.ModuleList()</span><br><span class="line">        p_reduction, cur_reduction = <span class="literal">False</span>, <span class="literal">False</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n_layers):</span><br><span class="line">            p_reduction, cur_reduction = cur_reduction, <span class="literal">False</span></span><br><span class="line">            <span class="keyword">if</span> i <span class="keyword">in</span> [n_layers // <span class="number">3</span>, <span class="number">2</span> * n_layers // <span class="number">3</span>]:</span><br><span class="line">                cur_channels *= <span class="number">2</span></span><br><span class="line">                cur_reduction = <span class="literal">True</span></span><br><span class="line">            self.cells.append(DartsCell(n_nodes, pp_channels, p_channels, cur_channels, p_reduction, cur_reduction))</span><br><span class="line">            cur_channels_out = cur_channels * n_nodes</span><br><span class="line">            pp_channels, p_channels = p_channels, cur_channels_out</span><br><span class="line">        self.gap = nn.AdaptiveAvgPool2d(<span class="number">1</span>)</span><br><span class="line">        self.linear = nn.Linear(p_channels, n_classes)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        s0 = s1 = self.stem(x)</span><br><span class="line">        <span class="keyword">for</span> cell <span class="keyword">in</span> self.cells:</span><br><span class="line">            s0, s1 = s1, cell(s0, s1)</span><br><span class="line">        output = self.gap(s1)</span><br><span class="line">        output = output.view(output.size(<span class="number">0</span>), -<span class="number">1</span>)</span><br><span class="line">        output = self.linear(output)</span><br><span class="line">        <span class="keyword">return</span> output</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>最终搜索出的结构如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;normal_n2_p0&quot;</span>: <span class="string">&quot;sepconv5x5&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;normal_n2_p1&quot;</span>: <span class="string">&quot;sepconv3x3&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;normal_n2_switch&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;normal_n2_p0&quot;</span>,</span><br><span class="line">    <span class="string">&quot;normal_n2_p1&quot;</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">&quot;normal_n3_p0&quot;</span>: <span class="string">&quot;skipconnect&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;normal_n3_p1&quot;</span>: <span class="string">&quot;sepconv3x3&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;normal_n3_p2&quot;</span>: [],</span><br><span class="line">  <span class="attr">&quot;normal_n3_switch&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;normal_n3_p0&quot;</span>,</span><br><span class="line">    <span class="string">&quot;normal_n3_p1&quot;</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">&quot;normal_n4_p0&quot;</span>: <span class="string">&quot;skipconnect&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;normal_n4_p1&quot;</span>: <span class="string">&quot;sepconv3x3&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;normal_n4_p2&quot;</span>: [],</span><br><span class="line">  <span class="attr">&quot;normal_n4_p3&quot;</span>: [],</span><br><span class="line">  <span class="attr">&quot;normal_n4_switch&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;normal_n4_p0&quot;</span>,</span><br><span class="line">    <span class="string">&quot;normal_n4_p1&quot;</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">&quot;normal_n5_p0&quot;</span>: <span class="string">&quot;dilconv3x3&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;normal_n5_p1&quot;</span>: <span class="string">&quot;dilconv5x5&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;normal_n5_p2&quot;</span>: [],</span><br><span class="line">  <span class="attr">&quot;normal_n5_p3&quot;</span>: [],</span><br><span class="line">  <span class="attr">&quot;normal_n5_p4&quot;</span>: [],</span><br><span class="line">  <span class="attr">&quot;normal_n5_switch&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;normal_n5_p0&quot;</span>,</span><br><span class="line">    <span class="string">&quot;normal_n5_p1&quot;</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">&quot;reduce_n2_p0&quot;</span>: <span class="string">&quot;maxpool&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;reduce_n2_p1&quot;</span>: <span class="string">&quot;maxpool&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;reduce_n2_switch&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;reduce_n2_p0&quot;</span>,</span><br><span class="line">    <span class="string">&quot;reduce_n2_p1&quot;</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">&quot;reduce_n3_p0&quot;</span>: <span class="string">&quot;maxpool&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;reduce_n3_p1&quot;</span>: [],</span><br><span class="line">  <span class="attr">&quot;reduce_n3_p2&quot;</span>: <span class="string">&quot;skipconnect&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;reduce_n3_switch&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;reduce_n3_p0&quot;</span>,</span><br><span class="line">    <span class="string">&quot;reduce_n3_p2&quot;</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">&quot;reduce_n4_p0&quot;</span>: <span class="string">&quot;maxpool&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;reduce_n4_p1&quot;</span>: [],</span><br><span class="line">  <span class="attr">&quot;reduce_n4_p2&quot;</span>: <span class="string">&quot;skipconnect&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;reduce_n4_p3&quot;</span>: [],</span><br><span class="line">  <span class="attr">&quot;reduce_n4_switch&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;reduce_n4_p0&quot;</span>,</span><br><span class="line">    <span class="string">&quot;reduce_n4_p2&quot;</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">&quot;reduce_n5_p0&quot;</span>: <span class="string">&quot;avgpool&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;reduce_n5_p1&quot;</span>: [],</span><br><span class="line">  <span class="attr">&quot;reduce_n5_p2&quot;</span>: <span class="string">&quot;skipconnect&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;reduce_n5_p3&quot;</span>: [],</span><br><span class="line">  <span class="attr">&quot;reduce_n5_p4&quot;</span>: [],</span><br><span class="line">  <span class="attr">&quot;reduce_n5_switch&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;reduce_n5_p0&quot;</span>,</span><br><span class="line">    <span class="string">&quot;reduce_n5_p2&quot;</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>retrain日志如下（仅截取第453个epoch和最后两个epoch）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br></pre></td><td class="code"><pre><span class="line">[2021-02-22 16:16:01] INFO (nni&#x2F;MainThread) Epoch 453 LR 0.003524</span><br><span class="line">[2021-02-22 16:16:02] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 000&#x2F;520 Loss 0.146 Prec@(1,5) (94.8%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:04] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 010&#x2F;520 Loss 0.142 Prec@(1,5) (96.5%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:07] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 020&#x2F;520 Loss 0.151 Prec@(1,5) (96.5%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:10] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 030&#x2F;520 Loss 0.137 Prec@(1,5) (96.9%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:13] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 040&#x2F;520 Loss 0.147 Prec@(1,5) (96.9%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:15] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 050&#x2F;520 Loss 0.146 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:18] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 060&#x2F;520 Loss 0.144 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:21] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 070&#x2F;520 Loss 0.145 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:23] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 080&#x2F;520 Loss 0.144 Prec@(1,5) (96.9%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:26] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 090&#x2F;520 Loss 0.143 Prec@(1,5) (96.9%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:29] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 100&#x2F;520 Loss 0.141 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:31] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 110&#x2F;520 Loss 0.139 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:34] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 120&#x2F;520 Loss 0.139 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:37] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 130&#x2F;520 Loss 0.138 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:40] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 140&#x2F;520 Loss 0.140 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:42] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 150&#x2F;520 Loss 0.139 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:45] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 160&#x2F;520 Loss 0.142 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:48] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 170&#x2F;520 Loss 0.141 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:50] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 180&#x2F;520 Loss 0.141 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:53] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 190&#x2F;520 Loss 0.141 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:56] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 200&#x2F;520 Loss 0.141 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:16:59] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 210&#x2F;520 Loss 0.142 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:01] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 220&#x2F;520 Loss 0.142 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:04] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 230&#x2F;520 Loss 0.142 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:07] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 240&#x2F;520 Loss 0.142 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:09] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 250&#x2F;520 Loss 0.141 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:12] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 260&#x2F;520 Loss 0.141 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:15] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 270&#x2F;520 Loss 0.140 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:17] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 280&#x2F;520 Loss 0.141 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:20] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 290&#x2F;520 Loss 0.140 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:23] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 300&#x2F;520 Loss 0.140 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:26] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 310&#x2F;520 Loss 0.140 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:28] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 320&#x2F;520 Loss 0.140 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:31] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 330&#x2F;520 Loss 0.141 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:34] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 340&#x2F;520 Loss 0.141 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:36] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 350&#x2F;520 Loss 0.140 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:39] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 360&#x2F;520 Loss 0.142 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:42] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 370&#x2F;520 Loss 0.142 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:45] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 380&#x2F;520 Loss 0.142 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:47] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 390&#x2F;520 Loss 0.142 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:50] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 400&#x2F;520 Loss 0.143 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:53] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 410&#x2F;520 Loss 0.142 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:55] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 420&#x2F;520 Loss 0.142 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:17:58] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 430&#x2F;520 Loss 0.141 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:18:01] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 440&#x2F;520 Loss 0.143 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:18:04] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 450&#x2F;520 Loss 0.143 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:18:06] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 460&#x2F;520 Loss 0.143 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:18:09] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 470&#x2F;520 Loss 0.144 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 16:18:12] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 480&#x2F;520 Loss 0.143 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:18:14] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 490&#x2F;520 Loss 0.142 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:18:17] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 500&#x2F;520 Loss 0.143 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:18:20] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 510&#x2F;520 Loss 0.143 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:18:23] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Step 520&#x2F;520 Loss 0.143 Prec@(1,5) (97.1%, 100.0%)</span><br><span class="line">[2021-02-22 16:18:23] INFO (nni&#x2F;MainThread) Train: [454&#x2F;600] Final Prec@1 97.0640%</span><br><span class="line">...</span><br><span class="line">[2021-02-22 21:37:03] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 000&#x2F;520 Loss 0.054 Prec@(1,5) (99.0%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:05] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 010&#x2F;520 Loss 0.060 Prec@(1,5) (99.1%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:08] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 020&#x2F;520 Loss 0.058 Prec@(1,5) (99.0%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:10] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 030&#x2F;520 Loss 0.054 Prec@(1,5) (99.1%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:12] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 040&#x2F;520 Loss 0.059 Prec@(1,5) (98.9%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:15] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 050&#x2F;520 Loss 0.058 Prec@(1,5) (99.0%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:17] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 060&#x2F;520 Loss 0.064 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:20] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 070&#x2F;520 Loss 0.066 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:22] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 080&#x2F;520 Loss 0.068 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:24] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 090&#x2F;520 Loss 0.067 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:27] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 100&#x2F;520 Loss 0.069 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:29] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 110&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:32] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 120&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:34] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 130&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:37] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 140&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:39] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 150&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:41] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 160&#x2F;520 Loss 0.070 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:44] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 170&#x2F;520 Loss 0.071 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:46] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 180&#x2F;520 Loss 0.072 Prec@(1,5) (98.6%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:49] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 190&#x2F;520 Loss 0.072 Prec@(1,5) (98.6%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:51] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 200&#x2F;520 Loss 0.072 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:53] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 210&#x2F;520 Loss 0.072 Prec@(1,5) (98.6%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:56] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 220&#x2F;520 Loss 0.071 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:37:58] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 230&#x2F;520 Loss 0.070 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:01] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 240&#x2F;520 Loss 0.070 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:03] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 250&#x2F;520 Loss 0.072 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:06] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 260&#x2F;520 Loss 0.072 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:08] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 270&#x2F;520 Loss 0.071 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:10] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 280&#x2F;520 Loss 0.071 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:13] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 290&#x2F;520 Loss 0.071 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:15] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 300&#x2F;520 Loss 0.070 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:18] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 310&#x2F;520 Loss 0.069 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:20] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 320&#x2F;520 Loss 0.070 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:22] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 330&#x2F;520 Loss 0.070 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:25] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 340&#x2F;520 Loss 0.069 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:27] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 350&#x2F;520 Loss 0.070 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:30] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 360&#x2F;520 Loss 0.070 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:32] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 370&#x2F;520 Loss 0.070 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:34] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 380&#x2F;520 Loss 0.070 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:37] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 390&#x2F;520 Loss 0.071 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:39] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 400&#x2F;520 Loss 0.071 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:42] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 410&#x2F;520 Loss 0.071 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:44] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 420&#x2F;520 Loss 0.071 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:47] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 430&#x2F;520 Loss 0.071 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:49] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 440&#x2F;520 Loss 0.071 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:51] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 450&#x2F;520 Loss 0.071 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:54] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 460&#x2F;520 Loss 0.070 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:56] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 470&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:38:59] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 480&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:01] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 490&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:03] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 500&#x2F;520 Loss 0.069 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:06] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 510&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:08] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Step 520&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:08] INFO (nni&#x2F;MainThread) Train: [599&#x2F;600] Final Prec@1 98.7600%</span><br><span class="line">[2021-02-22 21:39:09] INFO (nni&#x2F;MainThread) Valid: [599&#x2F;600] Step 000&#x2F;104 Loss 0.146 Prec@(1,5) (96.9%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:09] INFO (nni&#x2F;MainThread) Valid: [599&#x2F;600] Step 010&#x2F;104 Loss 0.113 Prec@(1,5) (96.9%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:10] INFO (nni&#x2F;MainThread) Valid: [599&#x2F;600] Step 020&#x2F;104 Loss 0.135 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:10] INFO (nni&#x2F;MainThread) Valid: [599&#x2F;600] Step 030&#x2F;104 Loss 0.163 Prec@(1,5) (96.9%, 99.9%)</span><br><span class="line">[2021-02-22 21:39:11] INFO (nni&#x2F;MainThread) Valid: [599&#x2F;600] Step 040&#x2F;104 Loss 0.159 Prec@(1,5) (97.0%, 99.9%)</span><br><span class="line">[2021-02-22 21:39:11] INFO (nni&#x2F;MainThread) Valid: [599&#x2F;600] Step 050&#x2F;104 Loss 0.155 Prec@(1,5) (97.0%, 99.9%)</span><br><span class="line">[2021-02-22 21:39:12] INFO (nni&#x2F;MainThread) Valid: [599&#x2F;600] Step 060&#x2F;104 Loss 0.150 Prec@(1,5) (97.1%, 99.9%)</span><br><span class="line">[2021-02-22 21:39:12] INFO (nni&#x2F;MainThread) Valid: [599&#x2F;600] Step 070&#x2F;104 Loss 0.140 Prec@(1,5) (97.2%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:13] INFO (nni&#x2F;MainThread) Valid: [599&#x2F;600] Step 080&#x2F;104 Loss 0.143 Prec@(1,5) (97.2%, 99.9%)</span><br><span class="line">[2021-02-22 21:39:13] INFO (nni&#x2F;MainThread) Valid: [599&#x2F;600] Step 090&#x2F;104 Loss 0.137 Prec@(1,5) (97.3%, 99.9%)</span><br><span class="line">[2021-02-22 21:39:14] INFO (nni&#x2F;MainThread) Valid: [599&#x2F;600] Step 100&#x2F;104 Loss 0.139 Prec@(1,5) (97.2%, 99.9%)</span><br><span class="line">[2021-02-22 21:39:14] INFO (nni&#x2F;MainThread) Valid: [599&#x2F;600] Step 104&#x2F;104 Loss 0.140 Prec@(1,5) (97.2%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:14] INFO (nni&#x2F;MainThread) Valid: [599&#x2F;600] Final Prec@1 97.2400%</span><br><span class="line">[2021-02-22 21:39:14] INFO (nni&#x2F;MainThread) Epoch 599 LR 0.000001</span><br><span class="line">[2021-02-22 21:39:14] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 000&#x2F;520 Loss 0.039 Prec@(1,5) (100.0%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:17] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 010&#x2F;520 Loss 0.063 Prec@(1,5) (98.9%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:19] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 020&#x2F;520 Loss 0.061 Prec@(1,5) (98.9%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:22] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 030&#x2F;520 Loss 0.064 Prec@(1,5) (98.9%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:24] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 040&#x2F;520 Loss 0.065 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:26] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 050&#x2F;520 Loss 0.065 Prec@(1,5) (98.9%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:29] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 060&#x2F;520 Loss 0.065 Prec@(1,5) (98.9%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:31] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 070&#x2F;520 Loss 0.066 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:34] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 080&#x2F;520 Loss 0.066 Prec@(1,5) (98.9%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:36] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 090&#x2F;520 Loss 0.067 Prec@(1,5) (98.9%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:39] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 100&#x2F;520 Loss 0.067 Prec@(1,5) (98.9%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:41] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 110&#x2F;520 Loss 0.069 Prec@(1,5) (98.9%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:43] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 120&#x2F;520 Loss 0.069 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:46] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 130&#x2F;520 Loss 0.069 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:48] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 140&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:51] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 150&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:53] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 160&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:55] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 170&#x2F;520 Loss 0.071 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:39:58] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 180&#x2F;520 Loss 0.072 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:00] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 190&#x2F;520 Loss 0.072 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:03] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 200&#x2F;520 Loss 0.072 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:05] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 210&#x2F;520 Loss 0.072 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:08] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 220&#x2F;520 Loss 0.072 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:10] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 230&#x2F;520 Loss 0.072 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:12] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 240&#x2F;520 Loss 0.072 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:15] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 250&#x2F;520 Loss 0.071 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:17] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 260&#x2F;520 Loss 0.071 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:20] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 270&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:22] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 280&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:24] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 290&#x2F;520 Loss 0.071 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:27] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 300&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:29] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 310&#x2F;520 Loss 0.071 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:32] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 320&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:34] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 330&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:36] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 340&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:39] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 350&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:41] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 360&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:44] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 370&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:46] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 380&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:49] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 390&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:51] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 400&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:53] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 410&#x2F;520 Loss 0.071 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:56] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 420&#x2F;520 Loss 0.072 Prec@(1,5) (98.7%, 100.0%)</span><br><span class="line">[2021-02-22 21:40:58] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 430&#x2F;520 Loss 0.071 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:01] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 440&#x2F;520 Loss 0.071 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:03] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 450&#x2F;520 Loss 0.071 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:05] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 460&#x2F;520 Loss 0.071 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:08] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 470&#x2F;520 Loss 0.071 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:10] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 480&#x2F;520 Loss 0.071 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:13] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 490&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:15] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 500&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:18] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 510&#x2F;520 Loss 0.070 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:20] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Step 520&#x2F;520 Loss 0.071 Prec@(1,5) (98.8%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:20] INFO (nni&#x2F;MainThread) Train: [600&#x2F;600] Final Prec@1 98.7720%</span><br><span class="line">[2021-02-22 21:41:20] INFO (nni&#x2F;MainThread) Valid: [600&#x2F;600] Step 000&#x2F;104 Loss 0.150 Prec@(1,5) (96.9%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:21] INFO (nni&#x2F;MainThread) Valid: [600&#x2F;600] Step 010&#x2F;104 Loss 0.114 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:21] INFO (nni&#x2F;MainThread) Valid: [600&#x2F;600] Step 020&#x2F;104 Loss 0.136 Prec@(1,5) (97.0%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:22] INFO (nni&#x2F;MainThread) Valid: [600&#x2F;600] Step 030&#x2F;104 Loss 0.164 Prec@(1,5) (96.8%, 99.9%)</span><br><span class="line">[2021-02-22 21:41:22] INFO (nni&#x2F;MainThread) Valid: [600&#x2F;600] Step 040&#x2F;104 Loss 0.160 Prec@(1,5) (96.9%, 99.9%)</span><br><span class="line">[2021-02-22 21:41:23] INFO (nni&#x2F;MainThread) Valid: [600&#x2F;600] Step 050&#x2F;104 Loss 0.156 Prec@(1,5) (97.0%, 99.9%)</span><br><span class="line">[2021-02-22 21:41:24] INFO (nni&#x2F;MainThread) Valid: [600&#x2F;600] Step 060&#x2F;104 Loss 0.151 Prec@(1,5) (97.1%, 99.9%)</span><br><span class="line">[2021-02-22 21:41:24] INFO (nni&#x2F;MainThread) Valid: [600&#x2F;600] Step 070&#x2F;104 Loss 0.140 Prec@(1,5) (97.2%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:25] INFO (nni&#x2F;MainThread) Valid: [600&#x2F;600] Step 080&#x2F;104 Loss 0.143 Prec@(1,5) (97.2%, 99.9%)</span><br><span class="line">[2021-02-22 21:41:25] INFO (nni&#x2F;MainThread) Valid: [600&#x2F;600] Step 090&#x2F;104 Loss 0.137 Prec@(1,5) (97.3%, 99.9%)</span><br><span class="line">[2021-02-22 21:41:26] INFO (nni&#x2F;MainThread) Valid: [600&#x2F;600] Step 100&#x2F;104 Loss 0.139 Prec@(1,5) (97.3%, 99.9%)</span><br><span class="line">[2021-02-22 21:41:26] INFO (nni&#x2F;MainThread) Valid: [600&#x2F;600] Step 104&#x2F;104 Loss 0.139 Prec@(1,5) (97.3%, 100.0%)</span><br><span class="line">[2021-02-22 21:41:26] INFO (nni&#x2F;MainThread) Valid: [600&#x2F;600] Final Prec@1 97.2500%</span><br></pre></td></tr></table></figure>
+<p>调用<code>nni.algorithms.nas.pytorch.darts.DartsTrainer</code>可进行DARTS的架构搜索。再通过<code>retrain.py</code>再次进行训练，最终在第454个epoch达到了97%的准确率，重训练过程中精确度最高能够达到98%。</p>
+<p>由于DARTS的候选边在MobileNet中并没有出现，所以最终生成的模型相对变化较大，但与此同时，性能上的提升也十分明显。</p>
+<h2 id="实验总结"><a href="#实验总结" class="headerlink" title="实验总结"></a>实验总结</h2><ul>
+<li><p>我们使用了Google Colab上的GPU进行训练，通过NNI的官方文档提供的指导说明，通过反向代理访问到了NNI的Web UI，使得我们能够在有限的算力下完成NNI的有关实验。</p>
+</li>
+<li><p>在算力允许的条件下，每一次trial的epoch最好设置得足够大，这样所得的模型最终结果相对能够更加精确。</p>
+</li>
+<li><p>NNI在超参调优和神经网络架构搜索方面真正解决了用户痛点所在，省下了繁琐的人工调参以及模型优化时间，以更低的时间成本，更高的工作效率为相关学习研究提供很大的方便。</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/29/NNI-Student-Program-2020-Task3/" rel="prev" title="NNI Student Program 2020 Task3">
+      <i class="fa fa-chevron-left"></i> NNI Student Program 2020 Task3
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/15/NNI-Student-Program-2020-Task3.2.1/" rel="next" title="NNI Student Program Task3.2.1">
+      NNI Student Program Task3.2.1 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Task2-2-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A"><span class="nav-number">1.</span> <span class="nav-text">Task2.2 实验报告</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B6%85%E5%8F%82%E8%B0%83%E4%BC%98"><span class="nav-number">1.1.</span> <span class="nav-text">超参调优</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">1.1.1.</span> <span class="nav-text">实验结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Classic-NAS"><span class="nav-number">1.2.</span> <span class="nav-text">Classic NAS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E7%BB%93%E6%9E%9C"><span class="nav-number">1.2.1.</span> <span class="nav-text">最终结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#One-Shot-NAS"><span class="nav-number">1.3.</span> <span class="nav-text">One-Shot NAS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DARTS%E5%8E%9F%E7%90%86%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90"><span class="nav-number">1.3.1.</span> <span class="nav-text">DARTS原理简要分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E9%83%A8%E5%88%86"><span class="nav-number">1.4.</span> <span class="nav-text">代码实现部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%80%BB%E7%BB%93"><span class="nav-number">1.5.</span> <span class="nav-text">实验总结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Garen Wang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Garen Wang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Garen-Wang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Garen-Wang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:garen-wang@qq.com" title="E-Mail → mailto:garen-wang@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">粤ICP备2021003110号 </a>
+      <img src="/images/beian.png" style="display: inline-block;">
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Garen Wang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'wMExYSieDga8BTVjfcUnCRh1-gzGzoHsz',
+      appKey     : 'pYUGXalVN490u6EsT2HJA4Rj',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
