@@ -202,10 +202,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-03-27 10:37:33 / Modified: 11:55:54" itemprop="dateCreated datePublished" datetime="2021-03-27T10:37:33+08:00">2021-03-27</time>
+              <time title="Created: 2021-03-27 10:37:33" itemprop="dateCreated datePublished" datetime="2021-03-27T10:37:33+08:00">2021-03-27</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-28 18:54:10" itemprop="dateModified" datetime="2021-03-28T18:54:10+08:00">2021-03-28</time>
+              </span>
 
           
             <span id="/2021/03/27/First-Presentation-in-Kap0k/" class="post-meta-item leancloud_visitors" data-flag-title="First Presentation in Kap0k" title="Views">
@@ -274,7 +280,7 @@
 <p>如何实现函数调用时的跳转？有两条汇编指令非常常用：</p>
 <script type="math/tex; mode=display">{jal \qquad r_d,\quad  imm[20:1]}</script><script type="math/tex; mode=display">{jalr \quad r_d, \quad (imm[11:0])r_s}</script><p>作用是在$r_d$上保存下当前栈帧的<code>ra</code>，然后<code>pc</code>会跳转到与<code>pc</code>或者$r_s$的offset为$imm$的地址处。</p>
 <p>而当函数要跳转回来时，相似地有<code>ret</code>的伪指令，这条指令会被认为是<code>jalr x0, 0(x1)</code>。</p>
-<p>{ % qnimg First-Presentation-in-Kap0k/prologue_and_epilogue.png %}</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/prologue_and_epilogue.png">
 <p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/64211181/whats-the-difference-between-caller-saved-and-callee-saved-in-risc-v">关于caller saved和callee saved的细节讨论</a></p>
 <p>找到<a target="_blank" rel="noopener" href="https://web.eecs.utk.edu/~smarz1/courses/ece356/notes/assembly/">一篇不错的文章</a>，不懂的时候查一查就可以了。</p>
 <h3 id="RISC-V实例"><a href="#RISC-V实例" class="headerlink" title="RISC-V实例"></a>RISC-V实例</h3><p>随便写了个类似helloworld的东西，拿到的<code>helloworld.s</code>，可以分析一下：</p>
