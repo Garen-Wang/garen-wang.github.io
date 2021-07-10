@@ -179,6 +179,221 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/07/10/Establish-SSH-Connection-to-Servers-in-School/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/10/Establish-SSH-Connection-to-Servers-in-School/" class="post-title-link" itemprop="url">Establish SSH Connection to Servers in School</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-07-10 11:24:54 / Modified: 12:29:00" itemprop="dateCreated datePublished" datetime="2021-07-10T11:24:54+08:00">2021-07-10</time>
+            </span>
+
+          
+            <span id="/2021/07/10/Establish-SSH-Connection-to-Servers-in-School/" class="post-meta-item leancloud_visitors" data-flag-title="Establish SSH Connection to Servers in School" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/07/10/Establish-SSH-Connection-to-Servers-in-School/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/10/Establish-SSH-Connection-to-Servers-in-School/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p>前几天师兄发了台实验室的服务器给我了，让我去搭一搭fabric的环境。</p>
+<p>fabric的环境可以搭，但是搭完我还得回家。我回去了咋办？</p>
+<p>实验室的服务器又是直接接在校园网内网的，那感觉意味着可以不用做了？（快进到摸鱼</p>
+<p>实际上回家的话还是可以连得上的，下面是操作流程：</p>
+<h2 id="Prerequisite"><a href="#Prerequisite" class="headerlink" title="Prerequisite"></a>Prerequisite</h2><p>一开始的准备是需要你有两台服务器：</p>
+<ul>
+<li>A：实验室的服务器（在内网，没有公网ip）</li>
+<li>B：有公网ip的服务器（在外网，一般可以是各大云的ECS弹性云服务器）</li>
+</ul>
+<p>使用到的软件是frp，我们通过在两个服务器都部署frp来进行ssh内网穿透。</p>
+<h2 id="Configuration-on-Server-A"><a href="#Configuration-on-Server-A" class="headerlink" title="Configuration on Server A"></a>Configuration on Server A</h2><p>首先把frp下载下来</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> wget https://github.com/fatedier/frp/releases/download/v0.37.0/frp_0.37.0_linux_amd64.tar.gz</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> tar zxvf frp_0.37.0_linux_amd64.tar.gz</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> mv frp_0.37.0_linux_amd64 frp</span></span><br></pre></td></tr></table></figure>
+<p>把frpc有关的都删除了，然后保持默认的7000端口不用更改，用screen开一个frp的后台</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rm -rf frpc*</span><br><span class="line">vim frps.ini</span><br><span class="line">screen -dmS frp</span><br><span class="line">screen -r frp</span><br></pre></td></tr></table></figure>
+<p>最后运行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./frps -c ./frps.ini &amp;</span><br></pre></td></tr></table></figure>
+<p>这个时候会跳出来一些信息，这表示左边已经正常连接了。</p>
+<h2 id="Configuration-on-Server-B"><a href="#Configuration-on-Server-B" class="headerlink" title="Configuration on Server B"></a>Configuration on Server B</h2><p>当然也把frp下载下来，不过这时跟frps有关的就可以都删除了。这里就不贴命令了。</p>
+<p>然后需要按照ip信息配置一下<code>frpc.ini</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#[common]</span><br><span class="line">server_addr &#x3D; x.x.x.x（B的公网IP）</span><br><span class="line">server_port &#x3D; 7000</span><br><span class="line">[ssh]</span><br><span class="line">type &#x3D; tcp</span><br><span class="line">local_ip &#x3D; x.x.x.x（A的内网IP）</span><br><span class="line">local_port &#x3D; 22</span><br><span class="line">remote_port &#x3D; 6000</span><br></pre></td></tr></table></figure>
+<p>A的内网ip并不是<code>127.0.0.1</code>，特别是在校园网环境下更是不可能，直接填在校园网上可以ssh连通的那个ip。</p>
+<p>配置的意思是A通过打开6000端口可以接入本地的22端口，22端口也就是默认进shell的端口。</p>
+<p>A跟B的7000端口通信，此时B访问自己的6000端口就可以接入A。</p>
+<p>当然别忘记运行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">screen -dmS frp</span><br><span class="line">screen -r frp</span><br><span class="line">./frpc -c ./frpc.ini &amp;</span><br></pre></td></tr></table></figure>
+<p>此时只要前面A服务器没有timeout，就应该会在两边弹出有新ssh连接的信息，这就说明ssh的反向代理打通了。</p>
+<h2 id="Way-to-Get-Access-to-A"><a href="#Way-to-Get-Access-to-A" class="headerlink" title="Way to Get Access to A"></a>Way to Get Access to A</h2><p>本来想连到B的7000端口上面去，可是Connection Closed by remote host了，就算<code>hosts.allow</code>、<code>hosts.deny</code>、安全组都把7000端口放通了都还是连不上，这就是我的知识盲区了。最后就通过最蠢的两次ssh连上去了。</p>
+<p>首先ssh连到B上面去。进到B的shell之后，我们再运行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh username@127.0.0.1 -p 6000</span></span><br></pre></td></tr></table></figure>
+<p>愿意的话可以再自己设置下ssh免密，不过已经可以打通了。</p>
+<h2 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h2><p>可能在上面的设置中会出现些问题，此时要注意把已经screen的进程关闭掉。（说关闭还不如说直接杀掉）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> screen -ls</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">kill</span> -9 [your-pid]</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> screen -wipe [your-pid]</span></span><br></pre></td></tr></table></figure>
+<p>想要重新尝试的话需要确保两边的screen都没有一个active的，然后才能再次尝试。</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://gofrp.org/docs/examples/ssh/">https://gofrp.org/docs/examples/ssh/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a25908b0b6eb?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">https://www.jianshu.com/p/a25908b0b6eb?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.shangmayuan.com/a/22889fff02d84a5e81387434.html">https://www.shangmayuan.com/a/22889fff02d84a5e81387434.html</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/05/05/Syntax-Highlighting-in-Parsing-Expression-Grammar/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/05/Syntax-Highlighting-in-Parsing-Expression-Grammar/" class="post-title-link" itemprop="url">Syntax Highlighting in Parsing Expression Grammar</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-05-05 10:00:25" itemprop="dateCreated datePublished" datetime="2021-05-05T10:00:25+08:00">2021-05-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-05-06 12:39:45" itemprop="dateModified" datetime="2021-05-06T12:39:45+08:00">2021-05-06</time>
+              </span>
+
+          
+            <span id="/2021/05/05/Syntax-Highlighting-in-Parsing-Expression-Grammar/" class="post-meta-item leancloud_visitors" data-flag-title="Syntax Highlighting in Parsing Expression Grammar" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/05/05/Syntax-Highlighting-in-Parsing-Expression-Grammar/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/05/Syntax-Highlighting-in-Parsing-Expression-Grammar/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="What-is-Parsing-Expression-Grammar"><a href="#What-is-Parsing-Expression-Grammar" class="headerlink" title="What is Parsing Expression Grammar?"></a>What is Parsing Expression Grammar?</h2><p>Parsing Expression Grammar(PEG) describes a formal languages as a set of rules for recognizing strings in the language.</p>
+<p>PEG is somewhat similar to Context Free Grammar(CFG), but the difference is that PEG follows “first match” rule, while CFG is ambiguous.</p>
+<p>PEG has a linear-time complexity.</p>
+<h2 id="Definition-of-PEG-Parser"><a href="#Definition-of-PEG-Parser" class="headerlink" title="Definition of PEG Parser"></a>Definition of PEG Parser</h2><h3 id="Syntax"><a href="#Syntax" class="headerlink" title="Syntax"></a>Syntax</h3><p>Somewhat similar to regular expression</p>
+<ul>
+<li>Sequence <code>e1 e2</code></li>
+<li>Choice <code>e1 / e2</code></li>
+<li>Zero-or-more <code>e*</code></li>
+<li>One-or-more <code>e+</code></li>
+<li>Optional <code>e?</code></li>
+<li>And-predicate <code>&amp;e</code></li>
+<li>Not-predicate <code>!e</code></li>
+</ul>
+<h2 id="How-to-implement-curly-brace-blocks-like-C-and-Java"><a href="#How-to-implement-curly-brace-blocks-like-C-and-Java" class="headerlink" title="How to implement curly-brace blocks like C++ and Java?"></a>How to implement curly-brace blocks like C++ and Java?</h2><h2 id="How-to-implement-indentation-blocks-like-Python"><a href="#How-to-implement-indentation-blocks-like-Python" class="headerlink" title="How to implement indentation blocks like Python?"></a>How to implement indentation blocks like Python?</h2>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/03/27/First-Presentation-in-Kap0k/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -210,7 +425,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-28 18:54:10" itemprop="dateModified" datetime="2021-03-28T18:54:10+08:00">2021-03-28</time>
+                <time title="Modified: 2021-04-06 20:17:24" itemprop="dateModified" datetime="2021-04-06T20:17:24+08:00">2021-04-06</time>
               </span>
 
           
@@ -397,7 +612,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-24 14:00:02" itemprop="dateModified" datetime="2021-03-24T14:00:02+08:00">2021-03-24</time>
+                <time title="Modified: 2021-04-19 08:49:57" itemprop="dateModified" datetime="2021-04-19T08:49:57+08:00">2021-04-19</time>
               </span>
 
           
@@ -456,181 +671,19 @@
 <h2 id="Find-Function-Calls"><a href="#Find-Function-Calls" class="headerlink" title="Find Function Calls"></a>Find Function Calls</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from FunctionCall fc</span><br><span class="line">where fc.getTarget().getName() &#x3D; &quot;memcpy&quot;</span><br><span class="line">select fc</span><br></pre></td></tr></table></figure>
 <h2 id="Find-Macro-Invocations"><a href="#Find-Macro-Invocations" class="headerlink" title="Find Macro Invocations"></a>Find Macro Invocations</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from MacroInvocation inv</span><br><span class="line">where inv.getMacro().getName().regexpMatch(&quot;ntoh(s|l|ll)&quot;)</span><br><span class="line">select inv</span><br></pre></td></tr></table></figure>
 <h2 id="Find-Macro-Expressions"><a href="#Find-Macro-Expressions" class="headerlink" title="Find Macro Expressions"></a>Find Macro Expressions</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from MacroInvocation inv</span><br><span class="line">where inv.getMacro().getName().regexpMatch(&quot;ntoh(s|l|ll)&quot;)</span><br><span class="line">select inv.getExpr()</span><br></pre></td></tr></table></figure>
-<h2 id="Create-A-Class"><a href="#Create-A-Class" class="headerlink" title="Create A Class"></a>Create A Class</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class NetworkByteSwap extends Expr &#123;</span><br><span class="line">  NetworkByteSwap() &#123;</span><br><span class="line">    exists (MacroInvocation inv | </span><br><span class="line">      inv.getMacro().getName() in [&quot;ntohs&quot;, &quot;ntohl&quot;, &quot;ntohll&quot;] and </span><br><span class="line">      this &#x3D; inv.getExpr()</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from NetworkByteSwap n</span><br><span class="line">select n, &quot;Network byte swap&quot;</span><br></pre></td></tr></table></figure>
-<h2 id="Data-Flow-in-CodeQL"><a href="#Data-Flow-in-CodeQL" class="headerlink" title="Data Flow in CodeQL"></a>Data Flow in CodeQL</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line">import semmle.code.cpp.dataflow.DataFlow</span><br><span class="line">import semmle.code.cpp.dataflow.TaintTracking</span><br><span class="line"></span><br><span class="line">class NetworkByteSwap extends Expr &#123;</span><br><span class="line">  NetworkByteSwap() &#123;</span><br><span class="line">    exists (MacroInvocation inv | </span><br><span class="line">      inv.getMacro().getName() in [&quot;ntohs&quot;, &quot;ntohl&quot;, &quot;ntohll&quot;] and </span><br><span class="line">      this &#x3D; inv.getExpr()</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Config extends TaintTracking::Configuration &#123;</span><br><span class="line">  Config() &#123;</span><br><span class="line">    this &#x3D; &quot;Network2MemFuncLength&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  override predicate isSource(DataFlow::Node source) &#123;</span><br><span class="line">    source.asExpr() instanceof NetworkByteSwap</span><br><span class="line">  &#125;</span><br><span class="line">  override predicate isSink(DataFlow::Node sink) &#123;</span><br><span class="line">    exists (FunctionCall fc |</span><br><span class="line">      sink.asExpr() &#x3D; fc.getArgument(2) and </span><br><span class="line">      fc.getTarget().hasQualifiedName(&quot;memcpy&quot;)</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from Config cfg, DataFlow::PathNode source, DataFlow::PathNode sink</span><br><span class="line">where cfg.hasFlowPath(source, sink)</span><br><span class="line">select sink, source, sink, &quot;Network byte swap flows to memory&quot;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/03/23/Rust-Programming-Language-Learning-Notes/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/23/Rust-Programming-Language-Learning-Notes/" class="post-title-link" itemprop="url">Rust Programming Language Learning Notes</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-03-23 23:20:42" itemprop="dateCreated datePublished" datetime="2021-03-23T23:20:42+08:00">2021-03-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-24 14:00:09" itemprop="dateModified" datetime="2021-03-24T14:00:09+08:00">2021-03-24</time>
-              </span>
-
-          
-            <span id="/2021/03/23/Rust-Programming-Language-Learning-Notes/" class="post-meta-item leancloud_visitors" data-flag-title="Rust Programming Language Learning Notes" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/03/23/Rust-Programming-Language-Learning-Notes/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/23/Rust-Programming-Language-Learning-Notes/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Recently I have looked through a new programming language called Rust(most of the time is spent in class).</p>
-<p>It is quite interesting to try this new programming language, not only because of its advantages like good performance like C and safety, but also because of a brand-new way of thinking. Actually some unique properties of Rust are quite inspiring, but it turns out not easy to even get a program compiled due to the strict restriction of Rust compiler. However, I still think it’s worth a lot.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/03/18/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/18/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-03-18 21:26:59" itemprop="dateCreated datePublished" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
-            </span>
-
-          
-            <span id="/2021/03/18/hello-world/" class="post-meta-item leancloud_visitors" data-flag-title="Hello World" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/03/18/hello-world/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/18/hello-world/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<h2 id="Create-A-Class"><a href="#Create-A-Class" class="headerlink" title="Create A Class"></a>Create A Class</h2><p>Similar to lots of other programming languages, CodeQL has the feature of object-oriented programming.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class NetworkByteSwap extends Expr &#123;</span><br><span class="line">  NetworkByteSwap() &#123;</span><br><span class="line">    exists (MacroInvocation inv | </span><br><span class="line">      inv.getMacro().getName() in [&quot;ntohs&quot;, &quot;ntohl&quot;, &quot;ntohll&quot;] and </span><br><span class="line">      this &#x3D; inv.getExpr()</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from NetworkByteSwap n</span><br><span class="line">select n, &quot;Network byte swap&quot;</span><br></pre></td></tr></table></figure>
+<p>Here <code>exists</code> can be understood as an existential quantifier in Discrete Mathematics, where we first define the variables then list all propositions the variables should satisfy, with a separator <code>|</code>.</p>
+<h2 id="Data-Flow-in-CodeQL"><a href="#Data-Flow-in-CodeQL" class="headerlink" title="Data Flow in CodeQL"></a>Data Flow in CodeQL</h2><p>First we introduce two important terminologies: <code>source</code> and <code>sink</code>.</p>
+<p><strong>Source</strong> is the function that is to blame when vulnerbilities occur, and <strong>sink</strong> refers to dangerous factors(e.g. pointer, parameter, etc.) in a specific function. Code is vulnerable if tainted data <strong>flows</strong> from a source to a sink.</p>
+<p>CodeQL has implemented two kinds of data flows.</p>
+<ol>
+<li>Local data flow. In this condition, tainted data will be tracked only inside a function scope.</li>
+<li>Global data flow. In this condition, tainted data can be tracked globally, not limited in a function scope.</li>
+</ol>
+<p>Generally, for source and sink, we need to find the characteristics they have and write predicates for them respectively.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line">import semmle.code.cpp.dataflow.DataFlow</span><br><span class="line">import semmle.code.cpp.dataflow.TaintTracking</span><br><span class="line"></span><br><span class="line">class NetworkByteSwap extends Expr &#123;</span><br><span class="line">  NetworkByteSwap() &#123;</span><br><span class="line">    exists (MacroInvocation inv | </span><br><span class="line">      inv.getMacro().getName() in [&quot;ntohs&quot;, &quot;ntohl&quot;, &quot;ntohll&quot;] and </span><br><span class="line">      this &#x3D; inv.getExpr()</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Config extends TaintTracking::Configuration &#123;</span><br><span class="line">  Config() &#123;</span><br><span class="line">    this &#x3D; &quot;Network2MemFuncLength&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  override predicate isSource(DataFlow::Node source) &#123;</span><br><span class="line">    source.asExpr() instanceof NetworkByteSwap</span><br><span class="line">  &#125;</span><br><span class="line">  override predicate isSink(DataFlow::Node sink) &#123;</span><br><span class="line">    exists (FunctionCall fc |</span><br><span class="line">      sink.asExpr() &#x3D; fc.getArgument(2) and </span><br><span class="line">      fc.getTarget().hasQualifiedName(&quot;memcpy&quot;)</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from Config cfg, DataFlow::PathNode source, DataFlow::PathNode sink</span><br><span class="line">where cfg.hasFlowPath(source, sink)</span><br><span class="line">select sink, source, sink, &quot;Network byte swap flows to memory&quot;</span><br></pre></td></tr></table></figure>
+<p>We can inherit <code>TaintTracking::Config</code> and override some specific predicates to customize our data flow. Respectively, <code>inSource</code> and <code>isSink</code> restrict conditions that a <code>DataFlow::Node</code> can be regarded as source and sink. And if we need to remove some false-positive queries, override predicate <code>isSanitizer</code> to make our queries more accurately.</p>
 
       
     </div>
@@ -1428,7 +1481,7 @@
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
