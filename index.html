@@ -204,7 +204,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-07-10 11:24:54 / Modified: 12:29:00" itemprop="dateCreated datePublished" datetime="2021-07-10T11:24:54+08:00">2021-07-10</time>
+              <time title="Created: 2021-07-10 11:24:54 / Modified: 19:22:28" itemprop="dateCreated datePublished" datetime="2021-07-10T11:24:54+08:00">2021-07-10</time>
             </span>
 
           
@@ -245,30 +245,51 @@
 <p>实际上回家的话还是可以连得上的，下面是操作流程：</p>
 <h2 id="Prerequisite"><a href="#Prerequisite" class="headerlink" title="Prerequisite"></a>Prerequisite</h2><p>一开始的准备是需要你有两台服务器：</p>
 <ul>
-<li>A：实验室的服务器（在内网，没有公网ip）</li>
-<li>B：有公网ip的服务器（在外网，一般可以是各大云的ECS弹性云服务器）</li>
+<li>A：实验室的服务器（在内网，没有公网IP）</li>
+<li>B：有公网IP的服务器（在外网，一般可以是各大云的ECS弹性云服务器）</li>
 </ul>
-<p>使用到的软件是frp，我们通过在两个服务器都部署frp来进行ssh内网穿透。</p>
-<h2 id="Configuration-on-Server-A"><a href="#Configuration-on-Server-A" class="headerlink" title="Configuration on Server A"></a>Configuration on Server A</h2><p>首先把frp下载下来</p>
+<p>使用到的软件是<code>frp</code>，我们通过在两个服务器都部署<code>frp</code>来进行ssh内网穿透。</p>
+<h2 id="Configuration-on-Server-A"><a href="#Configuration-on-Server-A" class="headerlink" title="Configuration on Server A"></a>Configuration on Server A</h2><p>首先把<code>frp</code>下载下来</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> wget https://github.com/fatedier/frp/releases/download/v0.37.0/frp_0.37.0_linux_amd64.tar.gz</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> tar zxvf frp_0.37.0_linux_amd64.tar.gz</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> mv frp_0.37.0_linux_amd64 frp</span></span><br></pre></td></tr></table></figure>
-<p>把frpc有关的都删除了，然后保持默认的7000端口不用更改，用screen开一个frp的后台</p>
+<p>把<code>frpc</code>有关的都删除了，然后保持默认的7000端口不用更改，用screen开一个frp的后台</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rm -rf frpc*</span><br><span class="line">vim frps.ini</span><br><span class="line">screen -dmS frp</span><br><span class="line">screen -r frp</span><br></pre></td></tr></table></figure>
 <p>最后运行</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./frps -c ./frps.ini &amp;</span><br></pre></td></tr></table></figure>
 <p>这个时候会跳出来一些信息，这表示左边已经正常连接了。</p>
-<h2 id="Configuration-on-Server-B"><a href="#Configuration-on-Server-B" class="headerlink" title="Configuration on Server B"></a>Configuration on Server B</h2><p>当然也把frp下载下来，不过这时跟frps有关的就可以都删除了。这里就不贴命令了。</p>
-<p>然后需要按照ip信息配置一下<code>frpc.ini</code>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#[common]</span><br><span class="line">server_addr &#x3D; x.x.x.x（B的公网IP）</span><br><span class="line">server_port &#x3D; 7000</span><br><span class="line">[ssh]</span><br><span class="line">type &#x3D; tcp</span><br><span class="line">local_ip &#x3D; x.x.x.x（A的内网IP）</span><br><span class="line">local_port &#x3D; 22</span><br><span class="line">remote_port &#x3D; 6000</span><br></pre></td></tr></table></figure>
-<p>A的内网ip并不是<code>127.0.0.1</code>，特别是在校园网环境下更是不可能，直接填在校园网上可以ssh连通的那个ip。</p>
+<h2 id="Configuration-on-Server-B"><a href="#Configuration-on-Server-B" class="headerlink" title="Configuration on Server B"></a>Configuration on Server B</h2><p>当然也把<code>frp</code>下载下来，不过这时跟<code>frps</code>有关的就可以都删除了。这里就不贴命令了。</p>
+<p>然后需要按照IP信息配置一下<code>frpc.ini</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr &#x3D; x.x.x.x（B的公网IP）</span><br><span class="line">server_port &#x3D; 7000</span><br><span class="line">[ssh]</span><br><span class="line">type &#x3D; tcp</span><br><span class="line">local_ip &#x3D; x.x.x.x（A的内网IP）</span><br><span class="line">local_port &#x3D; 22</span><br><span class="line">remote_port &#x3D; 6000</span><br></pre></td></tr></table></figure>
+<p>A的内网IP并不是<code>127.0.0.1</code>，特别是在校园网环境下更是不可能，直接填在校园网上可以ssh连通的那个IP。</p>
 <p>配置的意思是A通过打开6000端口可以接入本地的22端口，22端口也就是默认进shell的端口。</p>
 <p>A跟B的7000端口通信，此时B访问自己的6000端口就可以接入A。</p>
 <p>当然别忘记运行：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">screen -dmS frp</span><br><span class="line">screen -r frp</span><br><span class="line">./frpc -c ./frpc.ini &amp;</span><br></pre></td></tr></table></figure>
 <p>此时只要前面A服务器没有timeout，就应该会在两边弹出有新ssh连接的信息，这就说明ssh的反向代理打通了。</p>
-<h2 id="Way-to-Get-Access-to-A"><a href="#Way-to-Get-Access-to-A" class="headerlink" title="Way to Get Access to A"></a>Way to Get Access to A</h2><p>本来想连到B的7000端口上面去，可是Connection Closed by remote host了，就算<code>hosts.allow</code>、<code>hosts.deny</code>、安全组都把7000端口放通了都还是连不上，这就是我的知识盲区了。最后就通过最蠢的两次ssh连上去了。</p>
+<h2 id="Ways-to-Get-Access-to-A"><a href="#Ways-to-Get-Access-to-A" class="headerlink" title="Ways to Get Access to A"></a>Ways to Get Access to A</h2><h3 id="Brute-force-Way"><a href="#Brute-force-Way" class="headerlink" title="Brute-force Way"></a>Brute-force Way</h3><p>本来想连到B的7000端口上面去，可是Connection Closed by remote host了，就算<code>hosts.allow</code>、<code>hosts.deny</code>、安全组都把7000端口放通了都还是连不上，这就是我的知识盲区了。最后就通过最蠢的两次ssh连上去了。</p>
 <p>首先ssh连到B上面去。进到B的shell之后，我们再运行</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh username@127.0.0.1 -p 6000</span></span><br></pre></td></tr></table></figure>
 <p>愿意的话可以再自己设置下ssh免密，不过已经可以打通了。</p>
+<h2 id="SSH-in-Multiple-Hops"><a href="#SSH-in-Multiple-Hops" class="headerlink" title="SSH in Multiple Hops"></a>SSH in Multiple Hops</h2><p>其实也可以用一行命令解决：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh -t root@xx.xx.xx.xx ssh root@127.0.0.1 -p 6000</span></span><br></pre></td></tr></table></figure>
+<p>不仅在console上是如此，也可以在VS Code上直接连进去，方法是通过配置<code>.ssh/config</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Host xx.xx.xx.xx</span><br><span class="line">  HostName xx.xx.xx.xx</span><br><span class="line">  User root</span><br><span class="line">  port 22</span><br><span class="line"></span><br><span class="line">Host MyFabricServer</span><br><span class="line">  Hostname 127.0.0.1</span><br><span class="line">  User root</span><br><span class="line">  port 6000</span><br><span class="line">  ProxyJump xx.xx.xx.xx</span><br></pre></td></tr></table></figure>
+<p>其中，<code>xx.xx.xx.xx</code>表示B的公网IP。</p>
+<h3 id="Multiple-Clients-to-One-Server-Using-frp"><a href="#Multiple-Clients-to-One-Server-Using-frp" class="headerlink" title="Multiple Clients to One Server Using frp"></a>Multiple Clients to One Server Using <code>frp</code></h3><p>其实，B可以做多台内网服务器的中介，方法其实也跟上面类似，不过有一点小小的区别。</p>
+<p>把新的需要做反向代理的内网服务器记作C，则同样在C上面配置<code>frpc</code>有关内容，大部分操作与A类似，不过在<code>frpc.ini</code>有更改：</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = x.x.x.x（B的公网IP）</span><br><span class="line">server_port = 7000</span><br><span class="line"><span class="deletion">- [ssh]</span></span><br><span class="line"><span class="addition">+ [ssh2]</span></span><br><span class="line">type = tcp</span><br><span class="line">local_ip = x.x.x.x（A的内网IP）</span><br><span class="line">local_port = 22</span><br><span class="line"><span class="deletion">- remote_port = 6000</span></span><br><span class="line"><span class="addition">+ remote_port = 5000</span></span><br></pre></td></tr></table></figure>
+<p>其实<code>[ssh2]</code>可以改为其他的名字，正如<code>[ssh]</code>也只是一个identifier而已。再记得映射到另一个空闲的端口上。</p>
+<p>用screen运行相应命令之后会prompt出started successfully之类的字样，之后不需要去在B上面做修改，在B的shell里面ssh新的5000端口就可以连上了。</p>
+<h2 id="SSH-Connection-in-VS-Code"><a href="#SSH-Connection-in-VS-Code" class="headerlink" title="SSH Connection in VS Code"></a>SSH Connection in VS Code</h2><p>试了一下可以在VS Code里面直接连上做好反向代理的内网服务器，大概操作流程是这样的：</p>
+<ol>
+<li>额外下载一个叫<code>Remote SSH</code>的extension。</li>
+<li>点左下角绿色的连接按钮，选择Connect to the Host，然后选择Select SSH configuration file to update，任选一个配置文件。</li>
+<li>接下来进入了一个编辑文件的界面，就这样输入：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Host xx.xx.xx.xx</span><br><span class="line">  HostName xx.xx.xx.xx</span><br><span class="line">  User root</span><br><span class="line">  port 22</span><br><span class="line"></span><br><span class="line">Host MyFabricServer</span><br><span class="line">  Hostname 127.0.0.1</span><br><span class="line">  User root</span><br><span class="line">  port 5000</span><br><span class="line">  ProxyJump xx.xx.xx.xx</span><br></pre></td></tr></table></figure>
+<p>其中，<code>xx.xx.xx.xx</code>代表B的公网IP。</p>
+<ol>
+<li>接下来再点击连接，选择Connect to the Host，选择MyFabricServer，输入相应的密码，两个服务器的密码都输入正确的话就可以进入了。</li>
+</ol>
 <h2 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h2><p>可能在上面的设置中会出现些问题，此时要注意把已经screen的进程关闭掉。（说关闭还不如说直接杀掉）</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> screen -ls</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">kill</span> -9 [your-pid]</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> screen -wipe [your-pid]</span></span><br></pre></td></tr></table></figure>
 <p>想要重新尝试的话需要确保两边的screen都没有一个active的，然后才能再次尝试。</p>
