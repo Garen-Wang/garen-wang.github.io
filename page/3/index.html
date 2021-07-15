@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Noto Serif SC:300,300italic,400,400italic,700,700italic|Fira Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"121.36.2.124","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Garen Wang&#39;s Blog">
+<meta property="og:url" content="https://121.36.2.124/page/3/index.html">
+<meta property="og:site_name" content="Garen Wang&#39;s Blog">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="Garen Wang">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://121.36.2.124/page/3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Garen Wang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Garen Wang's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content index posts-expand">
+            
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/08/My-Hexo-Blog-Configuration/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/08/My-Hexo-Blog-Configuration/" class="post-title-link" itemprop="url">My Hexo Blog Configuration</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-08 22:04:28" itemprop="dateCreated datePublished" datetime="2021-01-08T22:04:28+08:00">2021-01-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
+              </span>
+
+          
+            <span id="/2021/01/08/My-Hexo-Blog-Configuration/" class="post-meta-item leancloud_visitors" data-flag-title="My Hexo Blog Configuration" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/01/08/My-Hexo-Blog-Configuration/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/08/My-Hexo-Blog-Configuration/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>芜湖！起飞！今天备案终于审核通过了！捣鼓了一下，终于把博客弄得像模像样的，就顺带记录一下！</p>
+<h2 id="序幕"><a href="#序幕" class="headerlink" title="序幕"></a>序幕</h2><p>军训汇操在早上结束了，回到宿舍一打开手机就连收到三条信息，终于给爷备案好了！</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/WeChat_Image_20210108221637.jpg">
+<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/WeChat_Image_20210108221657.jpg">
+<p>我啪的一下就开始准备我的博客了，很快啊！</p>
+<h2 id="博客框架"><a href="#博客框架" class="headerlink" title="博客框架"></a>博客框架</h2><p>博客使用Hexo搭建，用了NexT主题(NexT.Gemini)，在GitHub上就能找到这个主题。</p>
+<p>Hexo只要有npm就可以安装了，跑条命令安装一下就行。</p>
+<p>Hexo的操作可以直接看官方文档，也很容易懂，这里不赘述。</p>
+<p>GitHub Pages之前就配置好了，现在主要是需要配置到我的服务器上面去。</p>
+<h2 id="Hexo同步至服务器"><a href="#Hexo同步至服务器" class="headerlink" title="Hexo同步至服务器"></a>Hexo同步至服务器</h2><p>首先，在服务器上面安装一下git和nginx。在备案没有成功的时候，可以直接用买服务器时给的弹性公网IP直接去上，效果是一样的。</p>
+<p>按照我的印象，当没有安装nginx时，在浏览器中输入ip打开，是会出现小恐龙的，而安装了nginx之后就成了404。这说明nginx确实已经开始起作用了，安装正常。</p>
+<p>然后可以在服务器那端用ssh免密登录，粗略流程是这样的：</p>
+<ol>
+<li>在本机用<code>ssh-keygen</code>创建一个ssh公钥和私钥。</li>
+<li>在服务器的<code>.ssh</code>目录创建一个<code>authorized_keys</code>，再<code>chmod</code>一下。</li>
+<li>把ssh公钥写到<code>authorized_keys</code>上面去。</li>
+</ol>
+<p>这个时候，只要本机有私钥，服务器有公钥，我们就可以通过一个ssh命令免密远程登录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh root@&quot;your_ip&quot;</span><br></pre></td></tr></table></figure>
+<p>之后创建<code>/var/repo</code>文件夹，在里面新建一个叫blog的git仓库，新建命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git init --bare blog.git</span><br></pre></td></tr></table></figure>
+<p>之后，打开<code>blog.git/hooks/post-receive</code>，<code>chmod</code>一下，同时添加下列内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;sh</span><br><span class="line">git --work-tree&#x3D;&#x2F;var&#x2F;www&#x2F;hexo --git-dir&#x3D;&#x2F;var&#x2F;repo&#x2F;blog.git checkout -f</span><br></pre></td></tr></table></figure>
+<p>之后，在<code>var/www/hexo</code>处创建好文件夹，<code>chmod</code>一下，这样之后，服务器端的设置就完成了。</p>
+<p>最终我们想要的是：在本机输入<code>hexo d</code>时，能部署到服务器上，这时需要在根目录下的<code>_config.yml</code>下修改：</p>
+<h3 id="第一处"><a href="#第一处" class="headerlink" title="第一处"></a>第一处</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># URL</span><br><span class="line">## If your site is put in a subdirectory, set url as &#39;http:&#x2F;&#x2F;example.com&#x2F;child&#39; and root as &#39;&#x2F;child&#x2F;&#39;</span><br><span class="line">url: https:&#x2F;&#x2F;your_ip</span><br></pre></td></tr></table></figure>
+<h3 id="第二处"><a href="#第二处" class="headerlink" title="第二处"></a>第二处</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  - type: git</span><br><span class="line">    repo: git@github.com:Garen-Wang&#x2F;garen-wang.github.io.git</span><br><span class="line">    branch: master</span><br><span class="line">  - type: git</span><br><span class="line">    repo: root@your_ip:&#x2F;var&#x2F;repo&#x2F;blog.git</span><br><span class="line">    branch: master</span><br></pre></td></tr></table></figure>
+<p>这样就应该能把hexo部署到你的服务器上面去了。</p>
+<h2 id="添加备案号"><a href="#添加备案号" class="headerlink" title="添加备案号"></a>添加备案号</h2><p>网站还是得加备案号的，不过这里不用改模板，直接在NexT主题的<code>_config.yml</code>中修改：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">footer:</span><br><span class="line">  ...</span><br><span class="line">  </span><br><span class="line">  # Beian ICP and gongan information for Chinese users. See: http:&#x2F;&#x2F;www.beian.miit.gov.cn, http:&#x2F;&#x2F;www.beian.gov.cn</span><br><span class="line">  beian:</span><br><span class="line">    enable: true</span><br><span class="line">    icp: 粤ICP备2021003110号</span><br><span class="line">    # The digit in the num of gongan beian.</span><br><span class="line">    gongan_id:</span><br><span class="line">    # The full num of gongan beian.</span><br><span class="line">    gongan_num: 2021003110</span><br><span class="line">    # The icon for gongan beian. See: http:&#x2F;&#x2F;www.beian.gov.cn&#x2F;portal&#x2F;download</span><br><span class="line">    gongan_icon_url: images&#x2F;beian.png</span><br></pre></td></tr></table></figure>
+<p>在主题文件夹中的<code>source</code>中新建个<code>images</code>文件夹，可以把<a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/download">这张图片</a>下载到里面去，就可以用相对路径引用了。btw，对头像的设置也是同理。</p>
+<h2 id="mathjax支持"><a href="#mathjax支持" class="headerlink" title="mathjax支持"></a>mathjax支持</h2><p>这个东西曾经困扰了我很久，其实只要按下面的顺序，NexT主题也能用上mathjax。</p>
+<p>先更换Hexo的Markdown渲染引擎：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm uninstall hexo-renderer-marked --save</span><br><span class="line">npm install hexo-renderer-kramed --save</span><br></pre></td></tr></table></figure>
+<p>需要在<code>node_modules/kramed/lib/rules/inline.js</code>中修改两处（分别是原第11行和第20行）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;escape: &#x2F;^\\([\\&#96;*&#123;&#125;\[\]()#$+\-.!_&gt;])&#x2F;,</span><br><span class="line">escape: &#x2F;^\\([&#96;*\[\]()#$+\-.!_&gt;])&#x2F;,</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;em: &#x2F;^\b_((?:__|[\s\S])+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)&#x2F;,</span><br><span class="line">em: &#x2F;^\*((?:\*\*|[\s\S])+?)\*(?!\*)&#x2F;,</span><br></pre></td></tr></table></figure>
+<p>最后在每个需要启用mathjax的博客页面里，在一开始的Front-matter那里加上一句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mathjax: true</span><br></pre></td></tr></table></figure>
+<p>这样就可以用上LaTeX语法写行内公式和行间公式了。</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/2021-01-08_23-29.png">
+<h2 id="搜索框"><a href="#搜索框" class="headerlink" title="搜索框"></a>搜索框</h2><p>搜索框也很容易实现。</p>
+<p>先用npm安装下插件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save hexo-generator-search</span><br><span class="line">$ npm install --save hexo-generator-searchdb</span><br></pre></td></tr></table></figure>
+<p>在NexT主题文件夹下的<code>_config.yml</code>下修改：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">local_search:</span><br><span class="line">  enable: true</span><br></pre></td></tr></table></figure>
+<p>重新部署一下之后，就可以看到出现了搜索框。</p>
+<h2 id="评论系统支持"><a href="#评论系统支持" class="headerlink" title="评论系统支持"></a>评论系统支持</h2><p>评论系统中，NexT主题的配置中自带对Valine的支持，我们干脆直接用它咯！</p>
+<h3 id="Valine的使用"><a href="#Valine的使用" class="headerlink" title="Valine的使用"></a>Valine的使用</h3><ol>
+<li>在LeanCloud注册</li>
+<li>创建应用，名称随意</li>
+<li>进入“设置-应用Keys”，获取App ID和AppKey</li>
+<li>在主题文件夹中的<code>_config.yml</code>修改Valine对应内容为：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">valine:</span><br><span class="line">  enable: true</span><br><span class="line">  appid: Your leancloud application appid</span><br><span class="line">  appkey: Your leancloud application appkey</span><br><span class="line">  notify: true # Mail notifier</span><br><span class="line">  verify: false # Verification code</span><br><span class="line">  placeholder: Just go go # Comment box placeholder</span><br><span class="line">  avatar: mm # Gravatar style</span><br><span class="line">  guest_info: nick,mail,link # Custom comment header</span><br><span class="line">  pageSize: 10 # Pagination size</span><br><span class="line">  language: zh-cn # Language, available values: en, zh-cn</span><br><span class="line">  visitor: true # Article reading statistic</span><br><span class="line">  comment_count: true # If false, comment count will only be displayed in post page, not in home page</span><br><span class="line">  recordIP: false # Whether to record the commenter IP</span><br><span class="line">  serverURLs: # When the custom domain name is enabled, fill it in here (it will be detected automatically by default, no need to fill in)</span><br><span class="line">  #post_meta_order: 0</span><br></pre></td></tr></table></figure>
+<p>然后在储存-结构化数据中创建两个新的Class，名称分别为<code>Comment</code>和<code>Counter</code>，分别可以用来存评论和链接访问数，非常方便。</p>
+<p>在LeanCloud后台看到的数据就是这样的：</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/2021-01-08_22-44.png">
+<p>之后部署一下就可以看到效果了！</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/2021-01-08_22-42.png">
+<h2 id="七牛云图床"><a href="#七牛云图床" class="headerlink" title="七牛云图床"></a>七牛云图床</h2><p>首先先在博客根目录安装一下需要的Hexo插件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save hexo-qiniu-sync</span><br></pre></td></tr></table></figure><br>在七牛云右上角的密钥管理就可以找到access key和secret key了，bucket填你自己创建时写的空间名称，在<code>_config.yml</code>里面添加这一段配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">qiniu:</span><br><span class="line">  offline: false</span><br><span class="line">  sync: true</span><br><span class="line">  bucket: &quot;your_bucket_name&quot;</span><br><span class="line">  access_key: &quot;your_access_key&quot;</span><br><span class="line">  secret_key: &quot;your_secret_key&quot;</span><br><span class="line">  dirPrefix: static</span><br><span class="line">  urlPrefix: http:&#x2F;&#x2F;&quot;your_qiniu_url&quot;&#x2F;static</span><br><span class="line">  up_host: http:&#x2F;&#x2F;upload.qiniu.com</span><br><span class="line">  local_dir: static</span><br><span class="line">  update_exist: true</span><br><span class="line">  image: </span><br><span class="line">    folder: images</span><br><span class="line">    extend: </span><br><span class="line">  js:</span><br><span class="line">    folder: js</span><br><span class="line">  css:</span><br><span class="line">    folder: css</span><br></pre></td></tr></table></figure>
+<p>在文档中，就不需要使用Markdown的插入图片格式了，使用下面的格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% qnimg test.jpg %&#125;</span><br></pre></td></tr></table></figure>
+<p>这样的语句会自动读取<code>static/images/test.jpg</code>这个路径下的图片。</p>
+<p>在更新博客时，可以先跑一下这条命令，将<code>static/images</code>下的所有图片都上传到七牛云，这样博客的外链就能访问出图片了。</p>
+<p>不过不跑似乎也没关系，在<code>hexo g</code>的时候似乎会自动帮你上传，挺贴心的。</p>
+<h2 id="小彩蛋"><a href="#小彩蛋" class="headerlink" title="小彩蛋"></a>小彩蛋</h2><h3 id="我大E了啊"><a href="#我大E了啊" class="headerlink" title="我大E了啊"></a>我大E了啊</h3><p>在配置的时候有一次跑<code>hexo g -d</code>的时候报错了，怎么改都改不好，心态差点崩了，差点要把整个博客重新弄一遍。</p>
+<p>这种情况的最好解决方法是一开始就用git维护整个仓库。最后我直接用<code>git reset</code>回滚到上次commit的时候，一切就又都回来了。我又继续无止境地配置下去了……</p>
+<h3 id="什么？DDL？"><a href="#什么？DDL？" class="headerlink" title="什么？DDL？"></a>什么？DDL？</h3><p>啊？什么？我今天没赶DDL？</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/WeChat_Image_20210108221702.jpg">
+<p>其实明天是数创大作业的deadline。。。</p>
+<p>放心，明天弄得完的。deadline是第一生产力。。。</p>
+<p>熬夜继续爆肝大作业，还不如早点休息。。。</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/84869490_p0.jpg">
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/as480133937/article/details/100138838">https://blog.csdn.net/as480133937/article/details/100138838</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/yexiaohhjk/article/details/82526604">https://blog.csdn.net/yexiaohhjk/article/details/82526604</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/34747279">https://zhuanlan.zhihu.com/p/34747279</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/70bf58c48010">https://www.jianshu.com/p/70bf58c48010</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/08/NNI-Student-Program-2020-Task2/" class="post-title-link" itemprop="url">NNI Student Program 2020-Task2</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-08 19:51:37" itemprop="dateCreated datePublished" datetime="2021-01-08T19:51:37+08:00">2021-01-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
+              </span>
+
+          
+            <span id="/2021/01/08/NNI-Student-Program-2020-Task2/" class="post-meta-item leancloud_visitors" data-flag-title="NNI Student Program 2020-Task2" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/01/08/NNI-Student-Program-2020-Task2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/08/NNI-Student-Program-2020-Task2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Task2-进阶任务-HPO-NAS"><a href="#Task2-进阶任务-HPO-NAS" class="headerlink" title="Task2 进阶任务 HPO+NAS"></a>Task2 进阶任务 HPO+NAS</h1><h2 id="Task-2-1"><a href="#Task-2-1" class="headerlink" title="Task 2.1"></a>Task 2.1</h2><h3 id="CIFAR10简介"><a href="#CIFAR10简介" class="headerlink" title="CIFAR10简介"></a>CIFAR10简介</h3><p>CIFAR10数据集共有60000张分辨率为32*32的彩色图像，分为十类，每类都有6000张图像。</p>
+<p>50000张图像构成训练集，10000张图像构成测试集。</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task2/1.png">
+
+<h3 id="实现流程"><a href="#实现流程" class="headerlink" title="实现流程"></a>实现流程</h3><p>我们使用PyTorch编写卷积神经网络来解决这项图像分类任务。</p>
+<p>大体流程如下：</p>
+<ol>
+<li>使用torchvision下载数据集，读取数据集</li>
+<li>定义解决该问题的卷积神经网络</li>
+<li>训练神经网络</li>
+<li>测试神经网络</li>
+</ol>
+<p>代码中的神经网络有两个卷积层：</p>
+<ol>
+<li>第一层，3个输入（RGB），6个输出。</li>
+<li>第二层，6个输入，16个输出。</li>
+</ol>
+<p>池化层通过<code>torch.nn.MaxPool2d</code>来创建。</p>
+<p>然后定义三个全连接函数：</p>
+<ol>
+<li>第一个，将16*5*5个节点连接至120个节点。</li>
+<li>第二个，将120个节点连接到84个节点。</li>
+<li>第三个，将84个节点连接到10个节点，即对应分类。</li>
+</ol>
+<p>激活函数全程使用Relu函数。</p>
+<p>误差函数使用交叉熵函数，优化方法使用SGD。</p>
+<h3 id="实验配置"><a href="#实验配置" class="headerlink" title="实验配置"></a>实验配置</h3><p>使用Anaconda环境下的Python3.8，使用PyCharm运行程序。</p>
+<p>设置程序不使用GPU，只用CPU完成训练。</p>
+<h3 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h3><p>我们利用了<code>torch.nn</code>模块定义了本任务的神经网络。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NeuralNet</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(NeuralNet, self).__init__()</span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">3</span>, <span class="number">6</span>, <span class="number">5</span>)</span><br><span class="line">        self.pool = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">        self.conv2 = nn.Conv2d(<span class="number">6</span>, <span class="number">16</span>, <span class="number">5</span>)</span><br><span class="line">        self.func1 = nn.Linear(<span class="number">16</span> * <span class="number">5</span> * <span class="number">5</span>, <span class="number">120</span>)</span><br><span class="line">        self.func2 = nn.Linear(<span class="number">120</span>, <span class="number">84</span>)</span><br><span class="line">        self.func3 = nn.Linear(<span class="number">84</span>, <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        x = self.pool(F.relu(self.conv1(x)))</span><br><span class="line">        x = self.pool(F.relu(self.conv2(x)))</span><br><span class="line">        x = x.view(-<span class="number">1</span>, <span class="number">16</span> * <span class="number">5</span> * <span class="number">5</span>) <span class="comment"># -1 means uncertain number</span></span><br><span class="line">        x = F.relu(self.func1(x))</span><br><span class="line">        x = F.relu(self.func2(x))</span><br><span class="line">        x = self.func3(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>而训练过程中，使用PyTorch的写法是这样的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">train</span>(<span class="params">trainloader, path</span>):</span></span><br><span class="line">    neuralnet = NeuralNet()</span><br><span class="line">    criterion = nn.CrossEntropyLoss()</span><br><span class="line">    optimizer = optim.SGD(neuralnet.parameters(), lr=<span class="number">0.001</span>, momentum=<span class="number">0.9</span>)</span><br><span class="line">    <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">        running_loss = <span class="number">0.0</span></span><br><span class="line">        <span class="keyword">for</span> i, data <span class="keyword">in</span> <span class="built_in">enumerate</span>(trainloader, <span class="number">0</span>):</span><br><span class="line">            inputs, labels = data</span><br><span class="line">            <span class="comment"># training template for PyTorch</span></span><br><span class="line">            optimizer.zero_grad()</span><br><span class="line">            outputs = neuralnet(inputs)</span><br><span class="line">            loss = criterion(outputs, labels)</span><br><span class="line">            loss.backward()</span><br><span class="line">            optimizer.step()</span><br><span class="line"></span><br><span class="line">            running_loss += loss.item()</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> i % <span class="number">2000</span> == <span class="number">1999</span>:</span><br><span class="line">                print(<span class="string">&#x27;[%5d, %5d] loss = %.5f&#x27;</span> % (epoch + <span class="number">1</span>, i + <span class="number">1</span>, running_loss / <span class="number">2000</span>))</span><br><span class="line">                running_loss = <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">    torch.save(neuralnet.state_dict(), path)</span><br><span class="line">    print(<span class="string">&#x27;Training Finished&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="结果分析"><a href="#结果分析" class="headerlink" title="结果分析"></a>结果分析</h3><p>经10个epoch的训练，最终输出结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\12058\anaconda3\python.exe C:&#x2F;Users&#x2F;12058&#x2F;Documents&#x2F;GitHub&#x2F;nni-learning&#x2F;task2&#x2F;2.1&#x2F;main.py</span><br><span class="line">[    1,  2000] loss &#x3D; 2.16590</span><br><span class="line">[    1,  4000] loss &#x3D; 1.82480</span><br><span class="line">[    1,  6000] loss &#x3D; 1.64638</span><br><span class="line">[    1,  8000] loss &#x3D; 1.56156</span><br><span class="line">[    1, 10000] loss &#x3D; 1.49378</span><br><span class="line">[    1, 12000] loss &#x3D; 1.46539</span><br><span class="line">[    2,  2000] loss &#x3D; 1.39108</span><br><span class="line">[    2,  4000] loss &#x3D; 1.38308</span><br><span class="line">[    2,  6000] loss &#x3D; 1.36254</span><br><span class="line">[    2,  8000] loss &#x3D; 1.30314</span><br><span class="line">[    2, 10000] loss &#x3D; 1.30563</span><br><span class="line">[    2, 12000] loss &#x3D; 1.26935</span><br><span class="line">[    3,  2000] loss &#x3D; 1.21411</span><br><span class="line">[    3,  4000] loss &#x3D; 1.21809</span><br><span class="line">[    3,  6000] loss &#x3D; 1.17786</span><br><span class="line">[    3,  8000] loss &#x3D; 1.18651</span><br><span class="line">[    3, 10000] loss &#x3D; 1.16956</span><br><span class="line">[    3, 12000] loss &#x3D; 1.16728</span><br><span class="line">[    4,  2000] loss &#x3D; 1.10504</span><br><span class="line">[    4,  4000] loss &#x3D; 1.11141</span><br><span class="line">[    4,  6000] loss &#x3D; 1.07836</span><br><span class="line">[    4,  8000] loss &#x3D; 1.10194</span><br><span class="line">[    4, 10000] loss &#x3D; 1.07333</span><br><span class="line">[    4, 12000] loss &#x3D; 1.06928</span><br><span class="line">[    5,  2000] loss &#x3D; 0.98897</span><br><span class="line">[    5,  4000] loss &#x3D; 1.01186</span><br><span class="line">[    5,  6000] loss &#x3D; 1.01296</span><br><span class="line">[    5,  8000] loss &#x3D; 1.01628</span><br><span class="line">[    5, 10000] loss &#x3D; 1.02610</span><br><span class="line">[    5, 12000] loss &#x3D; 1.03693</span><br><span class="line">[    6,  2000] loss &#x3D; 0.94843</span><br><span class="line">[    6,  4000] loss &#x3D; 0.94470</span><br><span class="line">[    6,  6000] loss &#x3D; 0.96298</span><br><span class="line">[    6,  8000] loss &#x3D; 0.96035</span><br><span class="line">[    6, 10000] loss &#x3D; 0.98843</span><br><span class="line">[    6, 12000] loss &#x3D; 0.96657</span><br><span class="line">[    7,  2000] loss &#x3D; 0.87795</span><br><span class="line">[    7,  4000] loss &#x3D; 0.90013</span><br><span class="line">[    7,  6000] loss &#x3D; 0.91402</span><br><span class="line">[    7,  8000] loss &#x3D; 0.94256</span><br><span class="line">[    7, 10000] loss &#x3D; 0.93912</span><br><span class="line">[    7, 12000] loss &#x3D; 0.91624</span><br><span class="line">[    8,  2000] loss &#x3D; 0.84444</span><br><span class="line">[    8,  4000] loss &#x3D; 0.85796</span><br><span class="line">[    8,  6000] loss &#x3D; 0.90461</span><br><span class="line">[    8,  8000] loss &#x3D; 0.89855</span><br><span class="line">[    8, 10000] loss &#x3D; 0.89341</span><br><span class="line">[    8, 12000] loss &#x3D; 0.89116</span><br><span class="line">[    9,  2000] loss &#x3D; 0.79060</span><br><span class="line">[    9,  4000] loss &#x3D; 0.83296</span><br><span class="line">[    9,  6000] loss &#x3D; 0.84468</span><br><span class="line">[    9,  8000] loss &#x3D; 0.85216</span><br><span class="line">[    9, 10000] loss &#x3D; 0.86738</span><br><span class="line">[    9, 12000] loss &#x3D; 0.87915</span><br><span class="line">[   10,  2000] loss &#x3D; 0.76653</span><br><span class="line">[   10,  4000] loss &#x3D; 0.80672</span><br><span class="line">[   10,  6000] loss &#x3D; 0.82791</span><br><span class="line">[   10,  8000] loss &#x3D; 0.80691</span><br><span class="line">[   10, 10000] loss &#x3D; 0.83649</span><br><span class="line">[   10, 12000] loss &#x3D; 0.84138</span><br><span class="line">Training Finished</span><br><span class="line">Accuracy of plane: 81.14%</span><br><span class="line">Accuracy of car: 92.10%</span><br><span class="line">Accuracy of bird: 74.58%</span><br><span class="line">Accuracy of cat: 47.94%</span><br><span class="line">Accuracy of deer: 65.08%</span><br><span class="line">Accuracy of dog: 61.28%</span><br><span class="line">Accuracy of frog: 71.88%</span><br><span class="line">Accuracy of horse: 73.24%</span><br><span class="line">Accuracy of ship: 86.18%</span><br><span class="line">Accuracy of truck: 66.52%</span><br><span class="line">Testing Finished</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>可以看出，损失值总体稳定下降，对车、飞机、船等图像分类准确率较高，而对猫、狗、卡车等图像的准确率较不理想。</p>
+<p>如何提高部分不理想的分类准确率？请看Task 2.2……</p>
+<h2 id="Task-2-2"><a href="#Task-2-2" class="headerlink" title="Task 2.2"></a>Task 2.2</h2><p>to be continued…</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/08/NNI-Student-Program-2020-Task1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/08/NNI-Student-Program-2020-Task1/" class="post-title-link" itemprop="url">NNI Student Program 2020 Task1</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-08 19:46:45" itemprop="dateCreated datePublished" datetime="2021-01-08T19:46:45+08:00">2021-01-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
+              </span>
+
+          
+            <span id="/2021/01/08/NNI-Student-Program-2020-Task1/" class="post-meta-item leancloud_visitors" data-flag-title="NNI Student Program 2020 Task1" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/01/08/NNI-Student-Program-2020-Task1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/08/NNI-Student-Program-2020-Task1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Task-1-入门任务"><a href="#Task-1-入门任务" class="headerlink" title="Task 1 入门任务"></a>Task 1 入门任务</h1><h2 id="NNI-体验文档"><a href="#NNI-体验文档" class="headerlink" title="NNI 体验文档"></a>NNI 体验文档</h2><h3 id="1-AutoML-工具比较"><a href="#1-AutoML-工具比较" class="headerlink" title="1. AutoML 工具比较"></a>1. AutoML 工具比较</h3><p>机器学习算法与模型的选择，对机器学习十分重要，一个成功的选择，能够成倍提高训练效率，从而提高模型准确度，减少损失，产生更大的效益。</p>
+<p>但算法与模型的选择并不简单。就算是数据科学家，也需要花费大量的时间用于尝试与权衡不同模型的优劣，最终才能得出理想的结果。超参的调参过程中也经常造成算力的浪费。</p>
+<p>自动机器学习（AutoML）是一套自动化的机器学习应用工具，旨在用自动化工具完成特征工程、自动调参等优化工作。</p>
+<p>当前，自动机器学习平台早已问世，下面介绍几个著名的AutoML工具，并列出优缺点，以供比较。</p>
+<h4 id="auto-sklearn"><a href="#auto-sklearn" class="headerlink" title="auto-sklearn"></a>auto-sklearn</h4><p>auto-sklearn是GitHub上开源的一个基于sklearn的自动机器学习工具，目前已获得5.1k个星。</p>
+<p>优点：可限制训练时间，支持切分训练集和测试集，支持交叉验证。</p>
+<p>缺点：输出信息较少，优化算法单一。</p>
+<h4 id="Google-Cloud-AutoML"><a href="#Google-Cloud-AutoML" class="headerlink" title="Google Cloud AutoML"></a>Google Cloud AutoML</h4><p>Google Cloud AutoML基于高精度的深度神经网络而设计，可用于图像分类、自然语言处理、语音翻译等。</p>
+<p>优点：具有较完整的谷歌ML生态链，Tensorflow+Colab+Cloud AutoML共同使用时非常方便。</p>
+<p>优点：具有完整图形界面，对新手用户友好，同时提供API调用，分类详尽。</p>
+<p>缺点：完整版需付费，访问需科学上网。</p>
+<h4 id="Microsoft-NNI"><a href="#Microsoft-NNI" class="headerlink" title="Microsoft NNI"></a>Microsoft NNI</h4><p>NNI(Neural Network Intelligence)是微软亚洲研究院开源的自动机器学习工具，面向研究人员和算法工程师而设计，2018年9月问世，目前已经更新至v1.9。</p>
+<p>优点：具有多平台支持，可命令行操作，支持结果可视化。内置优化算法多，扩展性强，支持远程调用进行集群训练。</p>
+<p>缺点：暂未发现</p>
+<p>更详细的对比：</p>
+<p><img data-src="https://www.msra.cn/wp-content/uploads/2019/12/nni-2.png" alt></p>
+<p>（摘自MSRA官网）</p>
+<h3 id="2-NNI-安装及使用"><a href="#2-NNI-安装及使用" class="headerlink" title="2. NNI 安装及使用"></a>2. NNI 安装及使用</h3><p>NNI的安装非常简单，只需一行命令即可安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pip install --upgrade nni</span><br></pre></td></tr></table></figure>
+<p>本人强烈推荐将nni安装在Anaconda的环境中，可通过在PyCharm中设置Python解释器，实现对NNI的调用。</p>
+<p>使用NNI，需要在原有神经网络代码的基础上做出些许修改：</p>
+<ol>
+<li>通过nni模块获得参数</li>
+<li>向nni报告中间结果</li>
+<li>向nni报告最终结果</li>
+</ol>
+<p>修改好代码并且准备好搜索空间和配置文件后，就可以通过一行命令开始使用NNI：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nnictl create --config your-config.yml</span><br></pre></td></tr></table></figure>
+<p>具体会在下述代码部分进行解释。</p>
+<h3 id="3-NNI-使用感受"><a href="#3-NNI-使用感受" class="headerlink" title="3. NNI 使用感受"></a>3. NNI 使用感受</h3><p>NNI易于安装，易于使用，有一套完善的命令行控制工具，也有结果可视化界面，对机器学习实验与研究提供了巨大的便利。</p>
+<p>本人大一，尚未接触过多机器学习知识，但通过在本地跑通多个样例后，能感受到NNI在机器学习方面的威力，希望未来能够掌握NNI，方便未来的研究与学习。</p>
+<h2 id="NNI-样例分析文档"><a href="#NNI-样例分析文档" class="headerlink" title="NNI 样例分析文档"></a>NNI 样例分析文档</h2><h3 id="配置文件：config-windows-yml"><a href="#配置文件：config-windows-yml" class="headerlink" title="配置文件：config_windows.yml"></a>配置文件：config_windows.yml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">authorName: default</span><br><span class="line">experimentName: example_mnist_pytorch</span><br><span class="line">trialConcurrency: 1</span><br><span class="line">maxExecDuration: 2h</span><br><span class="line">maxTrialNum: 10</span><br><span class="line">#choice: local, remote, pai</span><br><span class="line">trainingServicePlatform: local</span><br><span class="line">searchSpacePath: search_space.json</span><br><span class="line">#choice: true, false</span><br><span class="line">useAnnotation: false</span><br><span class="line">tuner:</span><br><span class="line">  #choice: TPE, Random, Anneal, Evolution, BatchTuner, MetisTuner, GPTuner</span><br><span class="line">  #SMAC (SMAC should be installed through nnictl)</span><br><span class="line">  builtinTunerName: TPE</span><br><span class="line">  classArgs:</span><br><span class="line">    #choice: maximize, minimize</span><br><span class="line">    optimize_mode: maximize</span><br><span class="line">trial:</span><br><span class="line">  command: python mnist.py</span><br><span class="line">  codeDir: .</span><br><span class="line">  gpuNum: 0</span><br></pre></td></tr></table></figure>
+<h3 id="搜索空间：search-space-json"><a href="#搜索空间：search-space-json" class="headerlink" title="搜索空间：search_space.json"></a>搜索空间：search_space.json</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;batch_size&quot;</span>: &#123;<span class="attr">&quot;_type&quot;</span>:<span class="string">&quot;choice&quot;</span>, <span class="attr">&quot;_value&quot;</span>: [<span class="number">16</span>, <span class="number">32</span>, <span class="number">64</span>, <span class="number">128</span>]&#125;,</span><br><span class="line">    <span class="attr">&quot;hidden_size&quot;</span>:&#123;<span class="attr">&quot;_type&quot;</span>:<span class="string">&quot;choice&quot;</span>,<span class="attr">&quot;_value&quot;</span>:[<span class="number">128</span>, <span class="number">256</span>, <span class="number">512</span>, <span class="number">1024</span>]&#125;,</span><br><span class="line">    <span class="attr">&quot;lr&quot;</span>:&#123;<span class="attr">&quot;_type&quot;</span>:<span class="string">&quot;choice&quot;</span>,<span class="attr">&quot;_value&quot;</span>:[<span class="number">0.0001</span>, <span class="number">0.001</span>, <span class="number">0.01</span>, <span class="number">0.1</span>]&#125;,</span><br><span class="line">    <span class="attr">&quot;momentum&quot;</span>:&#123;<span class="attr">&quot;_type&quot;</span>:<span class="string">&quot;uniform&quot;</span>,<span class="attr">&quot;_value&quot;</span>:[<span class="number">0</span>, <span class="number">1</span>]&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p>代码部分只需要在原有PyTorch代码上进行些许修改。</p>
+<ol>
+<li>参数选择无需在程序中给定，而是通过nni获得：<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tuner_params = nni.get_next_parameter()</span><br></pre></td></tr></table></figure></li>
+<li>在每个epoch学习完成后，报告中间结果：<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nni.report_intermediate_result(test_acc)</span><br></pre></td></tr></table></figure></li>
+<li>在训练完整结束后，报告最终结果：<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nni.report_final_result(test_acc)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h4><p>如图，10次trial都成功地完成，其中id为9的trial达到了最高准确率，达99.34%。</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/1.png">
+
+<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/4.png">
+
+<h4 id="超参组合可视化"><a href="#超参组合可视化" class="headerlink" title="超参组合可视化"></a>超参组合可视化</h4><img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/5.png">
+
+<p>图中，准确率更高的组合用红线表示，而准确率低的用绿线表示。</p>
+<p>可以看出，当batch_size选择16，lr和momentum大小适中时，模型可以达到99%以上的准确率，实验效果非常理想。</p>
+<h4 id="训练结果可视化"><a href="#训练结果可视化" class="headerlink" title="训练结果可视化"></a>训练结果可视化</h4><img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/3.png">
+
+<p>Default Metric</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/2.png">
+
+<p>Sorted Default Metric</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/6.png">
+
+<p>Trial Duration</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/7.png">
+
+<p>Intermediate Results</p>
+<hr>
+<p>Jan 23rd upd: 楼下的评论说的有道理，把评论搬上来……</p>
+<p>在跑NNI的时候，有时经常遇见任何一个trial跑几秒就失败的情况。</p>
+<p>顺着实验文件夹里面的<code>stderr</code>去看，原来报错是这个：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Error: mkl-service + Intel(R) MKL: MKL_THREADING_LAYER&#x3D;INTEL is incompatible with libgomp.so.1 library.</span><br><span class="line">    Try to import numpy first or set the threading layer accordingly. Set MKL_SERVICE_FORCE_INTEL to force it.</span><br></pre></td></tr></table></figure>
+<p>解决方法是按它所说的：在终端中设置下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">export</span> MKL_SERVICE_FORCE_INTEL=1</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+  </nav>
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Garen Wang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Garen Wang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Garen-Wang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Garen-Wang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:garen-wang@qq.com" title="E-Mail → mailto:garen-wang@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">粤ICP备2021003110号 </a>
+      <img src="/images/beian.png" style="display: inline-block;">
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Garen Wang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'wMExYSieDga8BTVjfcUnCRh1-gzGzoHsz',
+      appKey     : 'pYUGXalVN490u6EsT2HJA4Rj',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/theresa.model.json"},"display":{"position":"left","width":150,"height":300},"react":{"opacity":0.5}});</script></body>
+</html>

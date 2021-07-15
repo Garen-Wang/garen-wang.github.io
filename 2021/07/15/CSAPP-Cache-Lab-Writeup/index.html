@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Noto Serif SC:300,300italic,400,400italic,700,700italic|Fira Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"121.36.2.124","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前置知识Cache知识点概述一般来说，cache就是这样的结构：   来自CSAPP 3e Figure 6.25  首先看(a)图，这么一个cache里面有着$S&#x3D;2^s$个set，每个set里面又有$E$个line，而每一个line就是cache里面的基本组成单位。 一个line由三部分组成：  $B&#x3D;2^b$个byte用来存缓存下来的内容 $t$个bit用来记录当前line的tag $1$个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP Cache Lab Writeup">
+<meta property="og:url" content="https://121.36.2.124/2021/07/15/CSAPP-Cache-Lab-Writeup/index.html">
+<meta property="og:site_name" content="Garen Wang&#39;s Blog">
+<meta property="og:description" content="前置知识Cache知识点概述一般来说，cache就是这样的结构：   来自CSAPP 3e Figure 6.25  首先看(a)图，这么一个cache里面有着$S&#x3D;2^s$个set，每个set里面又有$E$个line，而每一个line就是cache里面的基本组成单位。 一个line由三部分组成：  $B&#x3D;2^b$个byte用来存缓存下来的内容 $t$个bit用来记录当前line的tag $1$个">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/CSAPP-Cache-Lab-Writeup/organization-of-cache.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/CSAPP-Cache-Lab-Writeup/miss-rate.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/CSAPP-Cache-Lab-Writeup/result-a.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/CSAPP-Cache-Lab-Writeup/result-b.png">
+<meta property="article:published_time" content="2021-07-15T08:04:52.000Z">
+<meta property="article:modified_time" content="2021-07-15T09:23:00.738Z">
+<meta property="article:author" content="Garen Wang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://qiniu.garen-wang.cn/static/images/CSAPP-Cache-Lab-Writeup/organization-of-cache.png">
+
+<link rel="canonical" href="https://121.36.2.124/2021/07/15/CSAPP-Cache-Lab-Writeup/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>CSAPP Cache Lab Writeup | Garen Wang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Garen Wang's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/07/15/CSAPP-Cache-Lab-Writeup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSAPP Cache Lab Writeup
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-07-15 16:04:52 / Modified: 17:23:00" itemprop="dateCreated datePublished" datetime="2021-07-15T16:04:52+08:00">2021-07-15</time>
+            </span>
+
+          
+            <span id="/2021/07/15/CSAPP-Cache-Lab-Writeup/" class="post-meta-item leancloud_visitors" data-flag-title="CSAPP Cache Lab Writeup" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/07/15/CSAPP-Cache-Lab-Writeup/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/15/CSAPP-Cache-Lab-Writeup/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><h2 id="Cache知识点概述"><a href="#Cache知识点概述" class="headerlink" title="Cache知识点概述"></a>Cache知识点概述</h2><p>一般来说，cache就是这样的结构：</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Cache-Lab-Writeup/organization-of-cache.png">
+<blockquote>
+<p>来自CSAPP 3e Figure 6.25</p>
+</blockquote>
+<p>首先看(a)图，这么一个cache里面有着$S=2^s$个set，每个set里面又有$E$个line，而每一个line就是cache里面的基本组成单位。</p>
+<p>一个line由三部分组成：</p>
+<ul>
+<li>$B=2^b$个byte用来存缓存下来的内容</li>
+<li>$t$个bit用来记录当前line的tag</li>
+<li>$1$个bit用来表示当前line是valid的还是invalid的</li>
+</ul>
+<p>可见，cache能存储内容的量并不等同于实际所占的大小，它的size为$S \times E \times B$ bytes。</p>
+<p>cache这样的结构就支持了用一个$m$位的地址去定位访问cache，如图(b)。当已知cache的地址，我们可以尝试从cache里面访问内容，流程如下：</p>
+<ol>
+<li>通过set index确定所在的set。</li>
+<li>找出tag与之相等的line。</li>
+<li>断言valid位不为0。</li>
+<li>block offset代表starting byte，retrieve从这个byte开始的内容。</li>
+</ol>
+<p>当一次访问值的操作中恰好可以从cache里面找到而不用下放到访问内存，那么称为一次hit。当在cache里面找不到，称为一次miss。</p>
+<p>在cache里面找不到值的miss发生时，这个值会被添加进cache当中，如果必须把某个cache line覆盖掉，那么这个过程称为eviction。</p>
+<p>在评估缓存友好度的时候，一般我们看miss rate，miss发生得越多，miss penalty所占总时间就越多，运行速度就较慢。miss penalty的要比hit大两个数量级左右。</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Cache-Lab-Writeup/miss-rate.png">
+<p>要做到缓存友好，我们需要贯彻temporal locality（时间局部性）和spatial locality（空间局部性），比如步长为1的访问数组有很强的spatial locality，经常访问一个变量且尽量减少被evict的可能性有较好的temporal locality。</p>
+<h2 id="做前必看"><a href="#做前必看" class="headerlink" title="做前必看"></a>做前必看</h2><p>做之前先看看<a target="_blank" rel="noopener" href="http://www.cs.cmu.edu/afs/cs/academic/class/15213-f15/www/recitations/rec07.pdf">实验指导</a>，大体思路都在里面。</p>
+<p>然后再了解一下<a target="_blank" rel="noopener" href="http://csapp.cs.cmu.edu/public/waside/waside-blocking.pdf">blocking</a>的知识，这个方法会在Part B中用到。</p>
+<h2 id="Part-A-Building-Cache-Simulator"><a href="#Part-A-Building-Cache-Simulator" class="headerlink" title="Part A: Building Cache Simulator"></a>Part A: Building Cache Simulator</h2><p>Part A比较简单，需要你去模拟一个简化版的cache。</p>
+<p>简化版代表不需要考虑b位的储存内容，eviction的策略选择Least Recently Used(LRU)原则，把最不常访问的元素顶替掉。</p>
+<p>只需要修改<code>csim.c</code>，最终输出hit、miss跟eviction的次数。</p>
+<p>具体思路recitation都有，直接贴代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;getopt.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;math.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;cachelab.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> verbose; <span class="comment">// 0 means disable, 1 means enable</span></span><br><span class="line"><span class="keyword">int</span> s; <span class="comment">// number of set index bits</span></span><br><span class="line"><span class="keyword">int</span> S; <span class="comment">// number of sets</span></span><br><span class="line"><span class="keyword">int</span> E; <span class="comment">// associativity</span></span><br><span class="line"><span class="keyword">int</span> b; <span class="comment">// number of block bits</span></span><br><span class="line"><span class="keyword">char</span> traceFile[<span class="number">105</span>]; <span class="comment">// name of the `valgrind` trace to replay</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> hit, miss, eviction; <span class="comment">// final answers</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">printUsageInfo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Usage: ./csim-ref [-hv] -s &lt;s&gt; -E &lt;E&gt; -b &lt;b&gt; -t &lt;tracefile&gt;\n&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;    -h: Optional help flag that prints usage info\n&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;    -v: Optional verbose flag that displays trace info\n&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;    -s &lt;s&gt;: Number of set index bits (S = 2s is the number of sets)\n&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;    -E &lt;E&gt;: Associativity (number of lines per set)\n&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;    -b &lt;b&gt;: Number of block bits (B = 2b is the block size)\n&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;    -t &lt;tracefile&gt;: Name of the valgrind trace to replay\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">parseArguments</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> opt;</span><br><span class="line">    <span class="keyword">while</span> ((opt = getopt(argc, argv, <span class="string">&quot;hvs:E:b:t:&quot;</span>)) != <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="keyword">switch</span> (opt) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;h&#x27;</span>:</span><br><span class="line">                printUsageInfo();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;v&#x27;</span>:</span><br><span class="line">                verbose = <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;s&#x27;</span>:</span><br><span class="line">                s = atoi(optarg);</span><br><span class="line">                S = (<span class="number">1</span> &lt;&lt; s);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;E&#x27;</span>:</span><br><span class="line">                E = atoi(optarg);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;b&#x27;</span>:</span><br><span class="line">                b = atoi(optarg);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;t&#x27;</span>:</span><br><span class="line">                <span class="built_in">strncpy</span>(traceFile, optarg, <span class="number">105</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;Unknown format. Please make sure it is valid.\n&quot;</span>);</span><br><span class="line">                printUsageInfo();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> valid;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> tag;</span><br><span class="line">    <span class="keyword">int</span> timestamp;</span><br><span class="line">&#125; CacheLine;</span><br><span class="line"></span><br><span class="line">CacheLine **cacheTable;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">buildCache</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// CacheLine **cacheTable;</span></span><br><span class="line">    cacheTable = <span class="built_in">malloc</span>(S * <span class="keyword">sizeof</span>(CacheLine*));</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; S; ++i) &#123;</span><br><span class="line">        cacheTable[i] = <span class="built_in">malloc</span>(E * <span class="keyword">sizeof</span>(CacheLine));</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; E; ++j) &#123;</span><br><span class="line">            cacheTable[i][j].valid = <span class="number">0</span>;</span><br><span class="line">            cacheTable[i][j].tag = <span class="number">0xffffffff</span>; <span class="comment">// initially an impossible value</span></span><br><span class="line">            cacheTable[i][j].timestamp = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">freeCache</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; S; ++i) &#123;</span><br><span class="line">        <span class="built_in">free</span>(cacheTable[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">free</span>(cacheTable);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">timeAdvance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; S; ++i) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; E; ++j) &#123;</span><br><span class="line">            <span class="keyword">if</span> (cacheTable[i][j].valid) &#123;</span><br><span class="line">                cacheTable[i][j].timestamp++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">getCache</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> addr, <span class="keyword">int</span> size)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> s_bits = ((addr &gt;&gt; b) &amp; ((<span class="number">1</span> &lt;&lt; s) - <span class="number">1</span>));</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> t_bits = (addr &gt;&gt; (s + b));</span><br><span class="line">    <span class="comment">// printf(&quot;[debug] t_bits = %u\n&quot;, t_bits);</span></span><br><span class="line">    <span class="comment">// if the corresponding cache can be found</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; E; ++i) &#123;</span><br><span class="line">        CacheLine *cacheLine = &amp;cacheTable[s_bits][i];</span><br><span class="line">        <span class="comment">// printf(&quot;[debug] tag = %u\n&quot;, cacheLine-&gt;tag);</span></span><br><span class="line">        <span class="keyword">if</span> (cacheLine-&gt;tag == t_bits) &#123;</span><br><span class="line">            hit++;</span><br><span class="line">            cacheLine-&gt;timestamp = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span> (verbose) <span class="built_in">printf</span>(<span class="string">&quot;hit&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// if we can fill the cache into a null cache line</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; E; ++i) &#123;</span><br><span class="line">        CacheLine *cacheLine = &amp;cacheTable[s_bits][i];</span><br><span class="line">        <span class="comment">// printf(&quot;[debug] %u\n&quot;, cacheLine.tag);</span></span><br><span class="line">        <span class="keyword">if</span> (!cacheLine-&gt;valid) &#123;</span><br><span class="line">            <span class="comment">// printf(&quot;[debug] fill in invalid\n&quot;);</span></span><br><span class="line">            cacheLine-&gt;valid = <span class="number">1</span>;</span><br><span class="line">            cacheLine-&gt;timestamp = <span class="number">0</span>;</span><br><span class="line">            cacheLine-&gt;tag = t_bits;</span><br><span class="line">            miss++;</span><br><span class="line">            <span class="keyword">if</span> (verbose) <span class="built_in">printf</span>(<span class="string">&quot;miss&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// otherwise, find the target to be substituted according to LRU</span></span><br><span class="line">    <span class="comment">// LRU: Least Recently Used, due to the inverse of locality</span></span><br><span class="line">    <span class="keyword">int</span> idx = <span class="number">0</span>, max_time_interval = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; E; ++i) &#123;</span><br><span class="line">        <span class="keyword">int</span> time_diff = cacheTable[s_bits][i].timestamp;</span><br><span class="line">        <span class="keyword">if</span> (time_diff &gt; max_time_interval) &#123;</span><br><span class="line">            max_time_interval = time_diff;</span><br><span class="line">            idx = i;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    eviction++;</span><br><span class="line">    miss++;</span><br><span class="line">    cacheTable[s_bits][idx].tag = t_bits;</span><br><span class="line">    cacheTable[s_bits][idx].timestamp = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (verbose) <span class="built_in">printf</span>(<span class="string">&quot;miss eviction&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">solve</span><span class="params">(<span class="keyword">char</span> op, <span class="keyword">unsigned</span> <span class="keyword">int</span> addr, <span class="keyword">int</span> size)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (verbose) <span class="built_in">printf</span>(<span class="string">&quot;%c %x,%d &quot;</span>, op, addr, size);</span><br><span class="line">    <span class="keyword">switch</span> (op) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&#x27;L&#x27;</span>: <span class="comment">// load</span></span><br><span class="line">            getCache(addr, size);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&#x27;S&#x27;</span>: <span class="comment">// store</span></span><br><span class="line">            getCache(addr, size);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&#x27;M&#x27;</span>: <span class="comment">// load + store</span></span><br><span class="line">            getCache(addr, size);</span><br><span class="line">            <span class="keyword">if</span> (verbose) <span class="built_in">printf</span>(<span class="string">&quot; &quot;</span>);</span><br><span class="line">            getCache(addr, size);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&#x27;I&#x27;</span>: <span class="comment">// instruction load, ignored</span></span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (verbose) <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">readTraceFile</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    FILE *file = fopen(traceFile, <span class="string">&quot;r&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (file == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Exception: cannot find tracefile.\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">char</span> op;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> addr;</span><br><span class="line">    <span class="keyword">int</span> size;</span><br><span class="line">    <span class="keyword">while</span> (<span class="built_in">fscanf</span>(file, <span class="string">&quot; %c %x,%d&quot;</span>, &amp;op, &amp;addr, &amp;size) != EOF) &#123;</span><br><span class="line">        <span class="comment">// printf(&quot;%c %x %u\n&quot;, op, addr, size);</span></span><br><span class="line">        solve(op, addr, size);</span><br><span class="line">        timeAdvance();</span><br><span class="line">    &#125;</span><br><span class="line">    fclose(file);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    parseArguments(argc, argv);</span><br><span class="line">    buildCache();</span><br><span class="line">    readTraceFile();</span><br><span class="line">    freeCache();</span><br><span class="line">    printSummary(hit, miss, eviction);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Cache-Lab-Writeup/result-a.png">
+<h2 id="Part-B-Efficient-Matrix-Transpose"><a href="#Part-B-Efficient-Matrix-Transpose" class="headerlink" title="Part B: Efficient Matrix Transpose"></a>Part B: Efficient Matrix Transpose</h2><p>这个部分是重头戏。这个部分要求你完成一个矩阵转置的函数，需要满足在不同size下miss次数不高于一定次数，即尽可能降低miss rate。</p>
+<p>在这一个part中，$s=5, E=1, b=5$，即我们考虑cache是一个包含32个set，每个set存32个byte的direct-mapped cache。</p>
+<p>这篇博客写得非常非常详细，可以直接看 <a target="_blank" rel="noopener" href="https://yangtau.me/computer-system/csapp-cache.html">https://yangtau.me/computer-system/csapp-cache.html</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> transpose_submit_desc[] = <span class="string">&quot;Transpose submission&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">transpose_submit</span><span class="params">(<span class="keyword">int</span> M, <span class="keyword">int</span> N, <span class="keyword">int</span> A[N][M], <span class="keyword">int</span> B[M][N])</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (M == <span class="number">32</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">int</span> block_size = <span class="number">8</span>;</span><br><span class="line">        <span class="comment">// 1. normal blocking: 344 misses</span></span><br><span class="line">        <span class="comment">// int i = 0, j = 0, ii, jj, tmp;</span></span><br><span class="line">        <span class="comment">// for (i = 0; i &lt; N; i += block_size) &#123;</span></span><br><span class="line">        <span class="comment">//     for (j = 0; j &lt; M; j += block_size) &#123;</span></span><br><span class="line">        <span class="comment">//         for (ii = i; ii &lt; i + block_size &amp;&amp; ii &lt; N; ++ii) &#123;</span></span><br><span class="line">        <span class="comment">//             for (jj = j; jj &lt; j + block_size &amp;&amp; jj &lt; M; ++jj) &#123;</span></span><br><span class="line">        <span class="comment">//                 tmp = A[ii][jj];</span></span><br><span class="line">        <span class="comment">//                 B[jj][ii] = tmp;</span></span><br><span class="line">        <span class="comment">//             &#125;</span></span><br><span class="line">        <span class="comment">//         &#125;</span></span><br><span class="line">        <span class="comment">//     &#125;</span></span><br><span class="line">        <span class="comment">// &#125;</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 2. use local variables: 288 misses</span></span><br><span class="line">        <span class="comment">// int i, j, k, a0, a1, a2, a3, a4, a5, a6, a7;</span></span><br><span class="line">        <span class="comment">// for (i = 0; i &lt; M; i += block_size) &#123;</span></span><br><span class="line">        <span class="comment">//     for (j = 0; j &lt; N; j += block_size) &#123;</span></span><br><span class="line">        <span class="comment">//         for (k = 0; k &lt; block_size; ++k) &#123;</span></span><br><span class="line">        <span class="comment">//             a0 = A[i + k][j + 0];</span></span><br><span class="line">        <span class="comment">//             a1 = A[i + k][j + 1];</span></span><br><span class="line">        <span class="comment">//             a2 = A[i + k][j + 2];</span></span><br><span class="line">        <span class="comment">//             a3 = A[i + k][j + 3];</span></span><br><span class="line">        <span class="comment">//             a4 = A[i + k][j + 4];</span></span><br><span class="line">        <span class="comment">//             a5 = A[i + k][j + 5];</span></span><br><span class="line">        <span class="comment">//             a6 = A[i + k][j + 6];</span></span><br><span class="line">        <span class="comment">//             a7 = A[i + k][j + 7];</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//             B[j + 0][i + k] = a0;</span></span><br><span class="line">        <span class="comment">//             B[j + 1][i + k] = a1;</span></span><br><span class="line">        <span class="comment">//             B[j + 2][i + k] = a2;</span></span><br><span class="line">        <span class="comment">//             B[j + 3][i + k] = a3;</span></span><br><span class="line">        <span class="comment">//             B[j + 4][i + k] = a4;</span></span><br><span class="line">        <span class="comment">//             B[j + 5][i + k] = a5;</span></span><br><span class="line">        <span class="comment">//             B[j + 6][i + k] = a6;</span></span><br><span class="line">        <span class="comment">//             B[j + 7][i + k] = a7;</span></span><br><span class="line">        <span class="comment">//         &#125;</span></span><br><span class="line">        <span class="comment">//     &#125;</span></span><br><span class="line">        <span class="comment">// &#125;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3. copy then transpose: 260 misses</span></span><br><span class="line">        <span class="keyword">int</span> i, j, ii, jj, a0, a1, a2, a3, a4, a5, a6, a7;</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; N; i += block_size) &#123;</span><br><span class="line">            <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; M; j += block_size) &#123;</span><br><span class="line">                <span class="keyword">for</span> (ii = i, jj = j; ii &lt; i + block_size; ++ii, ++jj) &#123;</span><br><span class="line">                    a0 = A[ii][j + <span class="number">0</span>];</span><br><span class="line">                    a1 = A[ii][j + <span class="number">1</span>];</span><br><span class="line">                    a2 = A[ii][j + <span class="number">2</span>];</span><br><span class="line">                    a3 = A[ii][j + <span class="number">3</span>];</span><br><span class="line">                    a4 = A[ii][j + <span class="number">4</span>];</span><br><span class="line">                    a5 = A[ii][j + <span class="number">5</span>];</span><br><span class="line">                    a6 = A[ii][j + <span class="number">6</span>];</span><br><span class="line">                    a7 = A[ii][j + <span class="number">7</span>];</span><br><span class="line"></span><br><span class="line">                    B[jj][i + <span class="number">0</span>] = a0;</span><br><span class="line">                    B[jj][i + <span class="number">1</span>] = a1;</span><br><span class="line">                    B[jj][i + <span class="number">2</span>] = a2;</span><br><span class="line">                    B[jj][i + <span class="number">3</span>] = a3;</span><br><span class="line">                    B[jj][i + <span class="number">4</span>] = a4;</span><br><span class="line">                    B[jj][i + <span class="number">5</span>] = a5;</span><br><span class="line">                    B[jj][i + <span class="number">6</span>] = a6;</span><br><span class="line">                    B[jj][i + <span class="number">7</span>] = a7;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (ii = <span class="number">0</span>; ii &lt; block_size; ++ii) &#123;</span><br><span class="line">                    <span class="keyword">for</span> (jj = ii + <span class="number">1</span>; jj &lt; block_size; ++jj) &#123;</span><br><span class="line">                        a0 = B[j + ii][i + jj];</span><br><span class="line">                        B[j + ii][i + jj] = B[j + jj][i + ii];</span><br><span class="line">                        B[j + jj][i + ii] = a0;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (M == <span class="number">64</span>) &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">int</span> i, j, k, a0, a1, a2, a3, a4, a5, a6, a7, tmp;</span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">int</span> block_size = <span class="number">8</span>;</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; M; i += block_size) &#123;</span><br><span class="line">            <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; N; j += block_size) &#123;</span><br><span class="line">                <span class="keyword">for</span> (k = <span class="number">0</span>; k &lt; block_size / <span class="number">2</span>; ++k) &#123;</span><br><span class="line">                    a0 = A[i + k][j + <span class="number">0</span>];</span><br><span class="line">                    a1 = A[i + k][j + <span class="number">1</span>];</span><br><span class="line">                    a2 = A[i + k][j + <span class="number">2</span>];</span><br><span class="line">                    a3 = A[i + k][j + <span class="number">3</span>];</span><br><span class="line">                    a4 = A[i + k][j + <span class="number">4</span>];</span><br><span class="line">                    a5 = A[i + k][j + <span class="number">5</span>];</span><br><span class="line">                    a6 = A[i + k][j + <span class="number">6</span>];</span><br><span class="line">                    a7 = A[i + k][j + <span class="number">7</span>];</span><br><span class="line"></span><br><span class="line">                    B[j + <span class="number">0</span>][i + k] = a0;</span><br><span class="line">                    B[j + <span class="number">1</span>][i + k] = a1;</span><br><span class="line">                    B[j + <span class="number">2</span>][i + k] = a2;</span><br><span class="line">                    B[j + <span class="number">3</span>][i + k] = a3;</span><br><span class="line"></span><br><span class="line">                    B[j + <span class="number">0</span>][i + k + <span class="number">4</span>] = a4;</span><br><span class="line">                    B[j + <span class="number">1</span>][i + k + <span class="number">4</span>] = a5;</span><br><span class="line">                    B[j + <span class="number">2</span>][i + k + <span class="number">4</span>] = a6;</span><br><span class="line">                    B[j + <span class="number">3</span>][i + k + <span class="number">4</span>] = a7;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">for</span> (k = <span class="number">0</span>; k &lt; block_size / <span class="number">2</span>; ++k) &#123;</span><br><span class="line">                    a0 = A[i + <span class="number">4</span>][j + k];</span><br><span class="line">                    a1 = A[i + <span class="number">5</span>][j + k];</span><br><span class="line">                    a2 = A[i + <span class="number">6</span>][j + k];</span><br><span class="line">                    a3 = A[i + <span class="number">7</span>][j + k];</span><br><span class="line">                    a4 = A[i + <span class="number">4</span>][j + k + <span class="number">4</span>];</span><br><span class="line">                    a5 = A[i + <span class="number">5</span>][j + k + <span class="number">4</span>];</span><br><span class="line">                    a6 = A[i + <span class="number">6</span>][j + k + <span class="number">4</span>];</span><br><span class="line">                    a7 = A[i + <span class="number">7</span>][j + k + <span class="number">4</span>];</span><br><span class="line"></span><br><span class="line">                    tmp = B[j + k][i + <span class="number">4</span>]; B[j + k][i + <span class="number">4</span>] = a0; a0 = tmp;</span><br><span class="line">                    tmp = B[j + k][i + <span class="number">5</span>]; B[j + k][i + <span class="number">5</span>] = a1; a1 = tmp;</span><br><span class="line">                    tmp = B[j + k][i + <span class="number">6</span>]; B[j + k][i + <span class="number">6</span>] = a2; a2 = tmp;</span><br><span class="line">                    tmp = B[j + k][i + <span class="number">7</span>]; B[j + k][i + <span class="number">7</span>] = a3; a3 = tmp;</span><br><span class="line"></span><br><span class="line">                    B[j + k + <span class="number">4</span>][i + <span class="number">0</span>] = a0;</span><br><span class="line">                    B[j + k + <span class="number">4</span>][i + <span class="number">1</span>] = a1;</span><br><span class="line">                    B[j + k + <span class="number">4</span>][i + <span class="number">2</span>] = a2;</span><br><span class="line">                    B[j + k + <span class="number">4</span>][i + <span class="number">3</span>] = a3;</span><br><span class="line">                    B[j + k + <span class="number">4</span>][i + <span class="number">4</span>] = a4;</span><br><span class="line">                    B[j + k + <span class="number">4</span>][i + <span class="number">5</span>] = a5;</span><br><span class="line">                    B[j + k + <span class="number">4</span>][i + <span class="number">6</span>] = a6;</span><br><span class="line">                    B[j + k + <span class="number">4</span>][i + <span class="number">7</span>] = a7;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 61 * 67, 1793 misses</span></span><br><span class="line">        <span class="keyword">int</span> i, j, k, l, a0, a1, a2, a3, a4, a5, a6, a7;</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; N; i += <span class="number">8</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; M; j += <span class="number">8</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (i + <span class="number">7</span> &lt; N &amp;&amp; j + <span class="number">7</span> &lt; M) &#123;</span><br><span class="line">                    <span class="comment">// bad</span></span><br><span class="line">                    <span class="comment">// for (k = i; k &lt; i + 8; ++k) &#123;</span></span><br><span class="line">                    <span class="comment">//     a0 = A[k][j + 0];</span></span><br><span class="line">                    <span class="comment">//     a1 = A[k][j + 1];</span></span><br><span class="line">                    <span class="comment">//     a2 = A[k][j + 2];</span></span><br><span class="line">                    <span class="comment">//     a3 = A[k][j + 3];</span></span><br><span class="line">                    <span class="comment">//     a4 = A[k][j + 4];</span></span><br><span class="line">                    <span class="comment">//     a5 = A[k][j + 5];</span></span><br><span class="line">                    <span class="comment">//     a6 = A[k][j + 6];</span></span><br><span class="line">                    <span class="comment">//     a7 = A[k][j + 7];</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">//     B[j + 0][k] = a0;</span></span><br><span class="line">                    <span class="comment">//     B[j + 1][k] = a1;</span></span><br><span class="line">                    <span class="comment">//     B[j + 2][k] = a2;</span></span><br><span class="line">                    <span class="comment">//     B[j + 3][k] = a3;</span></span><br><span class="line">                    <span class="comment">//     B[j + 4][k] = a4;</span></span><br><span class="line">                    <span class="comment">//     B[j + 5][k] = a5;</span></span><br><span class="line">                    <span class="comment">//     B[j + 6][k] = a6;</span></span><br><span class="line">                    <span class="comment">//     B[j + 7][k] = a7;</span></span><br><span class="line">                    <span class="comment">// &#125;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// good</span></span><br><span class="line">                </span><br><span class="line">                    <span class="keyword">for</span> (k = j; k &lt; j + <span class="number">8</span>; ++k) &#123;</span><br><span class="line">                        a0 = A[i + <span class="number">0</span>][k];</span><br><span class="line">                        a1 = A[i + <span class="number">1</span>][k];</span><br><span class="line">                        a2 = A[i + <span class="number">2</span>][k];</span><br><span class="line">                        a3 = A[i + <span class="number">3</span>][k];</span><br><span class="line">                        a4 = A[i + <span class="number">4</span>][k];</span><br><span class="line">                        a5 = A[i + <span class="number">5</span>][k];</span><br><span class="line">                        a6 = A[i + <span class="number">6</span>][k];</span><br><span class="line">                        a7 = A[i + <span class="number">7</span>][k];</span><br><span class="line"></span><br><span class="line">                        B[k][i + <span class="number">0</span>] = a0;</span><br><span class="line">                        B[k][i + <span class="number">1</span>] = a1;</span><br><span class="line">                        B[k][i + <span class="number">2</span>] = a2;</span><br><span class="line">                        B[k][i + <span class="number">3</span>] = a3;</span><br><span class="line">                        B[k][i + <span class="number">4</span>] = a4;</span><br><span class="line">                        B[k][i + <span class="number">5</span>] = a5;</span><br><span class="line">                        B[k][i + <span class="number">6</span>] = a6;</span><br><span class="line">                        B[k][i + <span class="number">7</span>] = a7;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">for</span> (k = i; k &lt; N &amp;&amp; k &lt; i + <span class="number">8</span>; ++k) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (l = j; l &lt; M &amp;&amp; l &lt; j + <span class="number">8</span>; ++l) &#123;</span><br><span class="line">                            B[l][k] = A[k][l];</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Cache-Lab-Writeup/result-b.png">
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/11/PHP-Language-Features-Summary/" rel="prev" title="PHP Language Features Summary">
+      <i class="fa fa-chevron-left"></i> PHP Language Features Summary
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">前置知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cache%E7%9F%A5%E8%AF%86%E7%82%B9%E6%A6%82%E8%BF%B0"><span class="nav-number">2.</span> <span class="nav-text">Cache知识点概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%81%9A%E5%89%8D%E5%BF%85%E7%9C%8B"><span class="nav-number">3.</span> <span class="nav-text">做前必看</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Part-A-Building-Cache-Simulator"><span class="nav-number">4.</span> <span class="nav-text">Part A: Building Cache Simulator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Part-B-Efficient-Matrix-Transpose"><span class="nav-number">5.</span> <span class="nav-text">Part B: Efficient Matrix Transpose</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Garen Wang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Garen Wang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Garen-Wang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Garen-Wang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:garen-wang@qq.com" title="E-Mail → mailto:garen-wang@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">粤ICP备2021003110号 </a>
+      <img src="/images/beian.png" style="display: inline-block;">
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Garen Wang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'wMExYSieDga8BTVjfcUnCRh1-gzGzoHsz',
+      appKey     : 'pYUGXalVN490u6EsT2HJA4Rj',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/theresa.model.json"},"display":{"position":"left","width":150,"height":300},"react":{"opacity":0.5}});</script></body>
+</html>
