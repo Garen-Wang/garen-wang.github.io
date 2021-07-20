@@ -179,6 +179,133 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/07/20/CSAPP-Shell-Lab-Writeup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/20/CSAPP-Shell-Lab-Writeup/" class="post-title-link" itemprop="url">CSAPP Shell Lab Writeup</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-07-20 17:09:19 / Modified: 20:40:17" itemprop="dateCreated datePublished" datetime="2021-07-20T17:09:19+08:00">2021-07-20</time>
+            </span>
+
+          
+            <span id="/2021/07/20/CSAPP-Shell-Lab-Writeup/" class="post-meta-item leancloud_visitors" data-flag-title="CSAPP Shell Lab Writeup" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/07/20/CSAPP-Shell-Lab-Writeup/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/20/CSAPP-Shell-Lab-Writeup/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Prerequisites"><a href="#Prerequisites" class="headerlink" title="Prerequisites"></a>Prerequisites</h2><h3 id="Signal"><a href="#Signal" class="headerlink" title="Signal"></a>Signal</h3><p>Signal是一种内核与进程之间交互的信息。诸如熟悉的Ctrl+C、Ctrl+Z等终止程序或休眠程序的实质都是发送相应的signal。Signal是异常控制流的其中一种，可以在本地异步运行。</p>
+<p>贴一些可能见得多的signal：</p>
+<ul>
+<li><code>SIGABRT</code>: abort</li>
+<li><code>SIGFPE</code>: floating point exception</li>
+<li><code>SIGINT</code>: interrupt (when pressing <code>Ctrl+C</code>)</li>
+<li><code>SIGSEGV</code>: segment violation (a.k.a. segment fault)</li>
+<li><code>SIGTSTP</code>: stopped (when pressing <code>Ctrl+Z</code>)</li>
+<li><code>SIGCHLD</code>: Terminated or stopped child</li>
+</ul>
+<h3 id="Relative-C-Functions"><a href="#Relative-C-Functions" class="headerlink" title="Relative C Functions"></a>Relative C Functions</h3><p>在命令行里面，如果要给一个进程（或进程组）添加信号，可以用<code>kill</code>。<code>kill</code>并不只是用来杀进程的，实际上是添加信号。</p>
+<p>在C里面也有一个叫<code>kill</code>的函数，需要指定pid和信号，用法大体类似。这就是我们可以用C写shell的原因之一。</p>
+<blockquote>
+<p><code>kill</code>可以作用于一个进程上，也可以作用于一整个进程组上，具体区别在pid的值：</p>
+<ul>
+<li>当pid为正，则作用于单个进程</li>
+<li>当pid为负，则作用于这个进程所在的进程组</li>
+</ul>
+</blockquote>
+<p>相信见过像Vim等的一些按Ctrl+C退不出的程序，之所以退不出不是因为<code>SIGINT</code>无法发出，而是因为signal的handler是可以由我们来自定义的。</p>
+<p>在C里面，我们可以通过调用<code>signal</code>函数，install一个signal的handler，覆盖原有的默认handler。signal大多数都能覆盖，除了<code>SIGKILL</code>跟<code>SIGSTOP</code>等。</p>
+<p>signal handler需要自己去声明定义一个函数，可以形象地理解成比较底层的try-catch，catch相应的signal，执行handler里面的内容。</p>
+<p>如果想要写shell，相信需要在程序里面创建进程，执行命令等等。相应的C函数也介绍一下：</p>
+<ul>
+<li><code>int fork()</code>: create a new process (child process). called once, return twice. return 0 in child process, return pid in parent process.</li>
+<li><code>int execve(argv[0], argv, environ)</code>: load and run another program. called once, never return(if sucessfully executed).</li>
+<li><code>void exit(int status)</code>: terminate the current process with status. Then it becomes a zombie process, waiting to be reaped by its parent.</li>
+</ul>
+<p>如果我们fork了一次，父子两个进程的执行速度是无法确定的，有时儿子快有时儿子慢，这就导致了一次运行的结果可能不同。形象地，我们可以理解成在这种无约束的异步进程中，进程之间会相互比赛，竞争运行速度<del>（卷起来了）</del>，我们称这种现象为race。</p>
+<p>如果不想出现这种情况，需要显式地叫其中一个进程去等其他的进程，这种操作可以用<code>waitpid</code>来完成。</p>
+<p>signal可以被屏蔽，即可以选择block掉指定类型的signal，以确保race不会在其中发生。分析可能发生的race是最复杂的部分。</p>
+<h2 id="Lab"><a href="#Lab" class="headerlink" title="Lab"></a>Lab</h2><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>在这个lab里面我们需要实现一个小型的shell，名叫tsh（tiny shell），因为不用实现现代shell的功能，所以功能确实很朴素。</p>
+<p>实验需要我们写的只有<code>tsh.c</code>一个文件，需要你定义若干个已经声明的函数。</p>
+<p>在<code>tsh.c</code>中也温馨地提供了几个helper functions。</p>
+<p>用户运行了shell之后，会在<code>stdin</code>等待用户的输入。用户的输入以空格为分隔，第一个称为name，后面则为参数。</p>
+<p>如果name是built-in command，则直接在前台运行，运行完直接等待下一个输入。</p>
+<p>如果name是一个binary executable，则新开一个进程（或者说是add a new job），在子进程中执行命令。</p>
+<p>命令有前台后台运行之分，如果最后带有一个<code>&amp;</code>，则为后台运行，此时shell不用去等待job运行完毕，可以继续执行shell的功能。前台等待job完成的内容需要在<code>waitfg</code>函数之中完成。</p>
+<p>这里有一个细节，因为我们的shell是一个程序，而默认我们创建的job会跟shell是同一个进程组，那么如果子进程被杀掉的话shell也会被杀掉，这不符合shell的性质，所以我们需要保证创建的子进程都跟shell自己处于不同的进程组。这部分是通过<code>setpgid(0, 0)</code>来完成的。</p>
+<p>在子进程执行完成之后，子进程会变成一个zombie，不再会被执行，但会一直占着地方，它们需要被shell回收。相关的信号是<code>SIGCHLD</code>。这部分的工作是通过定义<code>SIGCHLD</code>的handler来完成的。</p>
+<p>pid跟jid的管理我们不用操心，已经写好了，我们只需要调用<code>addjob</code>跟<code>deletejob</code>这样的API来维护进程。</p>
+<h3 id="eval"><a href="#eval" class="headerlink" title="eval"></a><code>eval</code></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">eval</span><span class="params">(<span class="keyword">char</span> *cmdline)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">char</span> *argv[MAXARGS];</span><br><span class="line">    <span class="keyword">int</span> bg = parseline(cmdline, argv);</span><br><span class="line">    <span class="keyword">if</span> (argv[<span class="number">0</span>] == <span class="literal">NULL</span>) <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">int</span> builtin = builtin_cmd(argv);</span><br><span class="line">    <span class="keyword">if</span> (builtin) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* from now on, execute non-builtin command */</span></span><br><span class="line">    <span class="keyword">sigset_t</span> mask, prev_mask, mask_all;</span><br><span class="line">    sigfillset(&amp;mask_all);</span><br><span class="line">    sigemptyset(&amp;mask);</span><br><span class="line">    sigaddset(&amp;mask, SIGCHLD);</span><br><span class="line">    </span><br><span class="line">    sigprocmask(SIG_BLOCK, &amp;mask, &amp;prev_mask); <span class="comment">// block SIGCHLD</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">pid_t</span> pid = fork(); <span class="comment">// during fork, SIGCHLD is blocked</span></span><br><span class="line">    <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// child process</span></span><br><span class="line">        sigprocmask(SIG_SETMASK, &amp;prev_mask, <span class="literal">NULL</span>); <span class="comment">// unblock SIGCHLD</span></span><br><span class="line">        setpgid(<span class="number">0</span>, <span class="number">0</span>); <span class="comment">// make sure programs are not in the same group as tsh</span></span><br><span class="line">        <span class="comment">// must unblock signals before execve</span></span><br><span class="line">        <span class="keyword">if</span> (execve(argv[<span class="number">0</span>], argv, environ) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%s: Command not found\n&quot;</span>, argv[<span class="number">0</span>]);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// parent process</span></span><br><span class="line">        sigprocmask(SIG_BLOCK, &amp;mask_all, <span class="literal">NULL</span>); <span class="comment">// block all signals</span></span><br><span class="line">        addjob(jobs, pid, bg + <span class="number">1</span>, cmdline); <span class="comment">// during addjob, all signals are blocked</span></span><br><span class="line">        <span class="keyword">if</span> (bg) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;[%d] (%d) %s&quot;</span>, pid2jid(pid), pid, cmdline);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            waitfg(pid);</span><br><span class="line">        &#125;</span><br><span class="line">        sigprocmask(SIG_SETMASK, &amp;prev_mask, <span class="literal">NULL</span>); <span class="comment">// reset</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="builtin-cmd"><a href="#builtin-cmd" class="headerlink" title="builtin_cmd"></a><code>builtin_cmd</code></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">builtin_cmd</span><span class="params">(<span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;quit&quot;</span>)) &#123;</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;jobs&quot;</span>)) &#123;</span><br><span class="line">        listjobs(jobs);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;bg&quot;</span>) || !<span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;fg&quot;</span>)) &#123;</span><br><span class="line">        do_bgfg(argv);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;&amp;&quot;</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;     <span class="comment">/* not a builtin command */</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="do-bgfg"><a href="#do-bgfg" class="headerlink" title="do_bgfg"></a><code>do_bgfg</code></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">do_bgfg</span><span class="params">(<span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (argv[<span class="number">1</span>] == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s command requires PID or %%jobid argument\n&quot;</span>, argv[<span class="number">0</span>]);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">job_t</span> *<span class="title">job</span> =</span> <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">if</span> (argv[<span class="number">1</span>][<span class="number">0</span>] == <span class="string">&#x27;%&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">int</span> jid = atoi(argv[<span class="number">1</span>] + <span class="number">1</span>);</span><br><span class="line">        job = getjobjid(jobs, jid);</span><br><span class="line">        <span class="keyword">if</span> (job == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%s: No such job\n&quot;</span>, argv[<span class="number">1</span>]);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">isdigit</span>(argv[<span class="number">1</span>][<span class="number">0</span>])) &#123;</span><br><span class="line">        <span class="keyword">int</span> pid = atoi(argv[<span class="number">1</span>]);</span><br><span class="line">        job = getjobpid(jobs, pid);</span><br><span class="line">        <span class="keyword">if</span> (job == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;(%s): No such process\n&quot;</span>, argv[<span class="number">1</span>]);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s: argument must be a PID or %%jobid\n&quot;</span>, argv[<span class="number">0</span>]);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    kill(-(job-&gt;pid), SIGCONT); <span class="comment">// send SIGCONT to the group, therefore negative</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;bg&quot;</span>)) &#123;</span><br><span class="line">        job-&gt;state = BG;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;[%d] (%d) %s&quot;</span>, job-&gt;jid, job-&gt;pid, job-&gt;cmdline);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        job-&gt;state = FG;</span><br><span class="line">        waitfg(job-&gt;pid);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="waitfg"><a href="#waitfg" class="headerlink" title="waitfg"></a><code>waitfg</code></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">waitfg</span><span class="params">(<span class="keyword">pid_t</span> pid)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// debug_printf(&quot;now in waitfg\n&quot;);</span></span><br><span class="line">    <span class="keyword">sigset_t</span> mask;</span><br><span class="line">    sigemptyset(&amp;mask);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (fgpid(jobs) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        sigsuspend(&amp;mask);</span><br><span class="line">    &#125;</span><br><span class="line">    sigprocmask(SIG_SETMASK, &amp;mask, <span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="signal-handlers"><a href="#signal-handlers" class="headerlink" title="signal handlers"></a>signal handlers</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sigchld_handler</span><span class="params">(<span class="keyword">int</span> sig)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// debug_printf(&quot;in SIGCHLD handler&quot;);</span></span><br><span class="line">    <span class="keyword">int</span> prev_errno = errno;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">sigset_t</span> mask, prev;</span><br><span class="line">    sigfillset(&amp;mask);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pid_t</span> pid;</span><br><span class="line">    <span class="keyword">int</span> status;</span><br><span class="line">    <span class="keyword">while</span> ((pid = waitpid(<span class="number">-1</span>, &amp;status, WNOHANG | WUNTRACED)) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (WIFEXITED(status)) &#123;</span><br><span class="line">            <span class="comment">// normally exited</span></span><br><span class="line">            sigprocmask(SIG_BLOCK, &amp;mask, &amp;prev);</span><br><span class="line">            deletejob(jobs, pid);</span><br><span class="line">            sigprocmask(SIG_SETMASK, &amp;prev, <span class="literal">NULL</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (WIFSIGNALED(status)) &#123;</span><br><span class="line">            <span class="comment">// exited via signal</span></span><br><span class="line">            struct <span class="keyword">job_t</span> *job = getjobpid(jobs, pid);</span><br><span class="line">            sigprocmask(SIG_BLOCK, &amp;mask, &amp;prev);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;Job [%d] (%d) Terminated by signal %d\n&quot;</span>, job-&gt;jid, job-&gt;pid, WTERMSIG(status));</span><br><span class="line">            deletejob(jobs, pid);</span><br><span class="line">            sigprocmask(SIG_SETMASK, &amp;prev, <span class="literal">NULL</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// stopped</span></span><br><span class="line">            struct <span class="keyword">job_t</span> *job = getjobpid(jobs, pid);</span><br><span class="line">            sigprocmask(SIG_BLOCK, &amp;mask, &amp;prev);</span><br><span class="line">            job-&gt;state = ST;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;Job [%d] (%d) Stopped by signal %d\n&quot;</span>, job-&gt;jid, job-&gt;pid, WSTOPSIG(status));</span><br><span class="line">            sigprocmask(SIG_SETMASK, &amp;prev, <span class="literal">NULL</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    errno = prev_errno;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * sigint_handler - The kernel sends a SIGINT to the shell whenver the</span></span><br><span class="line"><span class="comment"> *    user types ctrl-c at the keyboard.  Catch it and send it along</span></span><br><span class="line"><span class="comment"> *    to the foreground job.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sigint_handler</span><span class="params">(<span class="keyword">int</span> sig)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// debug_printf(&quot;in SIGINT handler&quot;);</span></span><br><span class="line">    <span class="keyword">int</span> prev_errno = errno;</span><br><span class="line">    <span class="keyword">pid_t</span> pid = fgpid(jobs);</span><br><span class="line">    <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        kill(-pid, sig);</span><br><span class="line">    &#125;</span><br><span class="line">    errno = prev_errno;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * sigtstp_handler - The kernel sends a SIGTSTP to the shell whenever</span></span><br><span class="line"><span class="comment"> *     the user types ctrl-z at the keyboard. Catch it and suspend the</span></span><br><span class="line"><span class="comment"> *     foreground job by sending it a SIGTSTP.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sigtstp_handler</span><span class="params">(<span class="keyword">int</span> sig)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// debug_printf(&quot;in SIGTSTP handler&quot;);</span></span><br><span class="line">    <span class="keyword">int</span> prev_errno = errno;</span><br><span class="line">    <span class="keyword">pid_t</span> pid = fgpid(jobs);</span><br><span class="line">    <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        kill(-pid, sig);</span><br><span class="line">    &#125;</span><br><span class="line">    errno = prev_errno;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h2><p>最后实现的就是可以一个可以跑绝对路径的shell，支持前后台运行以及信号级别的进程交互。</p>
+<p>最后发现<code>tshref</code>也连vim都打不开，我就平衡了（</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/07/15/CSAPP-Cache-Lab-Writeup/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1291,132 +1418,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/29/NNI-Student-Program-2020-Task3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/29/NNI-Student-Program-2020-Task3/" class="post-title-link" itemprop="url">NNI Student Program 2020 Task3</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-01-29 17:18:56" itemprop="dateCreated datePublished" datetime="2021-01-29T17:18:56+08:00">2021-01-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
-              </span>
-
-          
-            <span id="/2021/01/29/NNI-Student-Program-2020-Task3/" class="post-meta-item leancloud_visitors" data-flag-title="NNI Student Program 2020 Task3" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/01/29/NNI-Student-Program-2020-Task3/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/29/NNI-Student-Program-2020-Task3/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Task-3-进阶任务"><a href="#Task-3-进阶任务" class="headerlink" title="Task 3 进阶任务"></a>Task 3 进阶任务</h1><h2 id="特征工程简介"><a href="#特征工程简介" class="headerlink" title="特征工程简介"></a>特征工程简介</h2><p>有这么一句话在业界广泛流传：</p>
-<blockquote>
-<p>数据和特征决定了机器学习的上限，而模型和算法只是逼近这个上限而已。</p>
-</blockquote>
-<p>数据是特征的来源，特征是给定算法下模型精确度的最大决定因素，可见提升特征质量意义重大。</p>
-<p>特征工程(Feature Engineering)是机器学习的一个重要分支，指的是通过多种数据处理方法，从原始数据提取出若干个能优秀反映问题的特征，以提升最终算法与模型准确率的过程。</p>
-<h2 id="自动特征工程"><a href="#自动特征工程" class="headerlink" title="自动特征工程"></a>自动特征工程</h2><p>自动特征工程是一种新技术，是机器学习发展的一大步。自动特征工程能够在降低时间成本的同时，生成更优秀的特征，从而构建出准确率更高的模型。</p>
-<p>利用NNI的自动特征工程实现，我们通过简单调用函数便可实现特征工程的自动调优。</p>
-<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><ul>
-<li>nni</li>
-<li>numpy</li>
-<li>lightgbm: 微软开源算法</li>
-<li>pandas: 基于python的数据分析强力工具</li>
-<li>sklearn: 集成了特征工程相关的常用函数</li>
-</ul>
-<p>建议在conda环境下部署自动特征工程python环境。</p>
-<p>此外，由于pandas版本更新，直接运行自带项目会报错，实际上只需修改<code>fe_util.py</code>中的<code>agg</code>参数类型即可，大致修改如下：</p>
-<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">def aggregate(df, num_col, col, stat_list = AGGREGATE_TYPE):</span><br><span class="line"><span class="deletion">-   agg_dict = &#123;&#125;</span></span><br><span class="line"><span class="addition">+   agg_list = []</span></span><br><span class="line">    for i in stat_list:</span><br><span class="line"><span class="deletion">-       agg_dict[(&#x27;AGG_&#123;&#125;_&#123;&#125;_&#123;&#125;&#x27;.format(i, num_col, col)] = i</span></span><br><span class="line"><span class="addition">+       agg_list.append((&#x27;AGG_&#123;&#125;_&#123;&#125;_&#123;&#125;&#x27;.format(i, num_col, col), i))</span></span><br><span class="line"><span class="deletion">-   agg_result = df.groupby([col])[num_col].agg(agg_dict)</span></span><br><span class="line"><span class="addition">+   agg.result = df.groupby([col])[num_col].agg(agg_list)</span></span><br><span class="line">    r = left_merge(df, agg_result, on = [col])</span><br><span class="line">    df = concat([df, r])</span><br><span class="line">    return df</span><br></pre></td></tr></table></figure>
-<p>该修改已提交pull request至原项目。</p>
-<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><h3 id="配置搜索空间"><a href="#配置搜索空间" class="headerlink" title="配置搜索空间"></a>配置搜索空间</h3><p>NNI的自动特征工程支持count、crosscount、aggregate等一阶与二阶特征运算，配置搜索空间时只需按json格式填写搜索范围。具体填写方法以项目示例搜索空间为例：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;count&quot;</span>:[</span><br><span class="line">        <span class="string">&quot;C1&quot;</span>,<span class="string">&quot;C2&quot;</span>,<span class="string">&quot;C3&quot;</span>,<span class="string">&quot;C4&quot;</span>,<span class="string">&quot;C5&quot;</span>,<span class="string">&quot;C6&quot;</span>,<span class="string">&quot;C7&quot;</span>,<span class="string">&quot;C8&quot;</span>,<span class="string">&quot;C9&quot;</span>,<span class="string">&quot;C10&quot;</span>,</span><br><span class="line">        <span class="string">&quot;C11&quot;</span>,<span class="string">&quot;C12&quot;</span>,<span class="string">&quot;C13&quot;</span>,<span class="string">&quot;C14&quot;</span>,<span class="string">&quot;C15&quot;</span>,<span class="string">&quot;C16&quot;</span>,<span class="string">&quot;C17&quot;</span>,<span class="string">&quot;C18&quot;</span>,<span class="string">&quot;C19&quot;</span>,</span><br><span class="line">        <span class="string">&quot;C20&quot;</span>,<span class="string">&quot;C21&quot;</span>,<span class="string">&quot;C22&quot;</span>,<span class="string">&quot;C23&quot;</span>,<span class="string">&quot;C24&quot;</span>,<span class="string">&quot;C25&quot;</span>,<span class="string">&quot;C26&quot;</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">&quot;aggregate&quot;</span>:[</span><br><span class="line">        [<span class="string">&quot;I9&quot;</span>,<span class="string">&quot;I10&quot;</span>,<span class="string">&quot;I11&quot;</span>,<span class="string">&quot;I12&quot;</span>],</span><br><span class="line">        [</span><br><span class="line">            <span class="string">&quot;C1&quot;</span>,<span class="string">&quot;C2&quot;</span>,<span class="string">&quot;C3&quot;</span>,<span class="string">&quot;C4&quot;</span>,<span class="string">&quot;C5&quot;</span>,<span class="string">&quot;C6&quot;</span>,<span class="string">&quot;C7&quot;</span>,<span class="string">&quot;C8&quot;</span>,<span class="string">&quot;C9&quot;</span>,<span class="string">&quot;C10&quot;</span>,</span><br><span class="line">            <span class="string">&quot;C11&quot;</span>,<span class="string">&quot;C12&quot;</span>,<span class="string">&quot;C13&quot;</span>,<span class="string">&quot;C14&quot;</span>,<span class="string">&quot;C15&quot;</span>,<span class="string">&quot;C16&quot;</span>,<span class="string">&quot;C17&quot;</span>,<span class="string">&quot;C18&quot;</span>,<span class="string">&quot;C19&quot;</span>,</span><br><span class="line">            <span class="string">&quot;C20&quot;</span>,<span class="string">&quot;C21&quot;</span>,<span class="string">&quot;C22&quot;</span>,<span class="string">&quot;C23&quot;</span>,<span class="string">&quot;C24&quot;</span>,<span class="string">&quot;C25&quot;</span>,<span class="string">&quot;C26&quot;</span></span><br><span class="line">        ]</span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">&quot;crosscount&quot;</span>:[</span><br><span class="line">        [</span><br><span class="line">            <span class="string">&quot;C1&quot;</span>,<span class="string">&quot;C2&quot;</span>,<span class="string">&quot;C3&quot;</span>,<span class="string">&quot;C4&quot;</span>,<span class="string">&quot;C5&quot;</span>,<span class="string">&quot;C6&quot;</span>,<span class="string">&quot;C7&quot;</span>,<span class="string">&quot;C8&quot;</span>,<span class="string">&quot;C9&quot;</span>,<span class="string">&quot;C10&quot;</span>,</span><br><span class="line">            <span class="string">&quot;C11&quot;</span>,<span class="string">&quot;C12&quot;</span>,<span class="string">&quot;C13&quot;</span>,<span class="string">&quot;C14&quot;</span>,<span class="string">&quot;C15&quot;</span>,<span class="string">&quot;C16&quot;</span>,<span class="string">&quot;C17&quot;</span>,<span class="string">&quot;C18&quot;</span>,<span class="string">&quot;C19&quot;</span>,</span><br><span class="line">            <span class="string">&quot;C20&quot;</span>,<span class="string">&quot;C21&quot;</span>,<span class="string">&quot;C22&quot;</span>,<span class="string">&quot;C23&quot;</span>,<span class="string">&quot;C24&quot;</span>,<span class="string">&quot;C25&quot;</span>,<span class="string">&quot;C26&quot;</span></span><br><span class="line">        ],</span><br><span class="line">        [</span><br><span class="line">            <span class="string">&quot;C1&quot;</span>,<span class="string">&quot;C2&quot;</span>,<span class="string">&quot;C3&quot;</span>,<span class="string">&quot;C4&quot;</span>,<span class="string">&quot;C5&quot;</span>,<span class="string">&quot;C6&quot;</span>,<span class="string">&quot;C7&quot;</span>,<span class="string">&quot;C8&quot;</span>,<span class="string">&quot;C9&quot;</span>,<span class="string">&quot;C10&quot;</span>,</span><br><span class="line">            <span class="string">&quot;C11&quot;</span>,<span class="string">&quot;C12&quot;</span>,<span class="string">&quot;C13&quot;</span>,<span class="string">&quot;C14&quot;</span>,<span class="string">&quot;C15&quot;</span>,<span class="string">&quot;C16&quot;</span>,<span class="string">&quot;C17&quot;</span>,<span class="string">&quot;C18&quot;</span>,<span class="string">&quot;C19&quot;</span>,</span><br><span class="line">            <span class="string">&quot;C20&quot;</span>,<span class="string">&quot;C21&quot;</span>,<span class="string">&quot;C22&quot;</span>,<span class="string">&quot;C23&quot;</span>,<span class="string">&quot;C24&quot;</span>,<span class="string">&quot;C25&quot;</span>,<span class="string">&quot;C26&quot;</span></span><br><span class="line">        ]</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="导入tuner"><a href="#导入tuner" class="headerlink" title="导入tuner"></a>导入tuner</h3><p>导入自动特征工程的tuner时，需要在<code>config.yml</code>中的<code>tuner</code>项添加相关信息，其他地方正常填写即可。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">tuner:</span></span><br><span class="line">  <span class="attr">codeDir:</span> <span class="string">.</span></span><br><span class="line">  <span class="attr">classFileName:</span> <span class="string">autofe_tuner.py</span></span><br><span class="line">  <span class="attr">className:</span> <span class="string">AutoFETuner</span></span><br><span class="line">  <span class="attr">classArgs:</span></span><br><span class="line">    <span class="attr">optimize_mode:</span> <span class="string">maximize</span></span><br></pre></td></tr></table></figure>
-<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p>Tuner在生成的搜索空间中随机选取一定数量的feature组合，通过<code>nni.get_next_parameter()</code>的接口，以dict的形式返回给单次trial。经一系列处理后运行lightGBM算法，得到最终以AUC形式呈现的结果。</p>
-<p>调用代码主体部分如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># get parameter from tuner</span></span><br><span class="line">RECEIVED_PARAMS = nni.get_next_parameter()</span><br><span class="line">logger.info(<span class="string">&quot;Received params:\n&quot;</span>, RECEIVED_PARAMS)</span><br><span class="line"></span><br><span class="line"><span class="comment"># get sample column from parameter</span></span><br><span class="line">df = pd.read_csv(file_name)</span><br><span class="line"><span class="keyword">if</span> <span class="string">&#x27;sample_feature&#x27;</span> <span class="keyword">in</span> RECEIVED_PARAMS.keys():</span><br><span class="line">    sample_col = RECEIVED_PARAMS[<span class="string">&#x27;sample_feature&#x27;</span>]</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    sample_col = []</span><br><span class="line"></span><br><span class="line"><span class="comment"># df: raw feaure + sample_feature</span></span><br><span class="line">df = name2feature(df, sample_col, target_name)</span><br><span class="line">feature_imp, val_score = lgb_model_train(df, _epoch=<span class="number">1000</span>, target_name=target_name,id_index=id_index)</span><br><span class="line"></span><br><span class="line"><span class="comment"># report result to nni</span></span><br><span class="line">nni.report_final_result(&#123;</span><br><span class="line">    <span class="string">&quot;default&quot;</span>:val_score, </span><br><span class="line">    <span class="string">&quot;feature_importance&quot;</span>:feature_imp</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<h2 id="项目示例运行结果"><a href="#项目示例运行结果" class="headerlink" title="项目示例运行结果"></a>项目示例运行结果</h2><h3 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h3><img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3/task3_1.png">
-<h3 id="Top-10-Trials"><a href="#Top-10-Trials" class="headerlink" title="Top 10 Trials"></a>Top 10 Trials</h3><img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3/task3_2.png">
-<h3 id="Default-Metric"><a href="#Default-Metric" class="headerlink" title="Default Metric"></a>Default Metric</h3><img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3/task3_4.png">
-<h3 id="Hyper-parameter"><a href="#Hyper-parameter" class="headerlink" title="Hyper-parameter"></a>Hyper-parameter</h3><img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3/task3_6.png">
-<h3 id="Feature-Importance-of-Top-1-Trial"><a href="#Feature-Importance-of-Top-1-Trial" class="headerlink" title="Feature Importance of Top 1 Trial"></a>Feature Importance of Top 1 Trial</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">         feature_name  split  ...  split_percent  feature_score</span><br><span class="line">5                  I6     39  ...      11.504425       0.145729</span><br><span class="line">4                  I5     20  ...       5.899705       0.067777</span><br><span class="line">85     AGG_max_I9_C17     14  ...       4.129794       0.053053</span><br><span class="line">76      count_C18_C23     11  ...       3.244838       0.031225</span><br><span class="line">43   AGG_mean_I11_C16      9  ...       2.654867       0.029425</span><br><span class="line">..                ...    ...  ...            ...            ...</span><br><span class="line">86    AGG_var_I11_C25      0  ...       0.000000       0.000000</span><br><span class="line">82      count_C12_C20      0  ...       0.000000       0.000000</span><br><span class="line">80       count_C1_C17      0  ...       0.000000       0.000000</span><br><span class="line">77       count_C1_C23      0  ...       0.000000       0.000000</span><br><span class="line">100     count_C15_C21      0  ...       0.000000       0.000000</span><br><span class="line"></span><br><span class="line">[162 rows x 6 columns]</span><br></pre></td></tr></table></figure>
-<p>若想要查询某一次trial的feature importance，只需在WebUI中按下Copy as json，再代入原程序运行就可以获得了。</p>
-<h2 id="heart数据集运行结果"><a href="#heart数据集运行结果" class="headerlink" title="heart数据集运行结果"></a>heart数据集运行结果</h2><p><a target="_blank" rel="noopener" href="http://archive.ics.uci.edu/ml/datasets/Statlog+%28Heart%29">数据集地址</a></p>
-<p>heart数据集收集了中老年人是否患心脏病的270条数据，每条数据有13条属性，本质上是一个二分类问题的数据。</p>
-<p>我们希望通过特征工程，从数据中挖掘出心脏病患病与其他事件的相关性，从庞杂的数据中得出结论。</p>
-<p>初始AUC为0.932367，使用了NNI自动特征工程之后，AUC上升到了0.97343，比原始精确度高出许多。</p>
-<h3 id="Overview-1"><a href="#Overview-1" class="headerlink" title="Overview"></a>Overview</h3><img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3/example1.png">
-<h3 id="Top-10-Trials-1"><a href="#Top-10-Trials-1" class="headerlink" title="Top 10 Trials"></a>Top 10 Trials</h3><img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3/example2.png">
-<h3 id="Default"><a href="#Default" class="headerlink" title="Default"></a>Default</h3><p>Sorted Default MetricMetric</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3/example3.png">
-<h3 id="Hyper-parameter-1"><a href="#Hyper-parameter-1" class="headerlink" title="Hyper-parameter"></a>Hyper-parameter</h3><img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3/example4.png">
-<h3 id="Feature-Importance-of-Top-1-Trial-1"><a href="#Feature-Importance-of-Top-1-Trial-1" class="headerlink" title="Feature Importance of Top 1 Trial"></a>Feature Importance of Top 1 Trial</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">                     feature_name  split  ...  split_percent  feature_score</span><br><span class="line">113          count_chest-pain_sex      4  ...       9.302326       0.197441</span><br><span class="line">37      AGG_var_chest-pain_hr-max      5  ...      11.627907       0.083669</span><br><span class="line">53         AGG_median_age_vessels      3  ...       6.976744       0.075381</span><br><span class="line">0                             age      3  ...       6.976744       0.058558</span><br><span class="line">12                           thal      2  ...       4.651163       0.056385</span><br><span class="line">..                            ...    ...  ...            ...            ...</span><br><span class="line">54            AGG_max_sex_vessels      0  ...       0.000000       0.000000</span><br><span class="line">52   AGG_median_chest-pain_hr-max      0  ...       0.000000       0.000000</span><br><span class="line">51     AGG_median_bs-fasting_thal      0  ...       0.000000       0.000000</span><br><span class="line">50       AGG_mean_age_cholesterol      0  ...       0.000000       0.000000</span><br><span class="line">138            AGG_var_sex_hr-max      0  ...       0.000000       0.000000</span><br><span class="line"></span><br><span class="line">[139 rows x 6 columns]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1488,7 +1489,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1684,5 +1685,5 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
 });
 </script>
 
-<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/theresa.model.json"},"display":{"position":"left","width":150,"height":300},"react":{"opacity":0.5}});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":200,"height":400},"react":{"opacity":0.7}});</script></body>
 </html>
