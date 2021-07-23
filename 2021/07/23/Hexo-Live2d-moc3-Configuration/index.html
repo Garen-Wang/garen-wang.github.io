@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Noto Serif SC:300,300italic,400,400italic,700,700italic|Fira Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"garen-wang.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="今天闲着给自己的博客整了个效果，在live2d这方面整点花活。 记录一下，顺便也给hexo博客搭建live2d的方式做一次梳理。 live2d模型一般有几种常见的格式，其中方便web端渲染呈现的有moc跟moc3两种格式。 一般我们从大佬们白嫖到live2d模型下载解压之后会是这样的格式：  以jiaran4为例：  jiaran4.2048或jiaran4.1024存放了模型的材质贴图 jiar">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo Live2d moc3 Configuration">
+<meta property="og:url" content="http://garen-wang.cn/2021/07/23/Hexo-Live2d-moc3-Configuration/index.html">
+<meta property="og:site_name" content="Garen Wang&#39;s Blog">
+<meta property="og:description" content="今天闲着给自己的博客整了个效果，在live2d这方面整点花活。 记录一下，顺便也给hexo博客搭建live2d的方式做一次梳理。 live2d模型一般有几种常见的格式，其中方便web端渲染呈现的有moc跟moc3两种格式。 一般我们从大佬们白嫖到live2d模型下载解压之后会是这样的格式：  以jiaran4为例：  jiaran4.2048或jiaran4.1024存放了模型的材质贴图 jiar">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/tree.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/theresa.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/result1.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/demo.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/result2.png">
+<meta property="article:published_time" content="2021-07-23T15:55:17.000Z">
+<meta property="article:modified_time" content="2021-07-23T16:50:03.766Z">
+<meta property="article:author" content="Garen Wang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/tree.png">
+
+<link rel="canonical" href="http://garen-wang.cn/2021/07/23/Hexo-Live2d-moc3-Configuration/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Hexo Live2d moc3 Configuration | Garen Wang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Garen Wang's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/07/23/Hexo-Live2d-moc3-Configuration/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hexo Live2d moc3 Configuration
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-07-23 23:55:17" itemprop="dateCreated datePublished" datetime="2021-07-23T23:55:17+08:00">2021-07-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-07-24 00:50:03" itemprop="dateModified" datetime="2021-07-24T00:50:03+08:00">2021-07-24</time>
+              </span>
+
+          
+            <span id="/2021/07/23/Hexo-Live2d-moc3-Configuration/" class="post-meta-item leancloud_visitors" data-flag-title="Hexo Live2d moc3 Configuration" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/07/23/Hexo-Live2d-moc3-Configuration/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/23/Hexo-Live2d-moc3-Configuration/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>今天闲着给自己的博客整了个效果，在live2d这方面整点花活。</p>
+<p>记录一下，顺便也给hexo博客搭建live2d的方式做一次梳理。</p>
+<p>live2d模型一般有几种常见的格式，其中方便web端渲染呈现的有moc跟moc3两种格式。</p>
+<p>一般我们从大佬们白嫖到live2d模型下载解压之后会是这样的格式：</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/tree.png">
+<p>以jiaran4为例：</p>
+<ul>
+<li><code>jiaran4.2048</code>或<code>jiaran4.1024</code>存放了模型的材质贴图</li>
+<li><code>jiaran4.moc3</code>为模型主体，为二进制文件</li>
+<li><code>jiaran4.model3.json</code>为模型的配置文件，会重点标注出其他文件的引用路径</li>
+<li><code>jiaran4.physics3.json</code>是物理演算配置文件</li>
+<li><code>jiaran4.cdi3.json</code>作为显示信息，不是很重要</li>
+</ul>
+<p>比较豪华的live2d模型还有：</p>
+<ul>
+<li><code>jiaran4.pose3.json</code>，初始姿势配置文件</li>
+<li><code>motions</code>文件夹，内含若干个<code>xxx.motion3.json</code>的动作配置文件</li>
+</ul>
+<h2 id="moc模型"><a href="#moc模型" class="headerlink" title="moc模型"></a>moc模型</h2><p>以我拿到的一个崩2德莉莎的模型为例，目的是想要在hexo博客上实装。</p>
+<p>是hexo的话，可以方便地使用<a target="_blank" rel="noopener" href="https://github.com/EYHN/hexo-helper-live2d">hexo-helper-live2d</a>这么一个插件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> npm install --save hexo-helper-live2d</span></span><br></pre></td></tr></table></figure>
+<p>这个插件有若干个预设模型，随便扒拉几个看下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> npm install --save live2d-widget-model-shizuku</span></span><br></pre></td></tr></table></figure>
+<p>看下文件结构：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── assets</span><br><span class="line">│   ├── exp</span><br><span class="line">│   │   ├── f01.exp.json</span><br><span class="line">│   │   ├── f02.exp.json</span><br><span class="line">│   │   ├── f03.exp.json</span><br><span class="line">│   │   └── f04.exp.json</span><br><span class="line">│   ├── moc</span><br><span class="line">│   │   ├── shizuku.1024</span><br><span class="line">│   │   │   ├── texture_00.png</span><br><span class="line">│   │   │   ├── texture_01.png</span><br><span class="line">│   │   │   ├── texture_02.png</span><br><span class="line">│   │   │   ├── texture_03.png</span><br><span class="line">│   │   │   ├── texture_04.png</span><br><span class="line">│   │   │   └── texture_05.png</span><br><span class="line">│   │   └── shizuku.moc</span><br><span class="line">│   ├── mtn</span><br><span class="line">│   │   ├── flickHead_00.mtn</span><br><span class="line">│   │   ├── flickHead_01.mtn</span><br><span class="line">│   │   ├── flickHead_02.mtn</span><br><span class="line">│   │   ├── idle_00.mtn</span><br><span class="line">│   │   ├── idle_01.mtn</span><br><span class="line">│   │   ├── idle_02.mtn</span><br><span class="line">│   │   ├── pinchIn_00.mtn</span><br><span class="line">│   │   ├── pinchIn_01.mtn</span><br><span class="line">│   │   ├── pinchIn_02.mtn</span><br><span class="line">│   │   ├── pinchOut_00.mtn</span><br><span class="line">│   │   ├── pinchOut_01.mtn</span><br><span class="line">│   │   ├── pinchOut_02.mtn</span><br><span class="line">│   │   ├── shake_00.mtn</span><br><span class="line">│   │   ├── shake_01.mtn</span><br><span class="line">│   │   ├── shake_02.mtn</span><br><span class="line">│   │   ├── tapBody_00.mtn</span><br><span class="line">│   │   ├── tapBody_01.mtn</span><br><span class="line">│   │   └── tapBody_02.mtn</span><br><span class="line">│   ├── shizuku.model.json</span><br><span class="line">│   ├── shizuku.physics.json</span><br><span class="line">│   ├── shizuku.pose.json</span><br><span class="line">│   └── snd</span><br><span class="line">│       ├── flickHead_00.mp3</span><br><span class="line">│       ├── flickHead_01.mp3</span><br><span class="line">│       ├── flickHead_02.mp3</span><br><span class="line">│       ├── pinchIn_00.mp3</span><br><span class="line">│       ├── pinchIn_01.mp3</span><br><span class="line">│       ├── pinchIn_02.mp3</span><br><span class="line">│       ├── pinchOut_00.mp3</span><br><span class="line">│       ├── pinchOut_01.mp3</span><br><span class="line">│       ├── pinchOut_02.mp3</span><br><span class="line">│       ├── shake_00.mp3</span><br><span class="line">│       ├── shake_01.mp3</span><br><span class="line">│       ├── shake_02.mp3</span><br><span class="line">│       ├── tapBody_00.mp3</span><br><span class="line">│       ├── tapBody_01.mp3</span><br><span class="line">│       └── tapBody_02.mp3</span><br><span class="line">└── package.json</span><br><span class="line"></span><br><span class="line">6 directories, 48 files</span><br></pre></td></tr></table></figure>
+<p>如果我们有一个moc模型的话，就可以考虑模仿这样的文件格式安排，伪装成能被插件正常执行的模型包，在hexo里面跑起来。</p>
+<p>最后我把原来的模型包修改成了这样：</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/theresa.png">
+<p>这里有一点需要注意：<strong><code>.model3.json</code>文件内含relative file reference，在调整文件结构的时候也需要把里面的内容也做改动。</strong></p>
+<p>最终效果是这样的：</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/result1.png">
+<h2 id="moc3模型"><a href="#moc3模型" class="headerlink" title="moc3模型"></a>moc3模型</h2><p>不过这几年来新的模型大多以moc3的格式来传播，用原来moc格式的办法没法直接套用，尝试另外的解决方案。</p>
+<p>moc3模型以嘉然为例（<del>然然你带我走吧然然</del></p>
+<p>第一种尝试是从这几个repo来看看能不能伪装格式一起套用：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/Yukariin/AzurLaneL2DViewer">https://github.com/Yukariin/AzurLaneL2DViewer</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/alg-wiki/AzurLaneL2DViewer">https://github.com/alg-wiki/AzurLaneL2DViewer</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/HCLonely/Live2dV3">https://github.com/HCLonely/Live2dV3</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LitStronger/live2d-moc3">https://github.com/LitStronger/live2d-moc3</a></li>
+</ul>
+<p>然后发现不行，遂放弃。</p>
+<p>第二种尝试来自这篇博客：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/Arisf/p/14347362.html">https://www.cnblogs.com/Arisf/p/14347362.html</a></p>
+<p>首先是需要live2d cubism有关的几个js：</p>
+<ul>
+<li><code>bundle.js</code>，似乎需要自己生成</li>
+<li><code>live2dcubismcore.js</code>，是官方web sdk的</li>
+</ul>
+<p>相应所需要的js文件跟模型都一起放在了<a target="_blank" rel="noopener" href="https://github.com/Garen-Wang/live2d-moc3">我github的repo</a>里面，感谢开源，侵删。</p>
+<p>可以首先在本地上试试能不能跑起来。事实上把这几行代码一起粘到<code>body</code>标签里面就好了：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">&quot;live2d&quot;</span> <span class="attr">width</span>=<span class="string">&quot;400&quot;</span> <span class="attr">height</span>=<span class="string">&quot;400&quot;</span> <span class="attr">class</span>=<span class="string">&quot;live2d&quot;</span> <span class="attr">style</span>=<span class="string">&quot;position: fixed; opacity: 1; left: -110px; bottom: -135px; z-index: 99999; pointer-events: none;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">canvas</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/live2dcubismcore.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/bundle.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">     <span class="keyword">var</span> resourcesPath = <span class="string">&#x27;https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@v0.1.0/&#x27;</span>; <span class="comment">// 指定资源文件（模型）保存的路径，使用github的release版本，路径如下https://cdn.jsdelivr.net/gh/用户/库@版本号/资源路径</span></span></span><br><span class="line"><span class="javascript">     <span class="keyword">var</span> backImageName = <span class="string">&#x27;&#x27;</span>; <span class="comment">// 指定背景图片 ,默认为空</span></span></span><br><span class="line"><span class="javascript">     <span class="keyword">var</span> modelDir = [<span class="string">&#x27;jiaran4&#x27;</span>]; <span class="comment">// 指定需要加载的模型</span></span></span><br><span class="line"><span class="javascript">     initDefine(resourcesPath, backImageName, modelDir); <span class="comment">// 初始化模型</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>其中不知道是cdn抽风还是什么奇怪的原因，原本应该是<code>v0.1.1</code>的地方需要是<code>vv0.1.1</code>才访问得到，非常奇怪。</p>
+<p>如果正常的话应该是这样子：</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/demo.png">
+<p>接下来把然然带进hexo博客里面。由于我用的NexT主题，修改<code>themes/next/layout/_layout.swig</code>，直接在<code>body</code>标签的最后边粘上去这几行，做法非常暴力。</p>
+<p>不出意外的话然然应该就能跟爷同框了，像下面这样（</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/result2.png">
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/20/CSAPP-Shell-Lab-Writeup/" rel="prev" title="CSAPP Shell Lab Writeup">
+      <i class="fa fa-chevron-left"></i> CSAPP Shell Lab Writeup
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#moc%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">moc模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#moc3%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">moc3模型</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Garen Wang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Garen Wang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Garen-Wang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Garen-Wang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:garen-wang@qq.com" title="E-Mail → mailto:garen-wang@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">粤ICP备2021003110号 </a>
+      <img src="/images/beian.png" style="display: inline-block;">
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Garen Wang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'wMExYSieDga8BTVjfcUnCRh1-gzGzoHsz',
+      appKey     : 'pYUGXalVN490u6EsT2HJA4Rj',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+    <canvas id="live2d" width="400" height="400" class="live2d" style="position: fixed; opacity: 1; left: -110px; bottom: -135px; z-index: 99999; pointer-events: none;"></canvas>
+    <!--script src="https://blog-static.cnblogs.com/files/Arisf/live2dcubismcore.js"></script-->
+    <!--script src="https://blog-static.cnblogs.com/files/Arisf/bundle.js"></script-->
+    <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/live2dcubismcore.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/bundle.js"></script>
+    <script>
+        var resourcesPath = 'https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@v0.1.0/'; // 指定资源文件（模型）保存的路径，使用github的release版本，路径如下https://cdn.jsdelivr.net/gh/用户/库@版本号/资源路径
+        var backImageName = ''; // 指定背景图片 ,默认为空
+        var modelDir = ['jiaran4']; // 指定需要加载的模型
+        initDefine(resourcesPath, backImageName, modelDir); // 初始化模型</script>
+   </script>
+
+</body>
+</html>
