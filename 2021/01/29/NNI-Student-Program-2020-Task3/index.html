@@ -16,15 +16,16 @@
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
 
+
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"121.36.2.124","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"garen-wang.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="Task 3 进阶任务特征工程简介有这么一句话在业界广泛流传：  数据和特征决定了机器学习的上限，而模型和算法只是逼近这个上限而已。  数据是特征的来源，特征是给定算法下模型精确度的最大决定因素，可见提升特征质量意义重大。 特征工程(Feature Engineering)是机器学习的一个重要分支，指的是通过多种数据处理方法，从原始数据提取出若干个能优秀反映问题的特征，以提升最终算法与模型准确率的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NNI Student Program 2020 Task3">
-<meta property="og:url" content="https://121.36.2.124/2021/01/29/NNI-Student-Program-2020-Task3/index.html">
+<meta property="og:url" content="http://garen-wang.cn/2021/01/29/NNI-Student-Program-2020-Task3/index.html">
 <meta property="og:site_name" content="Garen Wang&#39;s Blog">
 <meta property="og:description" content="Task 3 进阶任务特征工程简介有这么一句话在业界广泛流传：  数据和特征决定了机器学习的上限，而模型和算法只是逼近这个上限而已。  数据是特征的来源，特征是给定算法下模型精确度的最大决定因素，可见提升特征质量意义重大。 特征工程(Feature Engineering)是机器学习的一个重要分支，指的是通过多种数据处理方法，从原始数据提取出若干个能优秀反映问题的特征，以提升最终算法与模型准确率的">
 <meta property="og:locale" content="en_US">
@@ -43,7 +44,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3/task3_1.png">
 
-<link rel="canonical" href="https://121.36.2.124/2021/01/29/NNI-Student-Program-2020-Task3/">
+<link rel="canonical" href="http://garen-wang.cn/2021/01/29/NNI-Student-Program-2020-Task3/">
 
 
 <script id="page-configurations">
@@ -86,6 +87,9 @@
   .use-motion .logo-line-after i { right: initial; }
   </style>
 </noscript>
+
+  <script src="https://blog-static.cnblogs.com/files/Arisf/live2dcubismcore.js"></script>
+  <script src="https://blog-static.cnblogs.com/files/Arisf/bundle.js"></script>
 
 </head>
 
@@ -172,6 +176,7 @@
     </div>
   </div>
 
+
 </div>
     </header>
 
@@ -194,7 +199,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://121.36.2.124/2021/01/29/NNI-Student-Program-2020-Task3/">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/01/29/NNI-Student-Program-2020-Task3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -597,5 +602,14 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
 });
 </script>
 
-<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/assets/theresa.model.json"},"display":{"position":"left","width":200,"height":400},"react":{"opacity":0.7}});</script></body>
+
+  <canvas id="live2d" width="150" height="300" class="live2d" style="position: fixed; opacity: 1; left: 0px; bottom: 0px; z-index: 99999; pointer-events: none;"></canvas>
+  <script>
+      var resourcesPath = 'https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@v0.1.0/';
+      var backImageName = '';
+      var modelDir = ['jiaran4'];
+      initDefine(resourcesPath, backImageName, modelDir);
+  </script>
+
+</body>
 </html>
