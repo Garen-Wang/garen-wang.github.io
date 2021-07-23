@@ -79,8 +79,6 @@
   </style>
 </noscript>
 
-  <script src="https://blog-static.cnblogs.com/files/Arisf/live2dcubismcore.js"></script>
-  <script src="https://blog-static.cnblogs.com/files/Arisf/bundle.js"></script>
 
 </head>
 
@@ -398,6 +396,7 @@
   <div id="sidebar-dimmer"></div>
 
 
+
       </div>
     </main>
 
@@ -567,13 +566,17 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
 </script>
 
 
-  <canvas id="live2d" width="150" height="300" class="live2d" style="position: fixed; opacity: 1; left: 0px; bottom: 0px; z-index: 99999; pointer-events: none;"></canvas>
-  <script>
-      var resourcesPath = 'https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@v0.1.0/';
-      var backImageName = '';
-      var modelDir = ['jiaran4'];
-      initDefine(resourcesPath, backImageName, modelDir);
-  </script>
+    <canvas id="live2d" width="400" height="400" class="live2d" style="position: fixed; opacity: 1; left: -110px; bottom: -135px; z-index: 99999; pointer-events: none;"></canvas>
+    <!--script src="https://blog-static.cnblogs.com/files/Arisf/live2dcubismcore.js"></script-->
+    <!--script src="https://blog-static.cnblogs.com/files/Arisf/bundle.js"></script-->
+    <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/live2dcubismcore.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/bundle.js"></script>
+    <script>
+        var resourcesPath = 'https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@v0.1.0/'; // 指定资源文件（模型）保存的路径，使用github的release版本，路径如下https://cdn.jsdelivr.net/gh/用户/库@版本号/资源路径
+        var backImageName = ''; // 指定背景图片 ,默认为空
+        var modelDir = ['jiaran4']; // 指定需要加载的模型
+        initDefine(resourcesPath, backImageName, modelDir); // 初始化模型</script>
+   </script>
 
 </body>
 </html>
