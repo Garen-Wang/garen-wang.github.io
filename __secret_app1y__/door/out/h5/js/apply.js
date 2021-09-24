@@ -18,11 +18,11 @@ var Global_VAR = {
 	getSite: SysUtils.getHttpRoot() + "/base/public/web/getSite", // 申请接口
 	beforeImg: null,
 	infoData: [ // 个人信息数据
-		{ label: "姓名", value: "王樾" }, 
-		{ label: "学号", value: "202030430189" }, 
-		{ label: "学院", value: "计算机科学与工程学院" }, 
+		{ label: "姓名", value: "嘉然Diana" }, 
+		{ label: "学号", value: "672328094" }, 
+		{ label: "学院", value: "枝江学园" }, 
 		{ label: "年级", value: "2020" }, 
-		{ label: "人员类型", value: "本科生" }
+		{ label: "人员类型", value: "是偶像！" }
 	],
 	// 步骤栏
 	stepBox: [     
@@ -73,11 +73,11 @@ var Global_FN = {
 					$("#weuiDialog").show();
 				},
 				success (res) {
-					Global_VAR.infoData[0].value = "王樾" || "";
-					Global_VAR.infoData[1].value = "202030430189" || "";
-					Global_VAR.infoData[2].value = "CollegeName" || "";
-					Global_VAR.infoData[3].value = "inSchool" || "";
-					Global_VAR.infoData[4].value = "DegreeName" || "";
+					Global_VAR.infoData[0].value = d.sPersonName || "";
+					Global_VAR.infoData[1].value = d.sPersonCode || "";
+					Global_VAR.infoData[2].value = d.sCollegeName || "";
+					Global_VAR.infoData[3].value = d.iInSchool || "";
+					Global_VAR.infoData[4].value = d.sDegreeName || "";
 		
 					Global_FN.infoData();
 
@@ -191,13 +191,13 @@ var Global_FN = {
 			let form = layui.form;
 			let $ = layui.jquery;
 
-			$(".info_box").empty();
-			let sList = "";
-			$.each(Global_VAR.infoData, (index, item) => {
-				// console.log(item);
-				sList += '<div class="info_list"><span>'+ item.label +'</span><span>'+ item.value +'</span></div>';
-			})
-			$(".info_box").html(sList);
+			// $(".info_box").empty();
+			// let sList = "";
+			// $.each(Global_VAR.infoData, (index, item) => {
+			// 	// console.log(item);
+			// 	sList += '<div class="info_list"><span>'+ item.label +'</span><span>'+ item.value +'</span></div>';
+			// })
+			// $(".info_box").html(sList);
 	
 			form.render();
 		});
