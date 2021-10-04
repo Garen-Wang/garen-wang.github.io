@@ -30,7 +30,7 @@
 <meta property="og:description" content="弱类型两种判等类型php有两种判等的类型，&#x3D;&#x3D;与&#x3D;&#x3D;&#x3D;。 其中，&#x3D;&#x3D;&#x3D;是强类型的判等，会先判断两边类型是否相等，之后在进行比较。 然而，&#x3D;&#x3D;是弱类型的判等，会发生隐式类型转换后进行比较。 NULL、0、”0”、false首先给大家看个好玩的： 1234567891011121314151617&lt;?php    var_dump(0&#x3D;&#x3D;&quot;0&quot;); &#x2F;&#x2F; bool(true)">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-07-11T09:20:11.000Z">
-<meta property="article:modified_time" content="2021-09-21T01:17:12.330Z">
+<meta property="article:modified_time" content="2021-10-04T09:25:13.129Z">
 <meta property="article:author" content="Garen Wang">
 <meta name="twitter:card" content="summary">
 
@@ -217,7 +217,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-21 09:17:12" itemprop="dateModified" datetime="2021-09-21T09:17:12+08:00">2021-09-21</time>
+                <time title="Modified: 2021-10-04 17:25:13" itemprop="dateModified" datetime="2021-10-04T17:25:13+08:00">2021-10-04</time>
               </span>
 
           
@@ -271,6 +271,10 @@
 <p>而如果想要达成这样的条件：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="variable">$param1</span> !== <span class="variable">$param2</span> &amp;&amp; md5(<span class="variable">$param1</span>) === md5(<span class="variable">$param2</span>)) &#123;</span><br><span class="line">    <span class="comment">// then</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>则可以将<code>$param1</code>和<code>$param2</code>定义为含有不同元素的两个数组。由于<code>md5</code>函数传入数组会返回<code>null</code>，两个强类型条件都得到满足。</p>
+<p>不过如果两个参数都被强转了就没法传入数组来绕过，类似如下情况：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((<span class="keyword">string</span>)<span class="variable">$_POST</span>[<span class="string">&#x27;a&#x27;</span>] !== (<span class="keyword">string</span>)<span class="variable">$_POST</span>[<span class="string">&#x27;b&#x27;</span>] &amp;&amp; md5(<span class="variable">$_POST</span>[<span class="string">&#x27;a&#x27;</span>]) === md5(<span class="variable">$_POST</span>[<span class="string">&#x27;b&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">echo</span> `<span class="variable">$cmd</span>`;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>只能用一组特别特殊的md5碰撞值来绕过：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a&#x3D;%4d%c9%68%ff%0e%e3%5c%20%95%72%d4%77%7b%72%15%87%d3%6f%a7%b2%1b%dc%56%b7%4a%3d%c0%78%3e%7b%95%18%af%bf%a2%00%a8%28%4b%f3%6e%8e%4b%55%b3%5f%42%75%93%d8%49%67%6d%a0%d1%55%5d%83%60%fb%5f%07%fe%a2</span><br><span class="line">b&#x3D;b&#x3D;%4d%c9%68%ff%0e%e3%5c%20%95%72%d4%77%7b%72%15%87%d3%6f%a7%b2%1b%dc%56%b7%4a%3d%c0%78%3e%7b%95%18%af%bf%a2%02%a8%28%4b%f3%6e%8e%4b%55%b3%5f%42%75%93%d8%49%67%6d%a0%d1%d5%5d%83%60%fb%5f%07%fe%a2</span><br></pre></td></tr></table></figure>
 <h2 id="json绕过"><a href="#json绕过" class="headerlink" title="json绕过"></a>json绕过</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="variable">$message</span> = json_decode(<span class="variable">$_POST</span>[<span class="string">&#x27;message&#x27;</span>]);</span><br><span class="line">    <span class="variable">$key</span> =<span class="string">&quot;*********&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$message</span>-&gt;key == <span class="variable">$key</span>) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;flag&quot;</span>;</span><br><span class="line">    &#125; </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 <p>虽然不知道<code>$key</code>的值，但是可以赌他不以数字开头，只要他不以数字开头，一旦发生弱类型的隐式转换，只要令<code>$message-&gt;key</code>为0就可以绕过了。</p>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
@@ -373,7 +377,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
