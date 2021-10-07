@@ -182,6 +182,119 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/07/11/PHP-Language-Features-Summary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/11/PHP-Language-Features-Summary/" class="post-title-link" itemprop="url">PHP Language Features Summary</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-07-11 17:20:11" itemprop="dateCreated datePublished" datetime="2021-07-11T17:20:11+08:00">2021-07-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-10-04 17:25:13" itemprop="dateModified" datetime="2021-10-04T17:25:13+08:00">2021-10-04</time>
+              </span>
+
+          
+            <span id="/2021/07/11/PHP-Language-Features-Summary/" class="post-meta-item leancloud_visitors" data-flag-title="PHP Language Features Summary" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/07/11/PHP-Language-Features-Summary/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/11/PHP-Language-Features-Summary/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="弱类型"><a href="#弱类型" class="headerlink" title="弱类型"></a>弱类型</h2><h3 id="两种判等类型"><a href="#两种判等类型" class="headerlink" title="两种判等类型"></a>两种判等类型</h3><p>php有两种判等的类型，<code>==</code>与<code>===</code>。</p>
+<p>其中，<code>===</code>是强类型的判等，会先判断两边类型是否相等，之后在进行比较。</p>
+<p>然而，<code>==</code>是弱类型的判等，会发生隐式类型转换后进行比较。</p>
+<h3 id="NULL、0、”0”、false"><a href="#NULL、0、”0”、false" class="headerlink" title="NULL、0、”0”、false"></a>NULL、0、”0”、false</h3><p>首先给大家看个好玩的：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    var_dump(<span class="number">0</span>==<span class="string">&quot;0&quot;</span>); <span class="comment">// bool(true)</span></span><br><span class="line">    var_dump(<span class="number">0</span>==<span class="literal">NULL</span>); <span class="comment">// bool(true)</span></span><br><span class="line">    var_dump(<span class="number">0</span>==<span class="literal">false</span>); <span class="comment">// bool(true)</span></span><br><span class="line"></span><br><span class="line">    var_dump(<span class="string">&quot;0&quot;</span>==<span class="literal">false</span>); <span class="comment">// bool(true)</span></span><br><span class="line">    var_dump(<span class="string">&quot;0&quot;</span>==<span class="literal">NULL</span>); <span class="comment">// bool(false)</span></span><br><span class="line">    var_dump(<span class="string">&quot;0&quot;</span>==<span class="number">0</span>); <span class="comment">// bool(false)</span></span><br><span class="line"></span><br><span class="line">    var_dump(<span class="literal">NULL</span>==<span class="string">&quot;0&quot;</span>); <span class="comment">// bool(false)</span></span><br><span class="line">    var_dump(<span class="literal">NULL</span>==<span class="number">0</span>); <span class="comment">// bool(true)</span></span><br><span class="line">    var_dump(<span class="literal">NULL</span>==<span class="literal">false</span>); <span class="comment">// bool(true)</span></span><br><span class="line"></span><br><span class="line">    var_dump(<span class="literal">false</span>==<span class="string">&quot;0&quot;</span>); <span class="comment">// bool(true)</span></span><br><span class="line">    var_dump(<span class="literal">false</span>==<span class="literal">NULL</span>); <span class="comment">// bool(true)</span></span><br><span class="line">    var_dump(<span class="literal">false</span>==<span class="number">0</span>); <span class="comment">// bool(true)</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="字符串与数字的弱类型判等"><a href="#字符串与数字的弱类型判等" class="headerlink" title="字符串与数字的弱类型判等"></a>字符串与数字的弱类型判等</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">var_dump(<span class="string">&quot;admin&quot;</span>==<span class="number">0</span>);  <span class="comment">//true</span></span><br><span class="line">var_dump(<span class="string">&quot;1admin&quot;</span>==<span class="number">1</span>); <span class="comment">//true</span></span><br><span class="line">var_dump(<span class="string">&quot;admin1&quot;</span>==<span class="number">1</span>) <span class="comment">//false</span></span><br><span class="line">var_dump(<span class="string">&quot;admin1&quot;</span>==<span class="number">0</span>) <span class="comment">//true</span></span><br><span class="line">var_dump(<span class="string">&quot;0e123456&quot;</span>==<span class="string">&quot;0e4456789&quot;</span>); <span class="comment">//true, 0e123456 = 0e4456789 = 0 in scientific notation</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>&quot;1admin&quot;==1</code>，<code>&quot;admin1&quot;==0</code>说明字符串隐式转数值时只看最前面的合法可转的数值表示。</p>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><h3 id="MD5碰撞绕过"><a href="#MD5碰撞绕过" class="headerlink" title="MD5碰撞绕过"></a>MD5碰撞绕过</h3><p>当我们需要判断两个字符串的MD5值是否相同，我们通常会这么做：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">if</span> (md5(<span class="variable">$Username</span>) != md5(<span class="variable">$Password</span>)) &#123;<span class="variable">$logined</span> = <span class="literal">false</span>; &#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>那么利用上面<code>&quot;0e123456&quot;==&quot;0e4456789&quot;</code>的性质，如果存在两个字符串，它们的前两位都恰好是<code>0e</code>，那么就成功绕过了这个分支。</p>
+<p>几个MD5值以<code>0e</code>开头的字符串：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">QNKCDZO</span><br><span class="line">0e830400451993494058024219903391</span><br><span class="line"></span><br><span class="line">s878926199a</span><br><span class="line">0e545993274517709034328855841020</span><br><span class="line">  </span><br><span class="line">s155964671a</span><br><span class="line">0e342768416822451524974117254469</span><br><span class="line">  </span><br><span class="line">s214587387a</span><br><span class="line">0e848240448830537924465865611904</span><br><span class="line">  </span><br><span class="line">s214587387a</span><br><span class="line">0e848240448830537924465865611904</span><br><span class="line">  </span><br><span class="line">s878926199a</span><br><span class="line">0e545993274517709034328855841020</span><br><span class="line">  </span><br><span class="line">s1091221200a</span><br><span class="line">0e940624217856561557816327384675</span><br><span class="line">  </span><br><span class="line">s1885207154a</span><br><span class="line">0e509367213418206700842008763514</span><br></pre></td></tr></table></figure>
+<p>MD5和双MD5都是0e开头的几个值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CbDLytmyGm2xQyaLNhWn</span><br><span class="line">770hQgrBOjrcqftrlaZk</span><br><span class="line">7r4lGXCH2Ksu2JNT3BYM</span><br></pre></td></tr></table></figure>
+<p>md5前后都是0e开头的值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0e215962017</span><br><span class="line">0eRnJWi9XnKd9Z7x</span><br></pre></td></tr></table></figure>
+<p>而如果想要达成这样的条件：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="variable">$param1</span> !== <span class="variable">$param2</span> &amp;&amp; md5(<span class="variable">$param1</span>) === md5(<span class="variable">$param2</span>)) &#123;</span><br><span class="line">    <span class="comment">// then</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>则可以将<code>$param1</code>和<code>$param2</code>定义为含有不同元素的两个数组。由于<code>md5</code>函数传入数组会返回<code>null</code>，两个强类型条件都得到满足。</p>
+<p>不过如果两个参数都被强转了就没法传入数组来绕过，类似如下情况：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((<span class="keyword">string</span>)<span class="variable">$_POST</span>[<span class="string">&#x27;a&#x27;</span>] !== (<span class="keyword">string</span>)<span class="variable">$_POST</span>[<span class="string">&#x27;b&#x27;</span>] &amp;&amp; md5(<span class="variable">$_POST</span>[<span class="string">&#x27;a&#x27;</span>]) === md5(<span class="variable">$_POST</span>[<span class="string">&#x27;b&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">echo</span> `<span class="variable">$cmd</span>`;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>只能用一组特别特殊的md5碰撞值来绕过：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a&#x3D;%4d%c9%68%ff%0e%e3%5c%20%95%72%d4%77%7b%72%15%87%d3%6f%a7%b2%1b%dc%56%b7%4a%3d%c0%78%3e%7b%95%18%af%bf%a2%00%a8%28%4b%f3%6e%8e%4b%55%b3%5f%42%75%93%d8%49%67%6d%a0%d1%55%5d%83%60%fb%5f%07%fe%a2</span><br><span class="line">b&#x3D;b&#x3D;%4d%c9%68%ff%0e%e3%5c%20%95%72%d4%77%7b%72%15%87%d3%6f%a7%b2%1b%dc%56%b7%4a%3d%c0%78%3e%7b%95%18%af%bf%a2%02%a8%28%4b%f3%6e%8e%4b%55%b3%5f%42%75%93%d8%49%67%6d%a0%d1%d5%5d%83%60%fb%5f%07%fe%a2</span><br></pre></td></tr></table></figure>
+<h2 id="json绕过"><a href="#json绕过" class="headerlink" title="json绕过"></a>json绕过</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="variable">$message</span> = json_decode(<span class="variable">$_POST</span>[<span class="string">&#x27;message&#x27;</span>]);</span><br><span class="line">    <span class="variable">$key</span> =<span class="string">&quot;*********&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$message</span>-&gt;key == <span class="variable">$key</span>) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;flag&quot;</span>;</span><br><span class="line">    &#125; </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>虽然不知道<code>$key</code>的值，但是可以赌他不以数字开头，只要他不以数字开头，一旦发生弱类型的隐式转换，只要令<code>$message-&gt;key</code>为0就可以绕过了。</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Mrsm1th/p/6745532.html">https://www.cnblogs.com/Mrsm1th/p/6745532.html</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/07/10/Establish-SSH-Connection-to-Servers-in-School/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1340,105 +1453,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/01/23/NNI-Exploration-Learning-Notes/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/23/NNI-Exploration-Learning-Notes/" class="post-title-link" itemprop="url">NNI Exploration Learning Notes</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-01-23 23:19:35" itemprop="dateCreated datePublished" datetime="2021-01-23T23:19:35+08:00">2021-01-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
-              </span>
-
-          
-            <span id="/2021/01/23/NNI-Exploration-Learning-Notes/" class="post-meta-item leancloud_visitors" data-flag-title="NNI Exploration Learning Notes" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/01/23/NNI-Exploration-Learning-Notes/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/23/NNI-Exploration-Learning-Notes/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="未完成任务"><a href="#未完成任务" class="headerlink" title="未完成任务"></a>未完成任务</h2><h3 id="Task-2-2"><a href="#Task-2-2" class="headerlink" title="Task 2.2"></a>Task 2.2</h3><p>-[] HPO<br>-[] 在搜索空间中选择随机结构，并验证性能<br>-[] NAS</p>
-<h3 id="Task-3-1"><a href="#Task-3-1" class="headerlink" title="Task 3.1"></a>Task 3.1</h3><p>-[] 跑通NNI Feature Engineering Sample</p>
-<h3 id="Task-3-2"><a href="#Task-3-2" class="headerlink" title="Task 3.2"></a>Task 3.2</h3><h4 id="Task-3-2-1"><a href="#Task-3-2-1" class="headerlink" title="Task 3.2.1"></a>Task 3.2.1</h4><h4 id="Task-3-2-2"><a href="#Task-3-2-2" class="headerlink" title="Task 3.2.2"></a>Task 3.2.2</h4><h3 id="Task-4"><a href="#Task-4" class="headerlink" title="Task 4"></a>Task 4</h3><h2 id="HPO"><a href="#HPO" class="headerlink" title="HPO"></a>HPO</h2><p>超参调优在NNI中比较好实现，只要有参数和模型的搜索空间，就可以利用NNI自带的tuner来做调参工作。</p>
-<h3 id="Assessor"><a href="#Assessor" class="headerlink" title="Assessor"></a>Assessor</h3><p>在数据量较大的情况下，一般一个trial普遍会比较久，NNI支持Assessor，实现在调优过程中类似“剪枝”的功能，提供了提前终止某些trial的策略以节省实验时间。</p>
-<p>需要添加assessor时只需在<code>config.yml</code>中添加，这里以Curvefitting为例：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">assessor:</span></span><br><span class="line">  <span class="attr">builtinAssessorName:</span> <span class="string">Curvefitting</span></span><br><span class="line">  <span class="attr">classArgs:</span></span><br><span class="line">    <span class="attr">epoch_num:</span> <span class="number">10</span></span><br><span class="line">    <span class="attr">threshold:</span> <span class="number">0.9</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="NAS"><a href="#NAS" class="headerlink" title="NAS"></a>NAS</h2><h3 id="搜索空间的编写"><a href="#搜索空间的编写" class="headerlink" title="搜索空间的编写"></a>搜索空间的编写</h3><p>在做NAS的过程中，我们需要手动写出待搜索的模型的类，我们借助NNI中的mutables来实现模型搜索空间的构建。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NeuralNet</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(NeuralNet, self).__init__()</span><br><span class="line">        self.conv1 = mutables.LayerChoice([</span><br><span class="line">            nn.Conv2d(<span class="number">3</span>, <span class="number">8</span>, <span class="number">3</span>, <span class="number">1</span>, padding=<span class="number">1</span>),</span><br><span class="line">            nn.Conv2d(<span class="number">3</span>, <span class="number">8</span>, <span class="number">5</span>, <span class="number">1</span>, padding=<span class="number">2</span>)</span><br><span class="line">        ], key=<span class="string">&#x27;conv1&#x27;</span>)</span><br><span class="line">        self.mid_conv = mutables.LayerChoice([</span><br><span class="line">            nn.Conv2d(<span class="number">8</span>, <span class="number">8</span>, <span class="number">3</span>, <span class="number">1</span>, padding=<span class="number">1</span>),</span><br><span class="line">            nn.Conv2d(<span class="number">8</span>, <span class="number">8</span>, <span class="number">5</span>, <span class="number">1</span>, padding=<span class="number">2</span>)</span><br><span class="line">        ], key=<span class="string">&#x27;mid_conv&#x27;</span>)</span><br><span class="line">        self.conv2 = nn.Conv2d(<span class="number">8</span>, <span class="number">16</span>, <span class="number">5</span>, <span class="number">1</span>)</span><br><span class="line">        self.pool = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">        self.func1 = nn.Linear(<span class="number">16</span> * <span class="number">5</span> * <span class="number">5</span>, <span class="number">120</span>)</span><br><span class="line">        self.func2 = nn.Linear(<span class="number">120</span>, <span class="number">84</span>)</span><br><span class="line">        self.func3 = nn.Linear(<span class="number">84</span>, <span class="number">10</span>)</span><br><span class="line">        self.input_switch = mutables.InputChoice(n_candidates=<span class="number">1</span>, key=<span class="string">&#x27;skip&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        x = self.pool(F.relu(self.conv1(x)))</span><br><span class="line">        x = self.mid_conv(x)</span><br><span class="line">        skip_x = self.input_switch([x])</span><br><span class="line">        x = self.conv2(x)</span><br><span class="line">        <span class="keyword">if</span> skip_x <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            x = x + skip_x</span><br><span class="line">        x = self.pool(F.relu(x))</span><br><span class="line">        x = x.view(-<span class="number">1</span>, <span class="number">16</span> * <span class="number">5</span> * <span class="number">5</span>)</span><br><span class="line">        x = F.relu(self.func1(x))</span><br><span class="line">        x = F.relu(self.func2(x))</span><br><span class="line">        x = self.func3(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
-<p><code>mutables.LayerChoice</code>实现了神经网络模型中一层的多选一，待选的神经网络层只需要在里面列出来即可。例如上面的代码，就实现了3*3和5*5两种二维卷积层的选择空间。</p>
-<p><code>mutables.InputChoice</code>实现了可跳过连接。在上述代码中，表示了mid_conv层是可跳过层。可跳过层的前后代码保持不变，在可跳过层则需要从可能连接加入到后一层的输出中。</p>
-<h3 id="Classical-NAS"><a href="#Classical-NAS" class="headerlink" title="Classical NAS"></a>Classical NAS</h3><h3 id="One-shot-NAS"><a href="#One-shot-NAS" class="headerlink" title="One-shot NAS"></a>One-shot NAS</h3><h3 id="DARTS"><a href="#DARTS" class="headerlink" title="DARTS"></a>DARTS</h3><h3 id="ENAS"><a href="#ENAS" class="headerlink" title="ENAS"></a>ENAS</h3>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1506,7 +1524,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1707,7 +1725,7 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
   <!-- script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.2.2/js/live2dcubismcore.js"></script -->
   <!-- script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.2.2/js/bundle.js"></script -->
 
-  <canvas id="live2d-canvas" width="400" height="400" style="position: fixed; opacity: 1; left: -110px; bottom: -135px; z-index: 99999; background-color: white;"></canvas>
+  <canvas id="live2d" width="400" height="400" style="position: fixed; opacity: 1; left: -110px; bottom: -135px; z-index: 99999;"></canvas>
   <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/live2dcubismcore.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/bundle.js"></script>
   <script>

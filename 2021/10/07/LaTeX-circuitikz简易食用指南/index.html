@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Noto Serif SC:300,300italic,400,400italic,700,700italic|Fira Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"garen-wang.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="写前的扯淡今天下午在做电路作业，画电路把自己画累了，不想拿格子一笔一笔画电路，于是看看能不能用LaTeX来写。 就没听说过由于懒得手写作业而来用TeX画电路的，属实离谱 circuitikz是tikz的超集，是在tikz的基础上添加了专属画电路的语法内容。 import1\usepackage&amp;#123;circuitikz&amp;#125; 不需要\usepackage&amp;#123;tikz&amp;#125;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LaTeX circuitikz简易食用指南">
+<meta property="og:url" content="http://garen-wang.cn/2021/10/07/LaTeX-circuitikz%E7%AE%80%E6%98%93%E9%A3%9F%E7%94%A8%E6%8C%87%E5%8D%97/index.html">
+<meta property="og:site_name" content="Garen Wang&#39;s Blog">
+<meta property="og:description" content="写前的扯淡今天下午在做电路作业，画电路把自己画累了，不想拿格子一笔一笔画电路，于是看看能不能用LaTeX来写。 就没听说过由于懒得手写作业而来用TeX画电路的，属实离谱 circuitikz是tikz的超集，是在tikz的基础上添加了专属画电路的语法内容。 import1\usepackage&amp;#123;circuitikz&amp;#125; 不需要\usepackage&amp;#123;tikz&amp;#125;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/./LaTeX-circuitikz简易食用指南/hello_world.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/LaTeX-circuitikz简易食用指南/p35.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/LaTeX-circuitikz简易食用指南/p36.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/LaTeX-circuitikz简易食用指南/p37.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/LaTeX-circuitikz简易食用指南/p38.png">
+<meta property="article:published_time" content="2021-10-07T13:34:11.000Z">
+<meta property="article:modified_time" content="2021-10-07T14:33:09.184Z">
+<meta property="article:author" content="Garen Wang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://qiniu.garen-wang.cn/static/images/./LaTeX-circuitikz简易食用指南/hello_world.png">
+
+<link rel="canonical" href="http://garen-wang.cn/2021/10/07/LaTeX-circuitikz%E7%AE%80%E6%98%93%E9%A3%9F%E7%94%A8%E6%8C%87%E5%8D%97/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>LaTeX circuitikz简易食用指南 | Garen Wang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Garen Wang's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/10/07/LaTeX-circuitikz%E7%AE%80%E6%98%93%E9%A3%9F%E7%94%A8%E6%8C%87%E5%8D%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LaTeX circuitikz简易食用指南
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-10-07 21:34:11 / Modified: 22:33:09" itemprop="dateCreated datePublished" datetime="2021-10-07T21:34:11+08:00">2021-10-07</time>
+            </span>
+
+          
+            <span id="/2021/10/07/LaTeX-circuitikz%E7%AE%80%E6%98%93%E9%A3%9F%E7%94%A8%E6%8C%87%E5%8D%97/" class="post-meta-item leancloud_visitors" data-flag-title="LaTeX circuitikz简易食用指南" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/10/07/LaTeX-circuitikz%E7%AE%80%E6%98%93%E9%A3%9F%E7%94%A8%E6%8C%87%E5%8D%97/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/10/07/LaTeX-circuitikz%E7%AE%80%E6%98%93%E9%A3%9F%E7%94%A8%E6%8C%87%E5%8D%97/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="写前的扯淡"><a href="#写前的扯淡" class="headerlink" title="写前的扯淡"></a>写前的扯淡</h2><p>今天下午在做电路作业，画电路把自己画累了，不想拿格子一笔一笔画电路，于是看看能不能用LaTeX来写。</p>
+<p><del>就没听说过由于懒得手写作业而来用TeX画电路的，属实离谱</del></p>
+<p>circuitikz是tikz的超集，是在tikz的基础上添加了专属画电路的语法内容。</p>
+<h2 id="import"><a href="#import" class="headerlink" title="import"></a>import</h2><figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">\usepackage</span>&#123;circuitikz&#125;</span><br></pre></td></tr></table></figure>
+<p>不需要<code>\usepackage&#123;tikz&#125;</code>。</p>
+<h2 id="hello-world"><a href="#hello-world" class="headerlink" title="hello world"></a>hello world</h2><blockquote>
+<p>摘自<a target="_blank" rel="noopener" href="https://www.overleaf.com/learn/latex/LaTeX_Graphics_using_TikZ%3A_A_Tutorial_for_Beginners_(Part_4">overleaf的tutorial</a>%E2%80%94Circuit_Diagrams_Using_Circuitikz)</p>
+</blockquote>
+<p>我们直接拿一段hello world难度的代码来分析下，看看你要写的内容表示了啥：</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">\begin</span>&#123;circuitikz&#125;</span><br><span class="line"><span class="keyword">\draw</span> (0,0) to[battery] (0,4)</span><br><span class="line">  to[ammeter] (4,4) </span><br><span class="line">  to[C] (4,0) -- (3.5,0)</span><br><span class="line">  to[lamp, *-*] (0.5,0) -- (0,0)</span><br><span class="line">(0.5,0) -- (0.5,-2)</span><br><span class="line">  to[voltmeter] (3.5,-2) -- (3.5,0)</span><br><span class="line">;</span><br><span class="line"><span class="keyword">\end</span>&#123;circuitikz&#125;</span><br></pre></td></tr></table></figure>
+<img data-src="http://qiniu.garen-wang.cn/static/images/./LaTeX-circuitikz简易食用指南/hello_world.png">
+<h2 id="对hello-world的分析"><a href="#对hello-world的分析" class="headerlink" title="对hello world的分析"></a>对hello world的分析</h2><p>代码的最外层框架是这个样子：</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">\begin</span>&#123;circuitikz&#125;</span><br><span class="line"><span class="keyword">\draw</span> (0, 0)</span><br><span class="line">&lt;your-code&gt;</span><br><span class="line">;</span><br><span class="line"><span class="keyword">\end</span>&#123;circuitikz&#125;</span><br></pre></td></tr></table></figure>
+<p>这里其实可以像tikz那样在里面写多个<code>\draw</code>语句，如果有很多并联电路可以自己用到。</p>
+<p>每条具体的语句中有几个重点的地方：</p>
+<ul>
+<li><code>to</code>后面中括号可以填内容，第一个表示了元件的种类，后面的是可选参数，关于可选参数后面再分析。</li>
+<li>中括号后可以紧跟一个坐标，这代表着从<strong>当前的起点</strong>到该坐标居中绘出上面指定的电路元件。</li>
+<li>两个坐标可以直接用<code>--</code>来连接，这代表着用直的导线来连接这两个点。</li>
+<li>在我自己认为，一个<code>\draw</code>语句最好是描述一个网孔的电路元件分布情况，如果有并联的，虽然也可以在同一个<code>\draw</code>语句中完成，不过我倾向于另起几个<code>\draw</code>来完成。</li>
+</ul>
+<h2 id="基本电路元件"><a href="#基本电路元件" class="headerlink" title="基本电路元件"></a>基本电路元件</h2><p>这部分是填在中括号的第一个参数中的：</p>
+<ul>
+<li>current source: I</li>
+<li>voltage source: V</li>
+<li>capacitance: C</li>
+<li>voltmeter: voltmeter</li>
+<li>ammeter: ammeter</li>
+<li>lamp: lamp</li>
+<li>resistor: R</li>
+<li>battery: battery</li>
+<li>wire: short</li>
+</ul>
+<p>电路元件自然有不同的样式风格，就比如电阻可以是一个矩形也可以是折线，一般我们通过选用american或者european来确定电路的样式。</p>
+<h2 id="可选参数"><a href="#可选参数" class="headerlink" title="可选参数"></a>可选参数</h2><h3 id="标节点"><a href="#标节点" class="headerlink" title="标节点"></a>标节点</h3><ul>
+<li><code>o-o</code>：在连线的起始段和末端都画一个空心点</li>
+<li><code>*-*</code>：在连线的起始段和末端都画一个实心点</li>
+<li><code>o-*</code></li>
+<li><code>*-o</code></li>
+</ul>
+<h3 id="加样式"><a href="#加样式" class="headerlink" title="加样式"></a>加样式</h3><ul>
+<li><code>l=</code></li>
+<li><code>i=</code></li>
+<li><code>v=</code>：一个弧线的箭头</li>
+<li><code>f=</code>：一个浮在旁边的箭头，经常用来标电流，及其常用</li>
+<li><code>f_=</code>：数据或者标识符通过加一个下划线可以换一边</li>
+</ul>
+<h3 id="加单位"><a href="#加单位" class="headerlink" title="加单位"></a>加单位</h3><ul>
+<li><code>&lt;\ampere&gt;</code></li>
+<li><code>&lt;\volt&gt;</code></li>
+<li><code>&lt;\frad&gt;</code></li>
+<li><code>&lt;\ohm&gt;</code></li>
+<li><code>&lt;\kilo&gt;</code>, <code>&lt;\milli&gt;</code>, …</li>
+<li>当然，传统套行内公式的方法也是可以的</li>
+</ul>
+<h3 id="加颜色"><a href="#加颜色" class="headerlink" title="加颜色"></a>加颜色</h3><ul>
+<li><code>color=red</code></li>
+</ul>
+<h3 id="调大小"><a href="#调大小" class="headerlink" title="调大小"></a>调大小</h3><p>一般其实是不用调的，挤的话直接调大一点就好了，不过想调元件大小也不是不可以啦（</p>
+<ul>
+<li><code>\ctikzset&#123;bipoles/resistor/height=0.15&#125;</code>：斜杠分隔出若干个想调大小参数的元件名称，这一行调高</li>
+<li><code>\ctikzset&#123;bipoles/resistor/width=0.4&#125;</code>：也可以调宽</li>
+</ul>
+<h3 id="特殊的"><a href="#特殊的" class="headerlink" title="特殊的"></a>特殊的</h3><ul>
+<li><code>V&lt;=10V</code>：如果想要画的电压源的方向跟默认相反，就手动调整</li>
+<li><code>f&gt;^=i</code>：在流入方向加一个箭头，标志为i</li>
+</ul>
+<h2 id="examples"><a href="#examples" class="headerlink" title="examples"></a>examples</h2><figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">\begin</span>&#123;circuitikz&#125;[european]</span><br><span class="line">    <span class="keyword">\draw</span> (0, 0)</span><br><span class="line">    to [R=<span class="built_in">$</span>R<span class="built_in">_</span>2<span class="built_in">$</span>] (0, 2) -- (0, 6)</span><br><span class="line">    to [I=<span class="built_in">$</span>i<span class="built_in">_</span>&#123;s1&#125;<span class="built_in">$</span>] (6, 6) -- (6, 2)</span><br><span class="line">    to [V&lt;=<span class="built_in">$</span>v<span class="built_in">_</span>s<span class="built_in">$</span>] (6, 0)</span><br><span class="line">    to [short, f=i] (3, 0) -- (0, 0)</span><br><span class="line">    (6, 4.5)</span><br><span class="line">    to [R=<span class="built_in">$</span>R<span class="built_in">_</span>1<span class="built_in">$</span>] (0, 4.5)</span><br><span class="line">    (6, 3)</span><br><span class="line">    to [R=<span class="built_in">$</span>R<span class="built_in">_</span>3<span class="built_in">$</span>] (3, 3) -- (2, 3)</span><br><span class="line">    to [I<span class="built_in">_</span>=<span class="built_in">$</span>i<span class="built_in">_</span>&#123;s2&#125;<span class="built_in">$</span>] (0, 3)</span><br><span class="line">    (2, 3)</span><br><span class="line">    to [R=<span class="built_in">$</span>R<span class="built_in">_</span>4<span class="built_in">$</span>, f&gt;<span class="built_in">^</span>=<span class="built_in">$</span>i<span class="built_in">_</span>4<span class="built_in">$</span>] (2, 0)</span><br><span class="line">    ;</span><br><span class="line">    <span class="comment">% \draw (5, 0) to [open, i=$i$] (4, 0);</span></span><br><span class="line">    <span class="comment">% \draw (2, 3) to [open, i=$i_4$] (2, 2);</span></span><br><span class="line"><span class="keyword">\end</span>&#123;circuitikz&#125;</span><br></pre></td></tr></table></figure>
+<img data-src="http://qiniu.garen-wang.cn/static/images/LaTeX-circuitikz简易食用指南/p35.png">
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">\begin</span>&#123;circuitikz&#125;[european]</span><br><span class="line">    <span class="keyword">\draw</span> (0, 0)</span><br><span class="line">    to [V=9V] (0, 4)</span><br><span class="line">    to [short] (4, 4)</span><br><span class="line">    to [R=2&lt;<span class="keyword">\ohm</span>&gt;] (5, 4) -- (6, 4)</span><br><span class="line">    to [V&lt;=3V] (7, 4) -- (8, 4)</span><br><span class="line">    to [R=3&lt;<span class="keyword">\ohm</span>&gt;] (9, 4) -- (10, 4)</span><br><span class="line">    to [V=4V] (11, 4) -- (12, 4)</span><br><span class="line">    to [R=6&lt;<span class="keyword">\ohm</span>&gt;, f&gt;<span class="built_in">^</span>=i] (12, 0) -- (0, 0)</span><br><span class="line">    ;</span><br><span class="line">    <span class="keyword">\draw</span> (2, 4)</span><br><span class="line">    to [R=9&lt;<span class="keyword">\ohm</span>&gt;] (2, 0);</span><br><span class="line">    <span class="keyword">\draw</span> (3, 4)</span><br><span class="line">    to [R=3&lt;<span class="keyword">\ohm</span>&gt;] (3, 2)</span><br><span class="line">    to [I&lt;=2A] (3, 0);</span><br><span class="line">    <span class="keyword">\draw</span> (7.5, 4)</span><br><span class="line">    to [R=2&lt;<span class="keyword">\ohm</span>&gt;] (7.5, 2)</span><br><span class="line">    to [V&lt;=10V] (7.5, 0);</span><br><span class="line"><span class="keyword">\end</span>&#123;circuitikz&#125;</span><br></pre></td></tr></table></figure>
+<img data-src="http://qiniu.garen-wang.cn/static/images/LaTeX-circuitikz简易食用指南/p36.png">
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">\begin</span>&#123;circuitikz&#125;[european]</span><br><span class="line">    <span class="keyword">\draw</span> (0, 0)</span><br><span class="line">    to [R=2&lt;<span class="keyword">\ohm</span>&gt;] (0, 2) -- (0, 3)</span><br><span class="line">    to [R=1&lt;<span class="keyword">\ohm</span>&gt;] (0, 4) -- (0, 5)</span><br><span class="line">    to [short] (4, 5) -- (5, 5)</span><br><span class="line">    to [R=2&lt;<span class="keyword">\ohm</span>&gt;, f&gt;=i] (8, 5)</span><br><span class="line">    to [V&lt;=10V] (8, 0) -- (0, 0)</span><br><span class="line">    (5, 0)</span><br><span class="line">    to [R=2&lt;<span class="keyword">\ohm</span>&gt;] (5, 2) -- (5, 3)</span><br><span class="line">    to [R=4&lt;<span class="keyword">\ohm</span>&gt;] (5, 4) -- (5, 5)</span><br><span class="line">    (0, 2.3)</span><br><span class="line">    to [I=9A] (5, 2.3)</span><br><span class="line">    ;</span><br><span class="line"><span class="keyword">\end</span>&#123;circuitikz&#125;</span><br></pre></td></tr></table></figure>
+<img data-src="http://qiniu.garen-wang.cn/static/images/LaTeX-circuitikz简易食用指南/p37.png">
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">\begin</span>&#123;circuitikz&#125;[european]</span><br><span class="line">    <span class="keyword">\draw</span> (0, 0)</span><br><span class="line">    to [short] (0, 6)</span><br><span class="line">    to [R=4&lt;<span class="keyword">\ohm</span>&gt;] (3, 6)</span><br><span class="line">    to [R=6&lt;<span class="keyword">\ohm</span>&gt;] (6, 6)</span><br><span class="line">    to [short] (6, 0)</span><br><span class="line">    to [V=10V] (0, 0)</span><br><span class="line">    (0, 3)</span><br><span class="line">    to [R=6&lt;<span class="keyword">\ohm</span>&gt;] (3, 3)</span><br><span class="line">    to [R=4&lt;<span class="keyword">\ohm</span>&gt;] (6, 3)</span><br><span class="line">    ;</span><br><span class="line">    <span class="keyword">\draw</span></span><br><span class="line">    (3, 6) node[label=&#123;[font=<span class="keyword">\footnotesize</span>]above:a&#125;] &#123;&#125;</span><br><span class="line">    to [R=<span class="built_in">$</span>R<span class="built_in">_</span>x<span class="built_in">$</span>, f=i, *-*] (3, 3) node[label=&#123;[font=<span class="keyword">\footnotesize</span>]below:b&#125;] &#123;&#125;</span><br><span class="line">    ;</span><br><span class="line"><span class="keyword">\end</span>&#123;circuitikz&#125;</span><br></pre></td></tr></table></figure>
+<img data-src="http://qiniu.garen-wang.cn/static/images/LaTeX-circuitikz简易食用指南/p38.png">
+<h2 id="推荐"><a href="#推荐" class="headerlink" title="推荐"></a>推荐</h2><ul>
+<li>不会就google</li>
+<li>不过有时去google还不如直接翻<a target="_blank" rel="noopener" href="https://mirrors.sustech.edu.cn/CTAN/graphics/pgf/contrib/circuitikz/doc/circuitikzmanual.pdf">官方的manual</a></li>
+<li>多手贱，多写，多写就会了</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/10/04/flask-SSTI%E5%AD%A6%E4%B9%A0/" rel="prev" title="flask SSTI学习">
+      <i class="fa fa-chevron-left"></i> flask SSTI学习
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%99%E5%89%8D%E7%9A%84%E6%89%AF%E6%B7%A1"><span class="nav-number">1.</span> <span class="nav-text">写前的扯淡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#import"><span class="nav-number">2.</span> <span class="nav-text">import</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hello-world"><span class="nav-number">3.</span> <span class="nav-text">hello world</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9hello-world%E7%9A%84%E5%88%86%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text">对hello world的分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%94%B5%E8%B7%AF%E5%85%83%E4%BB%B6"><span class="nav-number">5.</span> <span class="nav-text">基本电路元件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%E5%8F%82%E6%95%B0"><span class="nav-number">6.</span> <span class="nav-text">可选参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E8%8A%82%E7%82%B9"><span class="nav-number">6.1.</span> <span class="nav-text">标节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E6%A0%B7%E5%BC%8F"><span class="nav-number">6.2.</span> <span class="nav-text">加样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E5%8D%95%E4%BD%8D"><span class="nav-number">6.3.</span> <span class="nav-text">加单位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E9%A2%9C%E8%89%B2"><span class="nav-number">6.4.</span> <span class="nav-text">加颜色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E5%A4%A7%E5%B0%8F"><span class="nav-number">6.5.</span> <span class="nav-text">调大小</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E6%AE%8A%E7%9A%84"><span class="nav-number">6.6.</span> <span class="nav-text">特殊的</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#examples"><span class="nav-number">7.</span> <span class="nav-text">examples</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90"><span class="nav-number">8.</span> <span class="nav-text">推荐</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Garen Wang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Garen Wang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Garen-Wang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Garen-Wang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:garen-wang@qq.com" title="E-Mail → mailto:garen-wang@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">粤ICP备2021003110号 </a>
+      <img src="/images/beian.png" style="display: inline-block;">
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Garen Wang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'wMExYSieDga8BTVjfcUnCRh1-gzGzoHsz',
+      appKey     : 'pYUGXalVN490u6EsT2HJA4Rj',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <!-- script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.2.2/js/live2dcubismcore.js"></script -->
+  <!-- script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.2.2/js/bundle.js"></script -->
+
+  <canvas id="live2d" width="400" height="400" style="position: fixed; opacity: 1; left: -110px; bottom: -135px; z-index: 99999;"></canvas>
+  <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/live2dcubismcore.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/bundle.js"></script>
+  <script>
+    var resourcesPath = 'https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@v0.1.0/';
+    var backImageName = '';
+    var modelDir = ['jiaran4'];
+    initDefine(resourcesPath, backImageName, modelDir);
+  </script>
+
+</body>
+</html>
