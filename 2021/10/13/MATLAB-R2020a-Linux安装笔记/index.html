@@ -22,15 +22,23 @@
     var CONFIG = {"hostname":"garen-wang.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Garen Wang&#39;s Blog">
-<meta property="og:url" content="http://garen-wang.cn/tags/NNI/index.html">
+  <meta name="description" content="prologue现在我跟Windows的一大约束是Microsoft Office和MATLAB，经历一系列折腾终于在linux下安装了MATLAB，跟Windows的羁绊又少了一条 acquisition installation把iso文件下载下来后，有两种办法可以做：  mount这个iso，然后安装 解压出来，然后安装  我使用了后者，不过其实没啥区别。 不过直接.&#x2F;install在我的机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MATLAB R2020a Linux安装笔记">
+<meta property="og:url" content="http://garen-wang.cn/2021/10/13/MATLAB-R2020a-Linux%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="Garen Wang&#39;s Blog">
+<meta property="og:description" content="prologue现在我跟Windows的一大约束是Microsoft Office和MATLAB，经历一系列折腾终于在linux下安装了MATLAB，跟Windows的羁绊又少了一条 acquisition installation把iso文件下载下来后，有两种办法可以做：  mount这个iso，然后安装 解压出来，然后安装  我使用了后者，不过其实没啥区别。 不过直接.&#x2F;install在我的机">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-52.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-55.png">
+<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/post_installation.png">
+<meta property="article:published_time" content="2021-10-13T04:44:28.000Z">
+<meta property="article:modified_time" content="2021-10-13T05:04:03.395Z">
 <meta property="article:author" content="Garen Wang">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-52.png">
 
-<link rel="canonical" href="http://garen-wang.cn/tags/NNI/">
+<link rel="canonical" href="http://garen-wang.cn/2021/10/13/MATLAB-R2020a-Linux%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/">
 
 
 <script id="page-configurations">
@@ -38,12 +46,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Tag: NNI | Garen Wang's Blog</title>
+  <title>MATLAB R2020a Linux安装笔记 | Garen Wang's Blog</title>
   
 
 
@@ -176,117 +184,126 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/10/13/MATLAB-R2020a-Linux%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MATLAB R2020a Linux安装笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-10-13 12:44:28 / Modified: 13:04:03" itemprop="dateCreated datePublished" datetime="2021-10-13T12:44:28+08:00">2021-10-13</time>
+            </span>
+
+          
+            <span id="/2021/10/13/MATLAB-R2020a-Linux%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="MATLAB R2020a Linux安装笔记" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
   
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">NNI
-          <small>Tag</small>
-        </h2>
-      </div>
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/10/13/MATLAB-R2020a-Linux%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/10/13/MATLAB-R2020a-Linux%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-01-29T17:18:56+08:00"
-              content="2021-01-29">
-          01-29
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/01/29/NNI-Student-Program-2020-Task3/" itemprop="url">
-            <span itemprop="name">NNI Student Program 2020 Task3</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-01-23T23:19:35+08:00"
-              content="2021-01-23">
-          01-23
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/01/23/NNI-Exploration-Learning-Notes/" itemprop="url">
-            <span itemprop="name">NNI Exploration Learning Notes</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-01-08T19:51:37+08:00"
-              content="2021-01-08">
-          01-08
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/01/08/NNI-Student-Program-2020-Task2/" itemprop="url">
-            <span itemprop="name">NNI Student Program 2020-Task2</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-01-08T19:46:45+08:00"
-              content="2021-01-08">
-          01-08
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/01/08/NNI-Student-Program-2020-Task1/" itemprop="url">
-            <span itemprop="name">NNI Student Program 2020 Task1</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
+        <h2 id="prologue"><a href="#prologue" class="headerlink" title="prologue"></a>prologue</h2><p>现在我跟Windows的一大约束是Microsoft Office和MATLAB，经历一系列折腾终于在linux下安装了MATLAB，<del>跟Windows的羁绊又少了一条</del></p>
+<h2 id="acquisition"><a href="#acquisition" class="headerlink" title="acquisition"></a>acquisition</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/255088205"></a></p>
+<h2 id="installation"><a href="#installation" class="headerlink" title="installation"></a>installation</h2><p>把iso文件下载下来后，有两种办法可以做：</p>
+<ol>
+<li>mount这个iso，然后安装</li>
+<li>解压出来，然后安装</li>
+</ol>
+<p>我使用了后者，不过其实没啥区别。</p>
+<p>不过直接<code>./install</code>在我的机子上跑不起来，会报错，如下：</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-52.png">
+<p>网上找了很久，最后发现可以运行<code>/bin/glnxa64</code>下的<code>install_unix_legacy</code>。</p>
+<p>能打开java GUI，但是报了error，如下：</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-55.png">
+<p>这种情况下，只需要cd到用户根目录，然后再运行即可。</p>
+<p>记得运行的时候加上sudo，因为需要往<code>/usr/local</code>里面安装。</p>
+<h2 id="post-installation"><a href="#post-installation" class="headerlink" title="post-installation"></a>post-installation</h2><h3 id="message-from-wizard"><a href="#message-from-wizard" class="headerlink" title="message from wizard"></a>message from wizard</h3><img data-src="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/post_installation.png">
+<p>其实这些supported compilers在用的久的linux机器里面都有的，这一步可以直接忽略。</p>
+<p><a target="_blank" rel="noopener" href="https://wiki.archlinux.org/title/MATLAB#Install_supported_compilers"></a></p>
+<h3 id="HiDPI"><a href="#HiDPI" class="headerlink" title="HiDPI"></a>HiDPI</h3><p>打开安装好之后的MATLAB会发现界面小的离谱，这就涉及HiDPI的有关设置。</p>
+<p><a target="_blank" rel="noopener" href="https://wiki.archlinux.org/title/HiDPI#MATLAB"></a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exec</span> matlab -r <span class="string">&quot;s = settings;s.matlab.desktop.DisplayScaleFactor.PersonalValue=2;quit&quot;</span></span><br></pre></td></tr></table></figure>
+<h3 id="crack"><a href="#crack" class="headerlink" title="crack"></a>crack</h3><p>按照Crack里面的readme做就可以了。</p>
 
     </div>
-  </div>
-  
-  
-  
 
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/10/07/LaTeX-circuitikz%E7%AE%80%E6%98%93%E9%A3%9F%E7%94%A8%E6%8C%87%E5%8D%97/" rel="prev" title="LaTeX circuitikz简易食用指南">
+      <i class="fa fa-chevron-left"></i> LaTeX circuitikz简易食用指南
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
 
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -333,6 +350,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#prologue"><span class="nav-number">1.</span> <span class="nav-text">prologue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#acquisition"><span class="nav-number">2.</span> <span class="nav-text">acquisition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#installation"><span class="nav-number">3.</span> <span class="nav-text">installation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#post-installation"><span class="nav-number">4.</span> <span class="nav-text">post-installation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#message-from-wizard"><span class="nav-number">4.1.</span> <span class="nav-text">message from wizard</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HiDPI"><span class="nav-number">4.2.</span> <span class="nav-text">HiDPI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#crack"><span class="nav-number">4.3.</span> <span class="nav-text">crack</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -458,6 +476,61 @@
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 

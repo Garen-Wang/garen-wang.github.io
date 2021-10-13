@@ -182,6 +182,128 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/01/08/NNI-Student-Program-2020-Task2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/08/NNI-Student-Program-2020-Task2/" class="post-title-link" itemprop="url">NNI Student Program 2020-Task2</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-08 19:51:37" itemprop="dateCreated datePublished" datetime="2021-01-08T19:51:37+08:00">2021-01-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
+              </span>
+
+          
+            <span id="/2021/01/08/NNI-Student-Program-2020-Task2/" class="post-meta-item leancloud_visitors" data-flag-title="NNI Student Program 2020-Task2" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/01/08/NNI-Student-Program-2020-Task2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/08/NNI-Student-Program-2020-Task2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Task2-进阶任务-HPO-NAS"><a href="#Task2-进阶任务-HPO-NAS" class="headerlink" title="Task2 进阶任务 HPO+NAS"></a>Task2 进阶任务 HPO+NAS</h1><h2 id="Task-2-1"><a href="#Task-2-1" class="headerlink" title="Task 2.1"></a>Task 2.1</h2><h3 id="CIFAR10简介"><a href="#CIFAR10简介" class="headerlink" title="CIFAR10简介"></a>CIFAR10简介</h3><p>CIFAR10数据集共有60000张分辨率为32*32的彩色图像，分为十类，每类都有6000张图像。</p>
+<p>50000张图像构成训练集，10000张图像构成测试集。</p>
+<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task2/1.png">
+
+<h3 id="实现流程"><a href="#实现流程" class="headerlink" title="实现流程"></a>实现流程</h3><p>我们使用PyTorch编写卷积神经网络来解决这项图像分类任务。</p>
+<p>大体流程如下：</p>
+<ol>
+<li>使用torchvision下载数据集，读取数据集</li>
+<li>定义解决该问题的卷积神经网络</li>
+<li>训练神经网络</li>
+<li>测试神经网络</li>
+</ol>
+<p>代码中的神经网络有两个卷积层：</p>
+<ol>
+<li>第一层，3个输入（RGB），6个输出。</li>
+<li>第二层，6个输入，16个输出。</li>
+</ol>
+<p>池化层通过<code>torch.nn.MaxPool2d</code>来创建。</p>
+<p>然后定义三个全连接函数：</p>
+<ol>
+<li>第一个，将16*5*5个节点连接至120个节点。</li>
+<li>第二个，将120个节点连接到84个节点。</li>
+<li>第三个，将84个节点连接到10个节点，即对应分类。</li>
+</ol>
+<p>激活函数全程使用Relu函数。</p>
+<p>误差函数使用交叉熵函数，优化方法使用SGD。</p>
+<h3 id="实验配置"><a href="#实验配置" class="headerlink" title="实验配置"></a>实验配置</h3><p>使用Anaconda环境下的Python3.8，使用PyCharm运行程序。</p>
+<p>设置程序不使用GPU，只用CPU完成训练。</p>
+<h3 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h3><p>我们利用了<code>torch.nn</code>模块定义了本任务的神经网络。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NeuralNet</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(NeuralNet, self).__init__()</span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">3</span>, <span class="number">6</span>, <span class="number">5</span>)</span><br><span class="line">        self.pool = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">        self.conv2 = nn.Conv2d(<span class="number">6</span>, <span class="number">16</span>, <span class="number">5</span>)</span><br><span class="line">        self.func1 = nn.Linear(<span class="number">16</span> * <span class="number">5</span> * <span class="number">5</span>, <span class="number">120</span>)</span><br><span class="line">        self.func2 = nn.Linear(<span class="number">120</span>, <span class="number">84</span>)</span><br><span class="line">        self.func3 = nn.Linear(<span class="number">84</span>, <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        x = self.pool(F.relu(self.conv1(x)))</span><br><span class="line">        x = self.pool(F.relu(self.conv2(x)))</span><br><span class="line">        x = x.view(-<span class="number">1</span>, <span class="number">16</span> * <span class="number">5</span> * <span class="number">5</span>) <span class="comment"># -1 means uncertain number</span></span><br><span class="line">        x = F.relu(self.func1(x))</span><br><span class="line">        x = F.relu(self.func2(x))</span><br><span class="line">        x = self.func3(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>而训练过程中，使用PyTorch的写法是这样的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">train</span>(<span class="params">trainloader, path</span>):</span></span><br><span class="line">    neuralnet = NeuralNet()</span><br><span class="line">    criterion = nn.CrossEntropyLoss()</span><br><span class="line">    optimizer = optim.SGD(neuralnet.parameters(), lr=<span class="number">0.001</span>, momentum=<span class="number">0.9</span>)</span><br><span class="line">    <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">        running_loss = <span class="number">0.0</span></span><br><span class="line">        <span class="keyword">for</span> i, data <span class="keyword">in</span> <span class="built_in">enumerate</span>(trainloader, <span class="number">0</span>):</span><br><span class="line">            inputs, labels = data</span><br><span class="line">            <span class="comment"># training template for PyTorch</span></span><br><span class="line">            optimizer.zero_grad()</span><br><span class="line">            outputs = neuralnet(inputs)</span><br><span class="line">            loss = criterion(outputs, labels)</span><br><span class="line">            loss.backward()</span><br><span class="line">            optimizer.step()</span><br><span class="line"></span><br><span class="line">            running_loss += loss.item()</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> i % <span class="number">2000</span> == <span class="number">1999</span>:</span><br><span class="line">                print(<span class="string">&#x27;[%5d, %5d] loss = %.5f&#x27;</span> % (epoch + <span class="number">1</span>, i + <span class="number">1</span>, running_loss / <span class="number">2000</span>))</span><br><span class="line">                running_loss = <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">    torch.save(neuralnet.state_dict(), path)</span><br><span class="line">    print(<span class="string">&#x27;Training Finished&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="结果分析"><a href="#结果分析" class="headerlink" title="结果分析"></a>结果分析</h3><p>经10个epoch的训练，最终输出结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\12058\anaconda3\python.exe C:&#x2F;Users&#x2F;12058&#x2F;Documents&#x2F;GitHub&#x2F;nni-learning&#x2F;task2&#x2F;2.1&#x2F;main.py</span><br><span class="line">[    1,  2000] loss &#x3D; 2.16590</span><br><span class="line">[    1,  4000] loss &#x3D; 1.82480</span><br><span class="line">[    1,  6000] loss &#x3D; 1.64638</span><br><span class="line">[    1,  8000] loss &#x3D; 1.56156</span><br><span class="line">[    1, 10000] loss &#x3D; 1.49378</span><br><span class="line">[    1, 12000] loss &#x3D; 1.46539</span><br><span class="line">[    2,  2000] loss &#x3D; 1.39108</span><br><span class="line">[    2,  4000] loss &#x3D; 1.38308</span><br><span class="line">[    2,  6000] loss &#x3D; 1.36254</span><br><span class="line">[    2,  8000] loss &#x3D; 1.30314</span><br><span class="line">[    2, 10000] loss &#x3D; 1.30563</span><br><span class="line">[    2, 12000] loss &#x3D; 1.26935</span><br><span class="line">[    3,  2000] loss &#x3D; 1.21411</span><br><span class="line">[    3,  4000] loss &#x3D; 1.21809</span><br><span class="line">[    3,  6000] loss &#x3D; 1.17786</span><br><span class="line">[    3,  8000] loss &#x3D; 1.18651</span><br><span class="line">[    3, 10000] loss &#x3D; 1.16956</span><br><span class="line">[    3, 12000] loss &#x3D; 1.16728</span><br><span class="line">[    4,  2000] loss &#x3D; 1.10504</span><br><span class="line">[    4,  4000] loss &#x3D; 1.11141</span><br><span class="line">[    4,  6000] loss &#x3D; 1.07836</span><br><span class="line">[    4,  8000] loss &#x3D; 1.10194</span><br><span class="line">[    4, 10000] loss &#x3D; 1.07333</span><br><span class="line">[    4, 12000] loss &#x3D; 1.06928</span><br><span class="line">[    5,  2000] loss &#x3D; 0.98897</span><br><span class="line">[    5,  4000] loss &#x3D; 1.01186</span><br><span class="line">[    5,  6000] loss &#x3D; 1.01296</span><br><span class="line">[    5,  8000] loss &#x3D; 1.01628</span><br><span class="line">[    5, 10000] loss &#x3D; 1.02610</span><br><span class="line">[    5, 12000] loss &#x3D; 1.03693</span><br><span class="line">[    6,  2000] loss &#x3D; 0.94843</span><br><span class="line">[    6,  4000] loss &#x3D; 0.94470</span><br><span class="line">[    6,  6000] loss &#x3D; 0.96298</span><br><span class="line">[    6,  8000] loss &#x3D; 0.96035</span><br><span class="line">[    6, 10000] loss &#x3D; 0.98843</span><br><span class="line">[    6, 12000] loss &#x3D; 0.96657</span><br><span class="line">[    7,  2000] loss &#x3D; 0.87795</span><br><span class="line">[    7,  4000] loss &#x3D; 0.90013</span><br><span class="line">[    7,  6000] loss &#x3D; 0.91402</span><br><span class="line">[    7,  8000] loss &#x3D; 0.94256</span><br><span class="line">[    7, 10000] loss &#x3D; 0.93912</span><br><span class="line">[    7, 12000] loss &#x3D; 0.91624</span><br><span class="line">[    8,  2000] loss &#x3D; 0.84444</span><br><span class="line">[    8,  4000] loss &#x3D; 0.85796</span><br><span class="line">[    8,  6000] loss &#x3D; 0.90461</span><br><span class="line">[    8,  8000] loss &#x3D; 0.89855</span><br><span class="line">[    8, 10000] loss &#x3D; 0.89341</span><br><span class="line">[    8, 12000] loss &#x3D; 0.89116</span><br><span class="line">[    9,  2000] loss &#x3D; 0.79060</span><br><span class="line">[    9,  4000] loss &#x3D; 0.83296</span><br><span class="line">[    9,  6000] loss &#x3D; 0.84468</span><br><span class="line">[    9,  8000] loss &#x3D; 0.85216</span><br><span class="line">[    9, 10000] loss &#x3D; 0.86738</span><br><span class="line">[    9, 12000] loss &#x3D; 0.87915</span><br><span class="line">[   10,  2000] loss &#x3D; 0.76653</span><br><span class="line">[   10,  4000] loss &#x3D; 0.80672</span><br><span class="line">[   10,  6000] loss &#x3D; 0.82791</span><br><span class="line">[   10,  8000] loss &#x3D; 0.80691</span><br><span class="line">[   10, 10000] loss &#x3D; 0.83649</span><br><span class="line">[   10, 12000] loss &#x3D; 0.84138</span><br><span class="line">Training Finished</span><br><span class="line">Accuracy of plane: 81.14%</span><br><span class="line">Accuracy of car: 92.10%</span><br><span class="line">Accuracy of bird: 74.58%</span><br><span class="line">Accuracy of cat: 47.94%</span><br><span class="line">Accuracy of deer: 65.08%</span><br><span class="line">Accuracy of dog: 61.28%</span><br><span class="line">Accuracy of frog: 71.88%</span><br><span class="line">Accuracy of horse: 73.24%</span><br><span class="line">Accuracy of ship: 86.18%</span><br><span class="line">Accuracy of truck: 66.52%</span><br><span class="line">Testing Finished</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>可以看出，损失值总体稳定下降，对车、飞机、船等图像分类准确率较高，而对猫、狗、卡车等图像的准确率较不理想。</p>
+<p>如何提高部分不理想的分类准确率？请看Task 2.2……</p>
+<h2 id="Task-2-2"><a href="#Task-2-2" class="headerlink" title="Task 2.2"></a>Task 2.2</h2><p>to be continued…</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/01/08/NNI-Student-Program-2020-Task1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -401,7 +523,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">32</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
