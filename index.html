@@ -182,6 +182,304 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2022/02/05/%E4%BB%A5Rust%E4%B8%BA%E4%BE%8B%E6%B5%85%E8%B0%88%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E7%9A%84%E5%B0%8F%E7%9F%A5%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/02/05/%E4%BB%A5Rust%E4%B8%BA%E4%BE%8B%E6%B5%85%E8%B0%88%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E7%9A%84%E5%B0%8F%E7%9F%A5%E8%AF%86/" class="post-title-link" itemprop="url">Untitled</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-02-05 21:24:09" itemprop="dateCreated datePublished" datetime="2022-02-05T21:24:09+08:00">2022-02-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-07 15:15:08" itemprop="dateModified" datetime="2022-02-07T15:15:08+08:00">2022-02-07</time>
+              </span>
+
+          
+            <span id="/2022/02/05/%E4%BB%A5Rust%E4%B8%BA%E4%BE%8B%E6%B5%85%E8%B0%88%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E7%9A%84%E5%B0%8F%E7%9F%A5%E8%AF%86/" class="post-meta-item leancloud_visitors" data-flag-title="" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/02/05/%E4%BB%A5Rust%E4%B8%BA%E4%BE%8B%E6%B5%85%E8%B0%88%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E7%9A%84%E5%B0%8F%E7%9F%A5%E8%AF%86/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/05/%E4%BB%A5Rust%E4%B8%BA%E4%BE%8B%E6%B5%85%E8%B0%88%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E7%9A%84%E5%B0%8F%E7%9F%A5%E8%AF%86/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前置知识科普"><a href="#前置知识科普" class="headerlink" title="前置知识科普"></a>前置知识科普</h2><h3 id="栈内存和堆内存"><a href="#栈内存和堆内存" class="headerlink" title="栈内存和堆内存"></a>栈内存和堆内存</h3><p>常识告诉我们，在计算机系统的内存之中，有一个系统栈和一个负责管理动态分配内存的系统堆，栈向地地址生长，而堆向高地址生长。这两个结构所对应的那部分内存区域分别称为栈内存和堆内存。</p>
+<p>运行程序的时候，</p>
+<h3 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h3><p>lifetime</p>
+<h3 id="RAII"><a href="#RAII" class="headerlink" title="RAII"></a>RAII</h3><p>RAII全称是Resource Acquisition Is Initialization（资源获取即初始化），这个概念是为了在面向对象的语言中更优雅地管理资源，这里的资源指的是像file、socket、mutex等这些传统以来需要open然后close或者需要先lock然后unlock的类型。</p>
+<p>我们用比较简单的一句话概括RAII：资源与对象的生命周期高度绑定，资源在其所对应的对象完成初始化时得到获取，在资源生命周期走到尽头时得到释放与关闭。</p>
+<p>传统的使用方式与RAII不同，资源的生命周期是需要额外考虑的。比如C打开文件是通过一个open函数拿到file descriptor，然后传这个descriptor调用read、write等函数，等到所有的读写使用结束后再由开发者显式地close；再比如java打开文件，经常要用try-catch-finally语句去管理，而且经常会在finally去显式close。在这种传统的面向过程的操作范式中，资源的获取与释放都需要开发者显式调用。而RAII在开发者的角度则不用去额外去管资源的生命周期，在多线程的并发运行之中也可以在编译期统一管理好，避免deadlock等等的问题。</p>
+<h2 id="堆内存的管理方式"><a href="#堆内存的管理方式" class="headerlink" title="堆内存的管理方式"></a>堆内存的管理方式</h2><h3 id="全手动内存管理"><a href="#全手动内存管理" class="headerlink" title="全手动内存管理"></a>全手动内存管理</h3><p>C语言由于其历史特性，几乎是汇编的直接抽象表现，在内存管理方面也与汇编相似，内存分配与释放全靠开发者自身的使用，所以说可以说C是全手动内存管理的典范。</p>
+<p><code>malloc</code>、<code>realloc</code>、<code>calloc</code>等函数用来在堆上分配内存，而<code>free</code>用来释放堆上已分配的内存。但是开发者所得到的只是一个指针（类型需要在<code>malloc</code>之外强转），没有任何生命周期的信息。并且，这块内存区域只会在调用<code>free</code>之后才得到释放，这意味着这块内存区域不仅可以在单个线程中跨scope使用，而且允许在不同线程中使用，这些问题如果开发者没有意识到，就很容易踩到race等等的大坑。而且更糟的是，在<code>free</code>掉之后，原来储存着地址的那个指针仍可能被使用，这直接造成了UAF等影响巨大的问题。</p>
+<p>在这种条件下，程序是否安全要全靠开发者，开发者的疏忽很容易导致非预期运行错误的产生，编译期错误并不能足够地规避问题。</p>
+<p>C++虽然向下兼容C，使用了新的<code>new</code>和<code>delete</code>关键字，但核心问题还是没得到解决。这个核心问题就是指针满天飞所造成的生命周期混乱的问题，而C和C++如果只使用C-Type指针的话都没有办法在编译时完成查错，生命周期混乱编译器睁一只眼闭一只眼就过去了，所以只能比较大程度上寄托于运行时发生非预期现象才能发现。</p>
+<p>C++认识到向下兼容C所导致的这个问题，之后C++在RAII这方面做出了一些实践，类似<code>std::string</code>、<code>std::vector</code>等的动态内存容器类型和<code>std::smart_ptr</code>、<code>std::unique_ptr</code>等等的智能指针类型自然是被官方强推，已经是现代C++的基础数据类型了。</p>
+<h3 id="GC内存管理"><a href="#GC内存管理" class="headerlink" title="GC内存管理"></a>GC内存管理</h3><p>Garbage Collector简称GC，是以Java等语言所采用的内存管理方式的统称。</p>
+<p>GC的好处是开发者可以不用全手动完成内存管理，不需要手动释放内存（一般也不会允许），GC会在运行的过程中帮你完成。</p>
+<h2 id="Rust"><a href="#Rust" class="headerlink" title="Rust"></a>Rust</h2><p>Rust的编译器</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2022/01/27/Vim-Surround%E5%A4%87%E5%BF%98%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/01/27/Vim-Surround%E5%A4%87%E5%BF%98%E5%BD%95/" class="post-title-link" itemprop="url">Untitled</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-01-27 00:06:36" itemprop="dateCreated datePublished" datetime="2022-01-27T00:06:36+08:00">2022-01-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-05 21:03:09" itemprop="dateModified" datetime="2022-02-05T21:03:09+08:00">2022-02-05</time>
+              </span>
+
+          
+            <span id="/2022/01/27/Vim-Surround%E5%A4%87%E5%BF%98%E5%BD%95/" class="post-meta-item leancloud_visitors" data-flag-title="" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/01/27/Vim-Surround%E5%A4%87%E5%BF%98%E5%BD%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/27/Vim-Surround%E5%A4%87%E5%BF%98%E5%BD%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>一切的一切都要怪我根本记不得vim-surround的那些命令，以至于需要用的时候都得读readme，太丑陋了，所以找点时间梳理一下下。</p>
+<p>vim-surround可以在normal模式下用，也可以在visual模式下用。</p>
+<h2 id="normal"><a href="#normal" class="headerlink" title="normal"></a>normal</h2><p>根据第一个字母的区别，分为三种：</p>
+<ul>
+<li>ys: yield surrounding，带一个参数（下同）<ul>
+<li>yss: yield the surrounding of the whole line</li>
+<li>ys$: yield the surrounding of the interval from current cursor to end of line</li>
+<li>ysiw: yield the surrounding of the next word</li>
+<li>ys2w: yield the surrounding of the next 2 words (generalized to n, including 1)</li>
+</ul>
+</li>
+<li>ds: delete surrounding，带一个参数（下同）</li>
+<li>cs: change surrounding，带两个参数（下同）</li>
+</ul>
+<blockquote>
+<p>其实如果在vim里面点开<code>:man</code></p>
+</blockquote>
+<h2 id="visual"><a href="#visual" class="headerlink" title="visual"></a>visual</h2><p>visual模式下使用比较单一，只能够选择区间，然后在两边添加，而不能删除或更改。（如果需要直接在normal模式操作了）</p>
+<p>操作的方式很简单，先选区间，然后按S，后面跟一个参数即可。</p>
+<h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><ul>
+<li>各类括号的左半边</li>
+<li>各类括号的右半边</li>
+<li>t: 已存在的xml的tag的指代</li>
+</ul>
+<p>总结的不全，但是已经足够日常使用了。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2022/01/16/%E6%89%8B%E6%92%B8TUI%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8%E9%A3%9F%E7%94%A8%E6%8C%87%E5%8D%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/01/16/%E6%89%8B%E6%92%B8TUI%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8%E9%A3%9F%E7%94%A8%E6%8C%87%E5%8D%97/" class="post-title-link" itemprop="url">Untitled</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-01-16 14:39:49" itemprop="dateCreated datePublished" datetime="2022-01-16T14:39:49+08:00">2022-01-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-01-27 00:06:43" itemprop="dateModified" datetime="2022-01-27T00:06:43+08:00">2022-01-27</time>
+              </span>
+
+          
+            <span id="/2022/01/16/%E6%89%8B%E6%92%B8TUI%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8%E9%A3%9F%E7%94%A8%E6%8C%87%E5%8D%97/" class="post-meta-item leancloud_visitors" data-flag-title="" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/01/16/%E6%89%8B%E6%92%B8TUI%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8%E9%A3%9F%E7%94%A8%E6%8C%87%E5%8D%97/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/16/%E6%89%8B%E6%92%B8TUI%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8%E9%A3%9F%E7%94%A8%E6%8C%87%E5%8D%97/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="手撸TUI文本编辑器食用指南"><a href="#手撸TUI文本编辑器食用指南" class="headerlink" title="手撸TUI文本编辑器食用指南"></a>手撸TUI文本编辑器食用指南</h1><ul>
+<li>如果有tab的话，默认会显示8个字符，但是实际只占一个字符，这样会导致cursor移不到最右边，并且每多一个tab，cursor离最右边的距离就会多7</li>
+<li></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/10/13/MATLAB-R2020a-Linux%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -927,352 +1225,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/07/27/Concepts-about-Hyperledger-Fabric-v2-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/27/Concepts-about-Hyperledger-Fabric-v2-2/" class="post-title-link" itemprop="url">Concepts about Hyperledger Fabric v2.2</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-07-27 20:35:33 / Modified: 21:00:28" itemprop="dateCreated datePublished" datetime="2021-07-27T20:35:33+08:00">2021-07-27</time>
-            </span>
-
-          
-            <span id="/2021/07/27/Concepts-about-Hyperledger-Fabric-v2-2/" class="post-meta-item leancloud_visitors" data-flag-title="Concepts about Hyperledger Fabric v2.2" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/07/27/Concepts-about-Hyperledger-Fabric-v2-2/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/27/Concepts-about-Hyperledger-Fabric-v2-2/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/07/23/Hexo-Live2d-moc3-Configuration/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/23/Hexo-Live2d-moc3-Configuration/" class="post-title-link" itemprop="url">Hexo Live2d moc3 Configuration</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-07-23 23:55:17" itemprop="dateCreated datePublished" datetime="2021-07-23T23:55:17+08:00">2021-07-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-24 00:50:03" itemprop="dateModified" datetime="2021-07-24T00:50:03+08:00">2021-07-24</time>
-              </span>
-
-          
-            <span id="/2021/07/23/Hexo-Live2d-moc3-Configuration/" class="post-meta-item leancloud_visitors" data-flag-title="Hexo Live2d moc3 Configuration" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/07/23/Hexo-Live2d-moc3-Configuration/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/23/Hexo-Live2d-moc3-Configuration/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>今天闲着给自己的博客整了个效果，在live2d这方面整点花活。</p>
-<p>记录一下，顺便也给hexo博客搭建live2d的方式做一次梳理。</p>
-<p>live2d模型一般有几种常见的格式，其中方便web端渲染呈现的有moc跟moc3两种格式。</p>
-<p>一般我们从大佬们白嫖到live2d模型下载解压之后会是这样的格式：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/tree.png">
-<p>以jiaran4为例：</p>
-<ul>
-<li><code>jiaran4.2048</code>或<code>jiaran4.1024</code>存放了模型的材质贴图</li>
-<li><code>jiaran4.moc3</code>为模型主体，为二进制文件</li>
-<li><code>jiaran4.model3.json</code>为模型的配置文件，会重点标注出其他文件的引用路径</li>
-<li><code>jiaran4.physics3.json</code>是物理演算配置文件</li>
-<li><code>jiaran4.cdi3.json</code>作为显示信息，不是很重要</li>
-</ul>
-<p>比较豪华的live2d模型还有：</p>
-<ul>
-<li><code>jiaran4.pose3.json</code>，初始姿势配置文件</li>
-<li><code>motions</code>文件夹，内含若干个<code>xxx.motion3.json</code>的动作配置文件</li>
-</ul>
-<h2 id="moc模型"><a href="#moc模型" class="headerlink" title="moc模型"></a>moc模型</h2><p>以我拿到的一个崩2德莉莎的模型为例，目的是想要在hexo博客上实装。</p>
-<p>是hexo的话，可以方便地使用<a target="_blank" rel="noopener" href="https://github.com/EYHN/hexo-helper-live2d">hexo-helper-live2d</a>这么一个插件：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> npm install --save hexo-helper-live2d</span></span><br></pre></td></tr></table></figure>
-<p>这个插件有若干个预设模型，随便扒拉几个看下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> npm install --save live2d-widget-model-shizuku</span></span><br></pre></td></tr></table></figure>
-<p>看下文件结构：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── assets</span><br><span class="line">│   ├── exp</span><br><span class="line">│   │   ├── f01.exp.json</span><br><span class="line">│   │   ├── f02.exp.json</span><br><span class="line">│   │   ├── f03.exp.json</span><br><span class="line">│   │   └── f04.exp.json</span><br><span class="line">│   ├── moc</span><br><span class="line">│   │   ├── shizuku.1024</span><br><span class="line">│   │   │   ├── texture_00.png</span><br><span class="line">│   │   │   ├── texture_01.png</span><br><span class="line">│   │   │   ├── texture_02.png</span><br><span class="line">│   │   │   ├── texture_03.png</span><br><span class="line">│   │   │   ├── texture_04.png</span><br><span class="line">│   │   │   └── texture_05.png</span><br><span class="line">│   │   └── shizuku.moc</span><br><span class="line">│   ├── mtn</span><br><span class="line">│   │   ├── flickHead_00.mtn</span><br><span class="line">│   │   ├── flickHead_01.mtn</span><br><span class="line">│   │   ├── flickHead_02.mtn</span><br><span class="line">│   │   ├── idle_00.mtn</span><br><span class="line">│   │   ├── idle_01.mtn</span><br><span class="line">│   │   ├── idle_02.mtn</span><br><span class="line">│   │   ├── pinchIn_00.mtn</span><br><span class="line">│   │   ├── pinchIn_01.mtn</span><br><span class="line">│   │   ├── pinchIn_02.mtn</span><br><span class="line">│   │   ├── pinchOut_00.mtn</span><br><span class="line">│   │   ├── pinchOut_01.mtn</span><br><span class="line">│   │   ├── pinchOut_02.mtn</span><br><span class="line">│   │   ├── shake_00.mtn</span><br><span class="line">│   │   ├── shake_01.mtn</span><br><span class="line">│   │   ├── shake_02.mtn</span><br><span class="line">│   │   ├── tapBody_00.mtn</span><br><span class="line">│   │   ├── tapBody_01.mtn</span><br><span class="line">│   │   └── tapBody_02.mtn</span><br><span class="line">│   ├── shizuku.model.json</span><br><span class="line">│   ├── shizuku.physics.json</span><br><span class="line">│   ├── shizuku.pose.json</span><br><span class="line">│   └── snd</span><br><span class="line">│       ├── flickHead_00.mp3</span><br><span class="line">│       ├── flickHead_01.mp3</span><br><span class="line">│       ├── flickHead_02.mp3</span><br><span class="line">│       ├── pinchIn_00.mp3</span><br><span class="line">│       ├── pinchIn_01.mp3</span><br><span class="line">│       ├── pinchIn_02.mp3</span><br><span class="line">│       ├── pinchOut_00.mp3</span><br><span class="line">│       ├── pinchOut_01.mp3</span><br><span class="line">│       ├── pinchOut_02.mp3</span><br><span class="line">│       ├── shake_00.mp3</span><br><span class="line">│       ├── shake_01.mp3</span><br><span class="line">│       ├── shake_02.mp3</span><br><span class="line">│       ├── tapBody_00.mp3</span><br><span class="line">│       ├── tapBody_01.mp3</span><br><span class="line">│       └── tapBody_02.mp3</span><br><span class="line">└── package.json</span><br><span class="line"></span><br><span class="line">6 directories, 48 files</span><br></pre></td></tr></table></figure>
-<p>如果我们有一个moc模型的话，就可以考虑模仿这样的文件格式安排，伪装成能被插件正常执行的模型包，在hexo里面跑起来。</p>
-<p>最后我把原来的模型包修改成了这样：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/theresa.png">
-<p>这里有一点需要注意：<strong><code>.model3.json</code>文件内含relative file reference，在调整文件结构的时候也需要把里面的内容也做改动。</strong></p>
-<p>最终效果是这样的：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/result1.png">
-<h2 id="moc3模型"><a href="#moc3模型" class="headerlink" title="moc3模型"></a>moc3模型</h2><p>不过这几年来新的模型大多以moc3的格式来传播，用原来moc格式的办法没法直接套用，尝试另外的解决方案。</p>
-<p>moc3模型以嘉然为例（<del>然然你带我走吧然然</del></p>
-<p>第一种尝试是从这几个repo来看看能不能伪装格式一起套用：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://github.com/Yukariin/AzurLaneL2DViewer">https://github.com/Yukariin/AzurLaneL2DViewer</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/alg-wiki/AzurLaneL2DViewer">https://github.com/alg-wiki/AzurLaneL2DViewer</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/HCLonely/Live2dV3">https://github.com/HCLonely/Live2dV3</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/LitStronger/live2d-moc3">https://github.com/LitStronger/live2d-moc3</a></li>
-</ul>
-<p>然后发现不行，遂放弃。</p>
-<p>第二种尝试来自这篇博客：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/Arisf/p/14347362.html">https://www.cnblogs.com/Arisf/p/14347362.html</a></p>
-<p>首先是需要live2d cubism有关的几个js：</p>
-<ul>
-<li><code>bundle.js</code>，似乎需要自己生成</li>
-<li><code>live2dcubismcore.js</code>，是官方web sdk的</li>
-</ul>
-<p>相应所需要的js文件跟模型都一起放在了<a target="_blank" rel="noopener" href="https://github.com/Garen-Wang/live2d-moc3">我github的repo</a>里面，感谢开源，侵删。</p>
-<p>可以首先在本地上试试能不能跑起来。事实上把这几行代码一起粘到<code>body</code>标签里面就好了：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">&quot;live2d&quot;</span> <span class="attr">width</span>=<span class="string">&quot;400&quot;</span> <span class="attr">height</span>=<span class="string">&quot;400&quot;</span> <span class="attr">class</span>=<span class="string">&quot;live2d&quot;</span> <span class="attr">style</span>=<span class="string">&quot;position: fixed; opacity: 1; left: -110px; bottom: -135px; z-index: 99999; pointer-events: none;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">canvas</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/live2dcubismcore.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/bundle.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">     <span class="keyword">var</span> resourcesPath = <span class="string">&#x27;https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@v0.1.0/&#x27;</span>; <span class="comment">// 指定资源文件（模型）保存的路径，使用github的release版本，路径如下https://cdn.jsdelivr.net/gh/用户/库@版本号/资源路径</span></span></span><br><span class="line"><span class="javascript">     <span class="keyword">var</span> backImageName = <span class="string">&#x27;&#x27;</span>; <span class="comment">// 指定背景图片 ,默认为空</span></span></span><br><span class="line"><span class="javascript">     <span class="keyword">var</span> modelDir = [<span class="string">&#x27;jiaran4&#x27;</span>]; <span class="comment">// 指定需要加载的模型</span></span></span><br><span class="line"><span class="javascript">     initDefine(resourcesPath, backImageName, modelDir); <span class="comment">// 初始化模型</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>其中不知道是cdn抽风还是什么奇怪的原因，原本应该是<code>v0.1.1</code>的地方需要是<code>vv0.1.1</code>才访问得到，非常奇怪。</p>
-<p>如果正常的话应该是这样子：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/demo.png">
-<p>接下来把然然带进hexo博客里面。由于我用的NexT主题，修改<code>themes/next/layout/_layout.swig</code>，直接在<code>body</code>标签的最后边粘上去这几行，做法非常暴力。</p>
-<p>不出意外的话然然应该就能跟爷同框了，像下面这样（</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/Hexo-Live2d-moc3-Configuration/result2.png">
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/07/20/CSAPP-Shell-Lab-Writeup/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/20/CSAPP-Shell-Lab-Writeup/" class="post-title-link" itemprop="url">CSAPP Shell Lab Writeup</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-07-20 17:09:19 / Modified: 20:40:17" itemprop="dateCreated datePublished" datetime="2021-07-20T17:09:19+08:00">2021-07-20</time>
-            </span>
-
-          
-            <span id="/2021/07/20/CSAPP-Shell-Lab-Writeup/" class="post-meta-item leancloud_visitors" data-flag-title="CSAPP Shell Lab Writeup" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/07/20/CSAPP-Shell-Lab-Writeup/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/20/CSAPP-Shell-Lab-Writeup/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Prerequisites"><a href="#Prerequisites" class="headerlink" title="Prerequisites"></a>Prerequisites</h2><h3 id="Signal"><a href="#Signal" class="headerlink" title="Signal"></a>Signal</h3><p>Signal是一种内核与进程之间交互的信息。诸如熟悉的Ctrl+C、Ctrl+Z等终止程序或休眠程序的实质都是发送相应的signal。Signal是异常控制流的其中一种，可以在本地异步运行。</p>
-<p>贴一些可能见得多的signal：</p>
-<ul>
-<li><code>SIGABRT</code>: abort</li>
-<li><code>SIGFPE</code>: floating point exception</li>
-<li><code>SIGINT</code>: interrupt (when pressing <code>Ctrl+C</code>)</li>
-<li><code>SIGSEGV</code>: segment violation (a.k.a. segment fault)</li>
-<li><code>SIGTSTP</code>: stopped (when pressing <code>Ctrl+Z</code>)</li>
-<li><code>SIGCHLD</code>: Terminated or stopped child</li>
-</ul>
-<h3 id="Relative-C-Functions"><a href="#Relative-C-Functions" class="headerlink" title="Relative C Functions"></a>Relative C Functions</h3><p>在命令行里面，如果要给一个进程（或进程组）添加信号，可以用<code>kill</code>。<code>kill</code>并不只是用来杀进程的，实际上是添加信号。</p>
-<p>在C里面也有一个叫<code>kill</code>的函数，需要指定pid和信号，用法大体类似。这就是我们可以用C写shell的原因之一。</p>
-<blockquote>
-<p><code>kill</code>可以作用于一个进程上，也可以作用于一整个进程组上，具体区别在pid的值：</p>
-<ul>
-<li>当pid为正，则作用于单个进程</li>
-<li>当pid为负，则作用于这个进程所在的进程组</li>
-</ul>
-</blockquote>
-<p>相信见过像Vim等的一些按Ctrl+C退不出的程序，之所以退不出不是因为<code>SIGINT</code>无法发出，而是因为signal的handler是可以由我们来自定义的。</p>
-<p>在C里面，我们可以通过调用<code>signal</code>函数，install一个signal的handler，覆盖原有的默认handler。signal大多数都能覆盖，除了<code>SIGKILL</code>跟<code>SIGSTOP</code>等。</p>
-<p>signal handler需要自己去声明定义一个函数，可以形象地理解成比较底层的try-catch，catch相应的signal，执行handler里面的内容。</p>
-<p>如果想要写shell，相信需要在程序里面创建进程，执行命令等等。相应的C函数也介绍一下：</p>
-<ul>
-<li><code>int fork()</code>: create a new process (child process). called once, return twice. return 0 in child process, return pid in parent process.</li>
-<li><code>int execve(argv[0], argv, environ)</code>: load and run another program. called once, never return(if sucessfully executed).</li>
-<li><code>void exit(int status)</code>: terminate the current process with status. Then it becomes a zombie process, waiting to be reaped by its parent.</li>
-</ul>
-<p>如果我们fork了一次，父子两个进程的执行速度是无法确定的，有时儿子快有时儿子慢，这就导致了一次运行的结果可能不同。形象地，我们可以理解成在这种无约束的异步进程中，进程之间会相互比赛，竞争运行速度<del>（卷起来了）</del>，我们称这种现象为race。</p>
-<p>如果不想出现这种情况，需要显式地叫其中一个进程去等其他的进程，这种操作可以用<code>waitpid</code>来完成。</p>
-<p>signal可以被屏蔽，即可以选择block掉指定类型的signal，以确保race不会在其中发生。分析可能发生的race是最复杂的部分。</p>
-<h2 id="Lab"><a href="#Lab" class="headerlink" title="Lab"></a>Lab</h2><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>在这个lab里面我们需要实现一个小型的shell，名叫tsh（tiny shell），因为不用实现现代shell的功能，所以功能确实很朴素。</p>
-<p>实验需要我们写的只有<code>tsh.c</code>一个文件，需要你定义若干个已经声明的函数。</p>
-<p>在<code>tsh.c</code>中也温馨地提供了几个helper functions。</p>
-<p>用户运行了shell之后，会在<code>stdin</code>等待用户的输入。用户的输入以空格为分隔，第一个称为name，后面则为参数。</p>
-<p>如果name是built-in command，则直接在前台运行，运行完直接等待下一个输入。</p>
-<p>如果name是一个binary executable，则新开一个进程（或者说是add a new job），在子进程中执行命令。</p>
-<p>命令有前台后台运行之分，如果最后带有一个<code>&amp;</code>，则为后台运行，此时shell不用去等待job运行完毕，可以继续执行shell的功能。前台等待job完成的内容需要在<code>waitfg</code>函数之中完成。</p>
-<p>这里有一个细节，因为我们的shell是一个程序，而默认我们创建的job会跟shell是同一个进程组，那么如果子进程被杀掉的话shell也会被杀掉，这不符合shell的性质，所以我们需要保证创建的子进程都跟shell自己处于不同的进程组。这部分是通过<code>setpgid(0, 0)</code>来完成的。</p>
-<p>在子进程执行完成之后，子进程会变成一个zombie，不再会被执行，但会一直占着地方，它们需要被shell回收。相关的信号是<code>SIGCHLD</code>。这部分的工作是通过定义<code>SIGCHLD</code>的handler来完成的。</p>
-<p>pid跟jid的管理我们不用操心，已经写好了，我们只需要调用<code>addjob</code>跟<code>deletejob</code>这样的API来维护进程。</p>
-<h3 id="eval"><a href="#eval" class="headerlink" title="eval"></a><code>eval</code></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">eval</span><span class="params">(<span class="keyword">char</span> *cmdline)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">char</span> *argv[MAXARGS];</span><br><span class="line">    <span class="keyword">int</span> bg = parseline(cmdline, argv);</span><br><span class="line">    <span class="keyword">if</span> (argv[<span class="number">0</span>] == <span class="literal">NULL</span>) <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">int</span> builtin = builtin_cmd(argv);</span><br><span class="line">    <span class="keyword">if</span> (builtin) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* from now on, execute non-builtin command */</span></span><br><span class="line">    <span class="keyword">sigset_t</span> mask, prev_mask, mask_all;</span><br><span class="line">    sigfillset(&amp;mask_all);</span><br><span class="line">    sigemptyset(&amp;mask);</span><br><span class="line">    sigaddset(&amp;mask, SIGCHLD);</span><br><span class="line">    </span><br><span class="line">    sigprocmask(SIG_BLOCK, &amp;mask, &amp;prev_mask); <span class="comment">// block SIGCHLD</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">pid_t</span> pid = fork(); <span class="comment">// during fork, SIGCHLD is blocked</span></span><br><span class="line">    <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// child process</span></span><br><span class="line">        sigprocmask(SIG_SETMASK, &amp;prev_mask, <span class="literal">NULL</span>); <span class="comment">// unblock SIGCHLD</span></span><br><span class="line">        setpgid(<span class="number">0</span>, <span class="number">0</span>); <span class="comment">// make sure programs are not in the same group as tsh</span></span><br><span class="line">        <span class="comment">// must unblock signals before execve</span></span><br><span class="line">        <span class="keyword">if</span> (execve(argv[<span class="number">0</span>], argv, environ) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%s: Command not found\n&quot;</span>, argv[<span class="number">0</span>]);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// parent process</span></span><br><span class="line">        sigprocmask(SIG_BLOCK, &amp;mask_all, <span class="literal">NULL</span>); <span class="comment">// block all signals</span></span><br><span class="line">        addjob(jobs, pid, bg + <span class="number">1</span>, cmdline); <span class="comment">// during addjob, all signals are blocked</span></span><br><span class="line">        <span class="keyword">if</span> (bg) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;[%d] (%d) %s&quot;</span>, pid2jid(pid), pid, cmdline);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            waitfg(pid);</span><br><span class="line">        &#125;</span><br><span class="line">        sigprocmask(SIG_SETMASK, &amp;prev_mask, <span class="literal">NULL</span>); <span class="comment">// reset</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h3 id="builtin-cmd"><a href="#builtin-cmd" class="headerlink" title="builtin_cmd"></a><code>builtin_cmd</code></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">builtin_cmd</span><span class="params">(<span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;quit&quot;</span>)) &#123;</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;jobs&quot;</span>)) &#123;</span><br><span class="line">        listjobs(jobs);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;bg&quot;</span>) || !<span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;fg&quot;</span>)) &#123;</span><br><span class="line">        do_bgfg(argv);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;&amp;&quot;</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;     <span class="comment">/* not a builtin command */</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="do-bgfg"><a href="#do-bgfg" class="headerlink" title="do_bgfg"></a><code>do_bgfg</code></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">do_bgfg</span><span class="params">(<span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (argv[<span class="number">1</span>] == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s command requires PID or %%jobid argument\n&quot;</span>, argv[<span class="number">0</span>]);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">job_t</span> *<span class="title">job</span> =</span> <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">if</span> (argv[<span class="number">1</span>][<span class="number">0</span>] == <span class="string">&#x27;%&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">int</span> jid = atoi(argv[<span class="number">1</span>] + <span class="number">1</span>);</span><br><span class="line">        job = getjobjid(jobs, jid);</span><br><span class="line">        <span class="keyword">if</span> (job == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%s: No such job\n&quot;</span>, argv[<span class="number">1</span>]);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">isdigit</span>(argv[<span class="number">1</span>][<span class="number">0</span>])) &#123;</span><br><span class="line">        <span class="keyword">int</span> pid = atoi(argv[<span class="number">1</span>]);</span><br><span class="line">        job = getjobpid(jobs, pid);</span><br><span class="line">        <span class="keyword">if</span> (job == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;(%s): No such process\n&quot;</span>, argv[<span class="number">1</span>]);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s: argument must be a PID or %%jobid\n&quot;</span>, argv[<span class="number">0</span>]);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    kill(-(job-&gt;pid), SIGCONT); <span class="comment">// send SIGCONT to the group, therefore negative</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;bg&quot;</span>)) &#123;</span><br><span class="line">        job-&gt;state = BG;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;[%d] (%d) %s&quot;</span>, job-&gt;jid, job-&gt;pid, job-&gt;cmdline);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        job-&gt;state = FG;</span><br><span class="line">        waitfg(job-&gt;pid);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="waitfg"><a href="#waitfg" class="headerlink" title="waitfg"></a><code>waitfg</code></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">waitfg</span><span class="params">(<span class="keyword">pid_t</span> pid)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// debug_printf(&quot;now in waitfg\n&quot;);</span></span><br><span class="line">    <span class="keyword">sigset_t</span> mask;</span><br><span class="line">    sigemptyset(&amp;mask);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (fgpid(jobs) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        sigsuspend(&amp;mask);</span><br><span class="line">    &#125;</span><br><span class="line">    sigprocmask(SIG_SETMASK, &amp;mask, <span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="signal-handlers"><a href="#signal-handlers" class="headerlink" title="signal handlers"></a>signal handlers</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sigchld_handler</span><span class="params">(<span class="keyword">int</span> sig)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// debug_printf(&quot;in SIGCHLD handler&quot;);</span></span><br><span class="line">    <span class="keyword">int</span> prev_errno = errno;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">sigset_t</span> mask, prev;</span><br><span class="line">    sigfillset(&amp;mask);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pid_t</span> pid;</span><br><span class="line">    <span class="keyword">int</span> status;</span><br><span class="line">    <span class="keyword">while</span> ((pid = waitpid(<span class="number">-1</span>, &amp;status, WNOHANG | WUNTRACED)) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (WIFEXITED(status)) &#123;</span><br><span class="line">            <span class="comment">// normally exited</span></span><br><span class="line">            sigprocmask(SIG_BLOCK, &amp;mask, &amp;prev);</span><br><span class="line">            deletejob(jobs, pid);</span><br><span class="line">            sigprocmask(SIG_SETMASK, &amp;prev, <span class="literal">NULL</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (WIFSIGNALED(status)) &#123;</span><br><span class="line">            <span class="comment">// exited via signal</span></span><br><span class="line">            struct <span class="keyword">job_t</span> *job = getjobpid(jobs, pid);</span><br><span class="line">            sigprocmask(SIG_BLOCK, &amp;mask, &amp;prev);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;Job [%d] (%d) Terminated by signal %d\n&quot;</span>, job-&gt;jid, job-&gt;pid, WTERMSIG(status));</span><br><span class="line">            deletejob(jobs, pid);</span><br><span class="line">            sigprocmask(SIG_SETMASK, &amp;prev, <span class="literal">NULL</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// stopped</span></span><br><span class="line">            struct <span class="keyword">job_t</span> *job = getjobpid(jobs, pid);</span><br><span class="line">            sigprocmask(SIG_BLOCK, &amp;mask, &amp;prev);</span><br><span class="line">            job-&gt;state = ST;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;Job [%d] (%d) Stopped by signal %d\n&quot;</span>, job-&gt;jid, job-&gt;pid, WSTOPSIG(status));</span><br><span class="line">            sigprocmask(SIG_SETMASK, &amp;prev, <span class="literal">NULL</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    errno = prev_errno;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * sigint_handler - The kernel sends a SIGINT to the shell whenver the</span></span><br><span class="line"><span class="comment"> *    user types ctrl-c at the keyboard.  Catch it and send it along</span></span><br><span class="line"><span class="comment"> *    to the foreground job.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sigint_handler</span><span class="params">(<span class="keyword">int</span> sig)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// debug_printf(&quot;in SIGINT handler&quot;);</span></span><br><span class="line">    <span class="keyword">int</span> prev_errno = errno;</span><br><span class="line">    <span class="keyword">pid_t</span> pid = fgpid(jobs);</span><br><span class="line">    <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        kill(-pid, sig);</span><br><span class="line">    &#125;</span><br><span class="line">    errno = prev_errno;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * sigtstp_handler - The kernel sends a SIGTSTP to the shell whenever</span></span><br><span class="line"><span class="comment"> *     the user types ctrl-z at the keyboard. Catch it and suspend the</span></span><br><span class="line"><span class="comment"> *     foreground job by sending it a SIGTSTP.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sigtstp_handler</span><span class="params">(<span class="keyword">int</span> sig)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// debug_printf(&quot;in SIGTSTP handler&quot;);</span></span><br><span class="line">    <span class="keyword">int</span> prev_errno = errno;</span><br><span class="line">    <span class="keyword">pid_t</span> pid = fgpid(jobs);</span><br><span class="line">    <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        kill(-pid, sig);</span><br><span class="line">    &#125;</span><br><span class="line">    errno = prev_errno;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h2><p>最后实现的就是可以一个可以跑绝对路径的shell，支持前后台运行以及信号级别的进程交互。</p>
-<p>最后发现<code>tshref</code>也连vim都打不开，我就平衡了（</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1344,7 +1296,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1388,7 +1340,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
