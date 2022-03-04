@@ -29,14 +29,14 @@
 <meta property="og:site_name" content="Garen Wang&#39;s Blog">
 <meta property="og:description" content="prologue现在我跟Windows的一大约束是Microsoft Office和MATLAB，经历一系列折腾终于在linux下安装了MATLAB，跟Windows的羁绊又少了一条 acquisition installation把iso文件下载下来后，有两种办法可以做：  mount这个iso，然后安装 解压出来，然后安装  我使用了后者，不过其实没啥区别。 不过直接.&#x2F;install在我的机">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-52.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-55.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/post_installation.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-52.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-55.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/MATLAB-R2020a-Linux安装笔记/post_installation.png">
 <meta property="article:published_time" content="2021-10-13T04:44:28.000Z">
 <meta property="article:modified_time" content="2021-10-13T05:04:03.395Z">
 <meta property="article:author" content="Garen Wang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-52.png">
+<meta name="twitter:image" content="http://qiniu.garen-wang.top/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-52.png">
 
 <link rel="canonical" href="http://garen-wang.cn/2021/10/13/MATLAB-R2020a-Linux%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/">
 
@@ -259,13 +259,13 @@
 </ol>
 <p>我使用了后者，不过其实没啥区别。</p>
 <p>不过直接<code>./install</code>在我的机子上跑不起来，会报错，如下：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-52.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-52.png">
 <p>网上找了很久，最后发现可以运行<code>/bin/glnxa64</code>下的<code>install_unix_legacy</code>。</p>
 <p>能打开java GUI，但是报了error，如下：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-55.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/MATLAB-R2020a-Linux安装笔记/2021-10-13_12-55.png">
 <p>这种情况下，只需要cd到用户根目录，然后再运行即可。</p>
 <p>记得运行的时候加上sudo，因为需要往<code>/usr/local</code>里面安装。</p>
-<h2 id="post-installation"><a href="#post-installation" class="headerlink" title="post-installation"></a>post-installation</h2><h3 id="message-from-wizard"><a href="#message-from-wizard" class="headerlink" title="message from wizard"></a>message from wizard</h3><img data-src="http://qiniu.garen-wang.cn/static/images/MATLAB-R2020a-Linux安装笔记/post_installation.png">
+<h2 id="post-installation"><a href="#post-installation" class="headerlink" title="post-installation"></a>post-installation</h2><h3 id="message-from-wizard"><a href="#message-from-wizard" class="headerlink" title="message from wizard"></a>message from wizard</h3><img data-src="http://qiniu.garen-wang.top/static/images/MATLAB-R2020a-Linux安装笔记/post_installation.png">
 <p>其实这些supported compilers在用的久的linux机器里面都有的，这一步可以直接忽略。</p>
 <p><a target="_blank" rel="noopener" href="https://wiki.archlinux.org/title/MATLAB#Install_supported_compilers"></a></p>
 <h3 id="HiDPI"><a href="#HiDPI" class="headerlink" title="HiDPI"></a>HiDPI</h3><p>打开安装好之后的MATLAB会发现界面小的离谱，这就涉及HiDPI的有关设置。</p>

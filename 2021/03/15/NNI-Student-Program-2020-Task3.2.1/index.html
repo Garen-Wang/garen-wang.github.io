@@ -29,14 +29,14 @@
 <meta property="og:site_name" content="Garen Wang&#39;s Blog">
 <meta property="og:description" content="Task 3.2.1 表格型数据的进阶任务电影票房预测：TMDB Box Office Prediction特征处理首先，可以发现belongs-to-collection，homepage等特征存在缺失值，可根据具体数据类型使用不同策略填补缺失值，例如json数据填补&#39;[]&#39;，runtime用中位数填补等等。 其次，数据中存在异常值，需要人工删去异常数据或对异常数据进行填补，在这">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3.2.1/task3.2.1_2.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3.2.1/task3.23.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3.2.1/task3.2.1_1.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task3.2.1/task3.2.1_2.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task3.2.1/task3.23.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task3.2.1/task3.2.1_1.png">
 <meta property="article:published_time" content="2021-03-15T11:20:00.000Z">
 <meta property="article:modified_time" content="2021-03-18T13:26:59.899Z">
 <meta property="article:author" content="Garen Wang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3.2.1/task3.2.1_2.png">
+<meta name="twitter:image" content="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task3.2.1/task3.2.1_2.png">
 
 <link rel="canonical" href="http://garen-wang.cn/2021/03/15/NNI-Student-Program-2020-Task3.2.1/">
 
@@ -276,13 +276,13 @@
 <h2 id="旧金山犯罪分类：San-Francisco-Crime-Classification"><a href="#旧金山犯罪分类：San-Francisco-Crime-Classification" class="headerlink" title="旧金山犯罪分类：San Francisco Crime Classification"></a>旧金山犯罪分类：San Francisco Crime Classification</h2><h3 id="原始特征"><a href="#原始特征" class="headerlink" title="原始特征"></a>原始特征</h3><p>该数据的特征相对较少，特征的处理也并不会想上一道题一样繁琐，不过相应的，针对特征的处理则需要更多的技巧。这道题需要做到39个类别的多分类任务，如果对高阶特征的提取不够充分，效果则会比较一般。</p>
 <p>给出的特征中，除了<code>Descript</code>和<code>Resolution</code>之外的特征都很重要，我们逐步分析：</p>
 <p>首先，不同的警区，犯罪案件的发生率是不同的，有些警区所在的地区是犯罪高发地。可以通过数据可视化看出：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3.2.1/task3.2.1_2.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task3.2.1/task3.2.1_2.png">
 <p>可以看出：南部警区犯罪数量明显高于其他警区，Mission和北方警区犯罪数量也相对较多。</p>
 <p>信息量较大的还有日期特征，从中可以查看一天中具体时间段的犯罪数量的分布。在这里我们将一天从0点到24点分为6个时间段可视化结果如下：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3.2.1/task3.23.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task3.2.1/task3.23.png">
 <p>可以看出，在1代表的凌晨和6代表的夜晚这两个时间段内，犯罪数量相对其他的一个时间段都会高。</p>
 <h3 id="特征处理-1"><a href="#特征处理-1" class="headerlink" title="特征处理"></a>特征处理</h3><p><code>X</code>，<code>Y</code>两个特征中，在测试集发现经度为-120.5，纬度为90的异常特征，我们分别使用经纬度的中位数进行替换。替换后的散点图如下：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task3.2.1/task3.2.1_1.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task3.2.1/task3.2.1_1.png">
 <p>替换后可通过<code>sklearn.preprocessing.StandardScaler</code>，对数据进行标准化处理，这样更方便模型进行预测。</p>
 <h3 id="人工构造特征-1"><a href="#人工构造特征-1" class="headerlink" title="人工构造特征"></a>人工构造特征</h3><p>对时间序列特征，提取出年、月、日、季度、小时、星期等子特征。并使用one-hot编码展开。</p>
 <p>发现地址中具有规律，可根据地址最后两个大写字母种类的不同，构造关于地址的特征。</p>

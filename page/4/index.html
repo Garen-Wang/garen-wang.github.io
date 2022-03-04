@@ -254,14 +254,14 @@
 <p>做了一个晚上加半个早上，终于搞定了，是我太菜……</p>
 <h2 id="phase-1"><a href="#phase-1" class="headerlink" title="phase 1"></a>phase 1</h2><h3 id="汇编"><a href="#汇编" class="headerlink" title="汇编"></a>汇编</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">0000000000400ee0 &lt;phase_1&gt;:</span><br><span class="line">  400ee0:	48 83 ec 08          	sub    $0x8,%rsp</span><br><span class="line">  400ee4:	be 00 24 40 00       	mov    $0x402400,%esi</span><br><span class="line">  400ee9:	e8 4a 04 00 00       	callq  401338 &lt;strings_not_equal&gt;</span><br><span class="line">  400eee:	85 c0                	test   %eax,%eax</span><br><span class="line">  400ef0:	74 05                	je     400ef7 &lt;phase_1+0x17&gt;</span><br><span class="line">  400ef2:	e8 43 05 00 00       	callq  40143a &lt;explode_bomb&gt;</span><br><span class="line">  400ef7:	48 83 c4 08          	add    $0x8,%rsp</span><br><span class="line">  400efb:	c3                   	retq   </span><br></pre></td></tr></table></figure>
 <p>其中0x402400这个地址很奇妙，我们用gdb跟进去看一看：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/phase1.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/phase1.png">
 <p>这里的<code>test</code>跟<code>je</code>两个汇编语句是连接在一起的，一般就像是这样用的：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">test %rax, %rax</span><br><span class="line">je 0x??????</span><br></pre></td></tr></table></figure>
 <p><code>test</code>语句本质就是一个<code>and</code>，不过用<code>test</code>的话不会去改变%rax的值，而会直接放到下面来进行比较。</p>
 <p>这两句汇编的意思就是%rax值等于0时就跳转，否则不跳转，执行下一条命令。</p>
 <p>就是比较字符串相等就可以进入下一步了。</p>
 <p>所以只需要保证输入的字符串是<code>&quot;Border relations with Canada have never been better.&quot;</code>，就可以了。</p>
-<h3 id="IDA"><a href="#IDA" class="headerlink" title="IDA"></a>IDA</h3><img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/phase1(IDA).png">
+<h3 id="IDA"><a href="#IDA" class="headerlink" title="IDA"></a>IDA</h3><img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/phase1(IDA).png">
 <p>用IDA的话一眼看出来，就不用分析了。</p>
 <h2 id="phase-2"><a href="#phase-2" class="headerlink" title="phase 2"></a>phase 2</h2><h3 id="汇编-1"><a href="#汇编-1" class="headerlink" title="汇编"></a>汇编</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">0000000000400efc &lt;phase_2&gt;:</span><br><span class="line">  400efc:	55                   	push   %rbp</span><br><span class="line">  400efd:	53                   	push   %rbx</span><br><span class="line">  400efe:	48 83 ec 28          	sub    $0x28,%rsp</span><br><span class="line">  400f02:	48 89 e6             	mov    %rsp,%rsi</span><br><span class="line">  400f05:	e8 52 05 00 00       	callq  40145c &lt;read_six_numbers&gt;</span><br><span class="line">  400f0a:	83 3c 24 01          	cmpl   $0x1,(%rsp)</span><br><span class="line">  400f0e:	74 20                	je     400f30 &lt;phase_2+0x34&gt;</span><br><span class="line">  400f10:	e8 25 05 00 00       	callq  40143a &lt;explode_bomb&gt;</span><br><span class="line">  400f15:	eb 19                	jmp    400f30 &lt;phase_2+0x34&gt;</span><br><span class="line">  400f17:	8b 43 fc             	mov    -0x4(%rbx),%eax</span><br><span class="line">  400f1a:	01 c0                	add    %eax,%eax</span><br><span class="line">  400f1c:	39 03                	cmp    %eax,(%rbx)</span><br><span class="line">  400f1e:	74 05                	je     400f25 &lt;phase_2+0x29&gt;</span><br><span class="line">  400f20:	e8 15 05 00 00       	callq  40143a &lt;explode_bomb&gt;</span><br><span class="line">  400f25:	48 83 c3 04          	add    $0x4,%rbx</span><br><span class="line">  400f29:	48 39 eb             	cmp    %rbp,%rbx</span><br><span class="line">  400f2c:	75 e9                	jne    400f17 &lt;phase_2+0x1b&gt;</span><br><span class="line">  400f2e:	eb 0c                	jmp    400f3c &lt;phase_2+0x40&gt;</span><br><span class="line">  400f30:	48 8d 5c 24 04       	lea    0x4(%rsp),%rbx</span><br><span class="line">  400f35:	48 8d 6c 24 18       	lea    0x18(%rsp),%rbp</span><br><span class="line">  400f3a:	eb db                	jmp    400f17 &lt;phase_2+0x1b&gt;</span><br><span class="line">  400f3c:	48 83 c4 28          	add    $0x28,%rsp</span><br><span class="line">  400f40:	5b                   	pop    %rbx</span><br><span class="line">  400f41:	5d                   	pop    %rbp</span><br><span class="line">  400f42:	c3                   	retq   </span><br></pre></td></tr></table></figure>
 <p>按照汇编来分析，stack frame的构造如下：</p>
@@ -270,16 +270,16 @@
 <p>我们需要满足的是两倍的rax等于rbx，也就是我们输入的数列是成倍增长的。</p>
 <p>还有一个条件：读入到<code>rsp - 0x20</code>，也就是第一个数字，必须是1。</p>
 <p>所以最终的输入就是<code>1 2 4 8 16 32</code>。</p>
-<h3 id="IDA-1"><a href="#IDA-1" class="headerlink" title="IDA"></a>IDA</h3><img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/phase2(IDA).png">
+<h3 id="IDA-1"><a href="#IDA-1" class="headerlink" title="IDA"></a>IDA</h3><img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/phase2(IDA).png">
 <p>输入六个整数，需要符合里面的这个规则：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">do</span></span><br><span class="line">&#123;</span><br><span class="line">  result = (<span class="keyword">unsigned</span> <span class="keyword">int</span>)(<span class="number">2</span> * *((_DWORD *)v2 - <span class="number">1</span>));</span><br><span class="line">  <span class="keyword">if</span> ( *(_DWORD *)v2 != (_DWORD)result )</span><br><span class="line">    explode_bomb();</span><br><span class="line">  v2 += <span class="number">4</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">while</span>(v2 != v5);</span><br></pre></td></tr></table></figure><br>这里需要注意：在第三行的代码里，<code>v2</code>先被强制类型转换为<code>DWORD*</code>，然后再执行减1的操作。</p>
 <p>因为<code>v2</code>的指针类型在减1之前已经确定，所以实际上<code>*((_DWORD *)v2 - 1)</code>就相当于<code>*(_DWORD *)(v2 - 4)</code>，也就是数组里面的上一个元素。</p>
 <p>所以六个整数，只需要满足后一个是前一个的两倍，就可以了。</p>
 <h2 id="phase-3"><a href="#phase-3" class="headerlink" title="phase 3"></a>phase 3</h2><h3 id="IDA-2"><a href="#IDA-2" class="headerlink" title="IDA"></a>IDA</h3><p>非常简单，switch里面提供了8个配套选择，任选一个即可过关。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/phase3(IDA).png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/phase3(IDA).png">
 <h3 id="汇编-2"><a href="#汇编-2" class="headerlink" title="汇编"></a>汇编</h3><p>然而这个关卡的话看汇编会比较难看出来。这也是这一关的价值所在。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">0000000000400f43 &lt;phase_3&gt;:</span><br><span class="line">  400f43:	48 83 ec 18          	sub    $0x18,%rsp</span><br><span class="line">  400f47:	48 8d 4c 24 0c       	lea    0xc(%rsp),%rcx</span><br><span class="line">  400f4c:	48 8d 54 24 08       	lea    0x8(%rsp),%rdx</span><br><span class="line">  400f51:	be cf 25 40 00       	mov    $0x4025cf,%esi</span><br><span class="line">  400f56:	b8 00 00 00 00       	mov    $0x0,%eax</span><br><span class="line">  400f5b:	e8 90 fc ff ff       	callq  400bf0 &lt;__isoc99_sscanf@plt&gt;</span><br><span class="line">  400f60:	83 f8 01             	cmp    $0x1,%eax</span><br><span class="line">  400f63:	7f 05                	jg     400f6a &lt;phase_3+0x27&gt;</span><br><span class="line">  400f65:	e8 d0 04 00 00       	callq  40143a &lt;explode_bomb&gt;</span><br><span class="line">  400f6a:	83 7c 24 08 07       	cmpl   $0x7,0x8(%rsp)</span><br><span class="line">  400f6f:	77 3c                	ja     400fad &lt;phase_3+0x6a&gt;</span><br><span class="line">  400f71:	8b 44 24 08          	mov    0x8(%rsp),%eax</span><br><span class="line">  400f75:	ff 24 c5 70 24 40 00 	jmpq   *0x402470(,%rax,8)</span><br><span class="line">  400f7c:	b8 cf 00 00 00       	mov    $0xcf,%eax</span><br><span class="line">  400f81:	eb 3b                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">  400f83:	b8 c3 02 00 00       	mov    $0x2c3,%eax</span><br><span class="line">  400f88:	eb 34                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">  400f8a:	b8 00 01 00 00       	mov    $0x100,%eax</span><br><span class="line">  400f8f:	eb 2d                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">  400f91:	b8 85 01 00 00       	mov    $0x185,%eax</span><br><span class="line">  400f96:	eb 26                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">  400f98:	b8 ce 00 00 00       	mov    $0xce,%eax</span><br><span class="line">  400f9d:	eb 1f                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">  400f9f:	b8 aa 02 00 00       	mov    $0x2aa,%eax</span><br><span class="line">  400fa4:	eb 18                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">  400fa6:	b8 47 01 00 00       	mov    $0x147,%eax</span><br><span class="line">  400fab:	eb 11                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">  400fad:	e8 88 04 00 00       	callq  40143a &lt;explode_bomb&gt;</span><br><span class="line">  400fb2:	b8 00 00 00 00       	mov    $0x0,%eax</span><br><span class="line">  400fb7:	eb 05                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">  400fb9:	b8 37 01 00 00       	mov    $0x137,%eax</span><br><span class="line">  400fbe:	3b 44 24 0c          	cmp    0xc(%rsp),%eax</span><br><span class="line">  400fc2:	74 05                	je     400fc9 &lt;phase_3+0x86&gt;</span><br><span class="line">  400fc4:	e8 71 04 00 00       	callq  40143a &lt;explode_bomb&gt;</span><br><span class="line">  400fc9:	48 83 c4 18          	add    $0x18,%rsp</span><br><span class="line">  400fcd:	c3                   	retq   </span><br></pre></td></tr></table></figure>
 <p>stack frame大概长这样：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">0x00(rsp)</span><br><span class="line">0x04</span><br><span class="line">0x08</span><br><span class="line">0x0c rcx [1]</span><br><span class="line">0x10 rdx [0]</span><br><span class="line">0x14</span><br><span class="line">0x18 rsp</span><br></pre></td></tr></table></figure><br>发现了第一个奇妙地址0x4025cf，我们也用gdb看看：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/phase3_disass.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/phase3_disass.png">
 <p>害……</p>
 <p>不过这里有另一个奇妙地址，其实这句话就是switch汇编实现的核心：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">400f75:	ff 24 c5 70 24 40 00 	jmpq   *0x402470(,%rax,8)</span><br></pre></td></tr></table></figure>
@@ -290,7 +290,7 @@
 </ul>
 <p>这种括号的表示方法不只在lea指令里面能用，在其他指令里也能见到。</p>
 <p>再查一查0x402470这个地址的值，还有后面几个地址的值：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/phase3_switch.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/phase3_switch.png">
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p&#x2F;x *0x402470</span><br><span class="line">$9 &#x3D; 0x400f7c</span><br><span class="line">(gdb) p&#x2F;x *0x402478</span><br><span class="line">$10 &#x3D; 0x400fb9</span><br><span class="line">(gdb) p&#x2F;x *0x402480</span><br><span class="line">$11 &#x3D; 0x400f83</span><br><span class="line">(gdb) p&#x2F;x *0x402488</span><br><span class="line">$12 &#x3D; 0x400f8a</span><br><span class="line">(gdb) p&#x2F;x *0x402490</span><br><span class="line">$13 &#x3D; 0x400f91</span><br><span class="line">(gdb) p&#x2F;x *0x402498</span><br><span class="line">$14 &#x3D; 0x400f98</span><br><span class="line">(gdb) p&#x2F;x *0x4024a0</span><br><span class="line">$15 &#x3D; 0x400f9f</span><br><span class="line">(gdb) p&#x2F;x *0x4024a8</span><br><span class="line">$16 &#x3D; 0x400fa6</span><br><span class="line">(gdb) p&#x2F;x *0x4024b0</span><br><span class="line">$17 &#x3D; 0x7564616d</span><br></pre></td></tr></table></figure>
 <p>可以发现，从0x402470开始储存的是一个指针数组，因为是64位，所以地址自然是8个字节8个字节间隔的。</p>
 <p>并且，这个数组里的指针指向的值，都是<code>phase_3</code>函数的mov指令，即对应了switch语句中的不同分支。</p>
@@ -300,9 +300,9 @@
 <p>一一对应后，可以梳理出能够通过的8个输出：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0: 0xcf</span><br><span class="line">1: 0x137</span><br><span class="line">2: 0x2c3</span><br><span class="line">3: 0x100</span><br><span class="line">4: 0x185</span><br><span class="line">5: 0xce</span><br><span class="line">6: 0x2aa</span><br><span class="line">7: 0x147</span><br></pre></td></tr></table></figure>
 <p>任选其一，就能通过第三关。</p>
-<h2 id="phase-4"><a href="#phase-4" class="headerlink" title="phase 4"></a>phase 4</h2><h3 id="IDA-3"><a href="#IDA-3" class="headerlink" title="IDA"></a>IDA</h3><img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/phase4(IDA).png">
+<h2 id="phase-4"><a href="#phase-4" class="headerlink" title="phase 4"></a>phase 4</h2><h3 id="IDA-3"><a href="#IDA-3" class="headerlink" title="IDA"></a>IDA</h3><img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/phase4(IDA).png">
 <p>这个部分我们需要保证第一个读入的整数<code>v3</code>小于等于14的同时，<code>func4(v3, 0, 14)</code>也等于0，第二个读入的整数<code>v4</code>也要等于0。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/func4(IDA).png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/func4(IDA).png">
 <p>而要使这个函数的返回值为0，只需要让<code>a1 = v3 = (14 - 0) / 2 + 0 = 7</code>。</p>
 <h3 id="汇编-3"><a href="#汇编-3" class="headerlink" title="汇编"></a>汇编</h3><p>然而汇编并不像IDA反汇编出来的这样清晰，这一关一眼看上去可能眼花，认真看就好了。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">000000000040100c &lt;phase_4&gt;:</span><br><span class="line">  40100c:	48 83 ec 18          	sub    $0x18,%rsp</span><br><span class="line">  401010:	48 8d 4c 24 0c       	lea    0xc(%rsp),%rcx</span><br><span class="line">  401015:	48 8d 54 24 08       	lea    0x8(%rsp),%rdx</span><br><span class="line">  40101a:	be cf 25 40 00       	mov    $0x4025cf,%esi</span><br><span class="line">  40101f:	b8 00 00 00 00       	mov    $0x0,%eax</span><br><span class="line">  401024:	e8 c7 fb ff ff       	callq  400bf0 &lt;__isoc99_sscanf@plt&gt;</span><br><span class="line">  401029:	83 f8 02             	cmp    $0x2,%eax</span><br><span class="line">  40102c:	75 07                	jne    401035 &lt;phase_4+0x29&gt;</span><br><span class="line">  40102e:	83 7c 24 08 0e       	cmpl   $0xe,0x8(%rsp)</span><br><span class="line">  401033:	76 05                	jbe    40103a &lt;phase_4+0x2e&gt;</span><br><span class="line">  401035:	e8 00 04 00 00       	callq  40143a &lt;explode_bomb&gt;</span><br><span class="line">  40103a:	ba 0e 00 00 00       	mov    $0xe,%edx</span><br><span class="line">  40103f:	be 00 00 00 00       	mov    $0x0,%esi</span><br><span class="line">  401044:	8b 7c 24 08          	mov    0x8(%rsp),%edi</span><br><span class="line">  401048:	e8 81 ff ff ff       	callq  400fce &lt;func4&gt;</span><br><span class="line">  40104d:	85 c0                	test   %eax,%eax</span><br><span class="line">  40104f:	75 07                	jne    401058 &lt;phase_4+0x4c&gt;</span><br><span class="line">  401051:	83 7c 24 0c 00       	cmpl   $0x0,0xc(%rsp)</span><br><span class="line">  401056:	74 05                	je     40105d &lt;phase_4+0x51&gt;</span><br><span class="line">  401058:	e8 dd 03 00 00       	callq  40143a &lt;explode_bomb&gt;</span><br><span class="line">  40105d:	48 83 c4 18          	add    $0x18,%rsp</span><br><span class="line">  401061:	c3                   	retq   </span><br></pre></td></tr></table></figure>
@@ -346,7 +346,7 @@
 <p>这个函数的stack frame是这样的：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">phase 5</span><br><span class="line">0x00 (rsp)</span><br><span class="line">0x08 canary</span><br><span class="line">0x10 rdi</span><br><span class="line">0x18</span><br><span class="line">0x20 rsp</span><br></pre></td></tr></table></figure>
 <p>同样有奇妙地址，我们查一查：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/phase5_str.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/phase5_str.png">
 <p>这个字符串打印出来之所以这样，是因为它最后一位不是<code>\x00</code>，所以就连续着把紧连着的下一个字符串也输出出来了。</p>
 <p>最开始在call出<code>string_length</code>之前的这部分是用来初始化canary的。不用管。</p>
 <p>字符串长度必须为6，才能跳转，不然会踩雷。</p>
@@ -362,7 +362,7 @@
 <p>手动数一数下标，就可以发现，要对应弄出<code>flyers</code>，我们依次需要下标是<code>9 15 14 5 6 7</code>。</p>
 <p>所以我们只需要翻翻ASCII表，找到低4位是这些的字符，拼到一起就可以了。</p>
 <p>我最终的答案是<code>ionefg</code>。答案不唯一。</p>
-<h3 id="IDA-4"><a href="#IDA-4" class="headerlink" title="IDA"></a>IDA</h3><img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/phase5(IDA).png">
+<h3 id="IDA-4"><a href="#IDA-4" class="headerlink" title="IDA"></a>IDA</h3><img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/phase5(IDA).png">
 <p>主要是这句代码太具有迷惑性：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v3[i] = array_3449[*(_BYTE *)(a1 + i) &amp; <span class="number">0xF</span>];</span><br></pre></td></tr></table></figure>
 <p>正确的解读是：</p>
@@ -389,7 +389,7 @@
 <p>一个for循环，从<code>v17</code>即<code>rbp - 0x58</code>开始，每次循环结束会跳转到<code>v10</code>的值。之所以可以直接迭代为<code>v10</code>的值，是因为这个数组在第三次操作的时候已经变成了指针数组了！</p>
 <p>接下来又是一句意味深长的代码：<code>*(_QWORD *)(i + 8) = *(_QWORD *)v10;</code></p>
 <p>我们在IDA开始乱了，用gdb看一看有没有线索，毕竟还没有查过那段<code>&amp;node1</code>的奇妙地址。结果非常的意外：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/phase6_node.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/phase6_node.png">
 <p>不知为什么，每一个node元素，他的第三个数字，恰好跟下一个node的地址一模一样！</p>
 <p>其实突破点就出来了：</p>
 <p><strong>每一个node是一个struct类型！</strong></p>
@@ -407,30 +407,30 @@
 <p>Jan 15 upd：来补上secret phase了！</p>
 <h3 id="怎么进secret-phase"><a href="#怎么进secret-phase" class="headerlink" title="怎么进secret phase"></a>怎么进secret phase</h3><p><code>secret_phase</code>函数的入口其实在<code>phase_defused</code>里面。</p>
 <p>懒得看汇编，直接用IDA Pro做了。<del>其实反汇编出来的跟看汇编也差不多</del></p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/phase_defused(IDA).png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/phase_defused(IDA).png">
 <p>这里看到一个<code>num_input_strings</code>，是个在bss段上的全局变量。同时，<code>sscanf</code>所读入的那个地址，也是在bss段上的，初始化都是0，不过可能会在函数执行的时候被修改。</p>
 <p>那到底是什么时候被修改的？我们分别用gdb设断点看一看。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/secret_phase(num_input_strings).png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/secret_phase(num_input_strings).png">
 <p>可以发现这个变量的意思就是记录现在是第几关。所以当第六关的时候就可以了。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/secret_phase(input_strings).png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/secret_phase(input_strings).png">
 <p>可以发现是我们在打phase 4的时候，这个<code>input_strings + 240</code>所在的字符串就更改成了我们输入的内容。并且后面不会再更改。</p>
 <p>所以我们只需要在第四阶段，在第三个位置上输入一个<code>DrEvil</code>，就可以在过完第六关之后触发了。</p>
-<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/secret_phase(IDA).png">
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/secret_phase(IDA).png">
 <p>要使这个<code>func7</code>返回2，并且输入的数字小于等于0x3e8 + 1，就可以通关了。</p>
 <p>这里有一个<code>&amp;n1</code>，点进去看看，又是在data段，跟前面的<code>&amp;node1</code>很类似。并且，<code>n1</code>后面也紧跟着其他类似的东西，应该又是一个struct。</p>
 <p>我们用gdb看一看：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/secret_phase(n1).png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/secret_phase(n1).png">
 <p>可以发现，每个结构体储存了两个地址，我们做下笔记：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">n1(n21, n22)  36</span><br><span class="line">n21(n31, n32) 8</span><br><span class="line">n22(n33, n34) 50</span><br><span class="line">n32(n43, n44) 22</span><br><span class="line">n33(n45, n46) 45</span><br><span class="line">n31(n41, n42) 6</span><br><span class="line">n34(n47, n48) 107</span><br><span class="line">n45 40</span><br><span class="line">n41 1</span><br><span class="line">n47 99</span><br><span class="line">n44 35</span><br><span class="line">n42 7</span><br><span class="line">n43 20</span><br><span class="line">n46 47</span><br><span class="line">n48 1001</span><br></pre></td></tr></table></figure>
 <p>这种一对二的关系，其实就是二叉树：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">                n1</span><br><span class="line">      n21             n22</span><br><span class="line">  n31     n32     n33     n34</span><br><span class="line">n41 n42 n43 n44 n45 n46 n47 n48</span><br></pre></td></tr></table></figure>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/func7(IDA).png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/func7(IDA).png">
 <p>想让<code>func7</code>为2，首先要落向左边，然后落向右边，然后返回0，这样就能构造出<code>2 * (2 * 0 + 1) = 2</code>了。</p>
 <p>最后的返回0，也可以走左边再返回0，所以<code>n32</code>和<code>n43</code>的值都是没问题的，即我们有20跟22两个答案。</p>
 <p>终于通关了！芜湖起飞！</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/success.png">
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/success1.png">
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Bomb-Lab-Writeup/success2.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/success.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/success1.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Bomb-Lab-Writeup/success2.png">
 
       
     </div>
@@ -636,8 +636,8 @@
       
           <p>芜湖！起飞！今天备案终于审核通过了！捣鼓了一下，终于把博客弄得像模像样的，就顺带记录一下！</p>
 <h2 id="序幕"><a href="#序幕" class="headerlink" title="序幕"></a>序幕</h2><p>军训汇操在早上结束了，回到宿舍一打开手机就连收到三条信息，终于给爷备案好了！</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/WeChat_Image_20210108221637.jpg">
-<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/WeChat_Image_20210108221657.jpg">
+<img data-src="http://qiniu.garen-wang.top/static/images/My-Hexo-Blog-Configuration/WeChat_Image_20210108221637.jpg">
+<img data-src="http://qiniu.garen-wang.top/static/images/My-Hexo-Blog-Configuration/WeChat_Image_20210108221657.jpg">
 <p>我啪的一下就开始准备我的博客了，很快啊！</p>
 <h2 id="博客框架"><a href="#博客框架" class="headerlink" title="博客框架"></a>博客框架</h2><p>博客使用Hexo搭建，用了NexT主题(NexT.Gemini)，在GitHub上就能找到这个主题。</p>
 <p>Hexo只要有npm就可以安装了，跑条命令安装一下就行。</p>
@@ -674,7 +674,7 @@
 <p>最后在每个需要启用mathjax的博客页面里，在一开始的Front-matter那里加上一句：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mathjax: true</span><br></pre></td></tr></table></figure>
 <p>这样就可以用上LaTeX语法写行内公式和行间公式了。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/2021-01-08_23-29.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/My-Hexo-Blog-Configuration/2021-01-08_23-29.png">
 <h2 id="搜索框"><a href="#搜索框" class="headerlink" title="搜索框"></a>搜索框</h2><p>搜索框也很容易实现。</p>
 <p>先用npm安装下插件：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save hexo-generator-search</span><br><span class="line">$ npm install --save hexo-generator-searchdb</span><br></pre></td></tr></table></figure>
@@ -691,9 +691,9 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">valine:</span><br><span class="line">  enable: true</span><br><span class="line">  appid: Your leancloud application appid</span><br><span class="line">  appkey: Your leancloud application appkey</span><br><span class="line">  notify: true # Mail notifier</span><br><span class="line">  verify: false # Verification code</span><br><span class="line">  placeholder: Just go go # Comment box placeholder</span><br><span class="line">  avatar: mm # Gravatar style</span><br><span class="line">  guest_info: nick,mail,link # Custom comment header</span><br><span class="line">  pageSize: 10 # Pagination size</span><br><span class="line">  language: zh-cn # Language, available values: en, zh-cn</span><br><span class="line">  visitor: true # Article reading statistic</span><br><span class="line">  comment_count: true # If false, comment count will only be displayed in post page, not in home page</span><br><span class="line">  recordIP: false # Whether to record the commenter IP</span><br><span class="line">  serverURLs: # When the custom domain name is enabled, fill it in here (it will be detected automatically by default, no need to fill in)</span><br><span class="line">  #post_meta_order: 0</span><br></pre></td></tr></table></figure>
 <p>然后在储存-结构化数据中创建两个新的Class，名称分别为<code>Comment</code>和<code>Counter</code>，分别可以用来存评论和链接访问数，非常方便。</p>
 <p>在LeanCloud后台看到的数据就是这样的：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/2021-01-08_22-44.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/My-Hexo-Blog-Configuration/2021-01-08_22-44.png">
 <p>之后部署一下就可以看到效果了！</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/2021-01-08_22-42.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/My-Hexo-Blog-Configuration/2021-01-08_22-42.png">
 <h2 id="七牛云图床"><a href="#七牛云图床" class="headerlink" title="七牛云图床"></a>七牛云图床</h2><p>首先先在博客根目录安装一下需要的Hexo插件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save hexo-qiniu-sync</span><br></pre></td></tr></table></figure><br>在七牛云右上角的密钥管理就可以找到access key和secret key了，bucket填你自己创建时写的空间名称，在<code>_config.yml</code>里面添加这一段配置：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">qiniu:</span><br><span class="line">  offline: false</span><br><span class="line">  sync: true</span><br><span class="line">  bucket: &quot;your_bucket_name&quot;</span><br><span class="line">  access_key: &quot;your_access_key&quot;</span><br><span class="line">  secret_key: &quot;your_secret_key&quot;</span><br><span class="line">  dirPrefix: static</span><br><span class="line">  urlPrefix: http:&#x2F;&#x2F;&quot;your_qiniu_url&quot;&#x2F;static</span><br><span class="line">  up_host: http:&#x2F;&#x2F;upload.qiniu.com</span><br><span class="line">  local_dir: static</span><br><span class="line">  update_exist: true</span><br><span class="line">  image: </span><br><span class="line">    folder: images</span><br><span class="line">    extend: </span><br><span class="line">  js:</span><br><span class="line">    folder: js</span><br><span class="line">  css:</span><br><span class="line">    folder: css</span><br></pre></td></tr></table></figure>
 <p>在文档中，就不需要使用Markdown的插入图片格式了，使用下面的格式：</p>
@@ -704,11 +704,11 @@
 <h2 id="小彩蛋"><a href="#小彩蛋" class="headerlink" title="小彩蛋"></a>小彩蛋</h2><h3 id="我大E了啊"><a href="#我大E了啊" class="headerlink" title="我大E了啊"></a>我大E了啊</h3><p>在配置的时候有一次跑<code>hexo g -d</code>的时候报错了，怎么改都改不好，心态差点崩了，差点要把整个博客重新弄一遍。</p>
 <p>这种情况的最好解决方法是一开始就用git维护整个仓库。最后我直接用<code>git reset</code>回滚到上次commit的时候，一切就又都回来了。我又继续无止境地配置下去了……</p>
 <h3 id="什么？DDL？"><a href="#什么？DDL？" class="headerlink" title="什么？DDL？"></a>什么？DDL？</h3><p>啊？什么？我今天没赶DDL？</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/WeChat_Image_20210108221702.jpg">
+<img data-src="http://qiniu.garen-wang.top/static/images/My-Hexo-Blog-Configuration/WeChat_Image_20210108221702.jpg">
 <p>其实明天是数创大作业的deadline。。。</p>
 <p>放心，明天弄得完的。deadline是第一生产力。。。</p>
 <p>熬夜继续爆肝大作业，还不如早点休息。。。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/My-Hexo-Blog-Configuration/84869490_p0.jpg">
+<img data-src="http://qiniu.garen-wang.top/static/images/My-Hexo-Blog-Configuration/84869490_p0.jpg">
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/as480133937/article/details/100138838">https://blog.csdn.net/as480133937/article/details/100138838</a></p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/yexiaohhjk/article/details/82526604">https://blog.csdn.net/yexiaohhjk/article/details/82526604</a></p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/34747279">https://zhuanlan.zhihu.com/p/34747279</a></p>
@@ -800,7 +800,7 @@
       
           <h1 id="Task2-进阶任务-HPO-NAS"><a href="#Task2-进阶任务-HPO-NAS" class="headerlink" title="Task2 进阶任务 HPO+NAS"></a>Task2 进阶任务 HPO+NAS</h1><h2 id="Task-2-1"><a href="#Task-2-1" class="headerlink" title="Task 2.1"></a>Task 2.1</h2><h3 id="CIFAR10简介"><a href="#CIFAR10简介" class="headerlink" title="CIFAR10简介"></a>CIFAR10简介</h3><p>CIFAR10数据集共有60000张分辨率为32*32的彩色图像，分为十类，每类都有6000张图像。</p>
 <p>50000张图像构成训练集，10000张图像构成测试集。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task2/1.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task2/1.png">
 
 <h3 id="实现流程"><a href="#实现流程" class="headerlink" title="实现流程"></a>实现流程</h3><p>我们使用PyTorch编写卷积神经网络来解决这项图像分类任务。</p>
 <p>大体流程如下：</p>
@@ -961,24 +961,24 @@
 </li>
 </ol>
 <h4 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h4><p>如图，10次trial都成功地完成，其中id为9的trial达到了最高准确率，达99.34%。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/1.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task1/1.png">
 
-<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/4.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task1/4.png">
 
-<h4 id="超参组合可视化"><a href="#超参组合可视化" class="headerlink" title="超参组合可视化"></a>超参组合可视化</h4><img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/5.png">
+<h4 id="超参组合可视化"><a href="#超参组合可视化" class="headerlink" title="超参组合可视化"></a>超参组合可视化</h4><img data-src="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task1/5.png">
 
 <p>图中，准确率更高的组合用红线表示，而准确率低的用绿线表示。</p>
 <p>可以看出，当batch_size选择16，lr和momentum大小适中时，模型可以达到99%以上的准确率，实验效果非常理想。</p>
-<h4 id="训练结果可视化"><a href="#训练结果可视化" class="headerlink" title="训练结果可视化"></a>训练结果可视化</h4><img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/3.png">
+<h4 id="训练结果可视化"><a href="#训练结果可视化" class="headerlink" title="训练结果可视化"></a>训练结果可视化</h4><img data-src="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task1/3.png">
 
 <p>Default Metric</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/2.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task1/2.png">
 
 <p>Sorted Default Metric</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/6.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task1/6.png">
 
 <p>Trial Duration</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/NNI-Student-Program-2020-Task1/7.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task1/7.png">
 
 <p>Intermediate Results</p>
 <hr>

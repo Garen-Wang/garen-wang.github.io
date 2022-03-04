@@ -29,18 +29,18 @@
 <meta property="og:site_name" content="Garen Wang&#39;s Blog">
 <meta property="og:description" content="RISC-V的分享讲一讲RISC-V的内容吧，最近跟着一个跟RISC-V有关的开源项目玩了一下，对RISC-V有最基本的了解，就分享一下吧。 第一次做队内分享，讲的不对的话请大哥们指正。 RISC-V了解在qemu编译的时候写一写，等啊等 RISC-V作为PC端和嵌入式设备的新架构，不像x86那样有沉重的历史包袱，相比更加的精简与现代化。 去年华为专场的那场CTF就有挺多RISC-V方面的pwn题">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/riscv.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/prologue_and_epilogue.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/you_are.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/get_gp.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/vmmap1.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/cat_maps_failed.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/cat_maps_successfully.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/riscv.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/prologue_and_epilogue.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/you_are.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/get_gp.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/vmmap1.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/cat_maps_failed.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/cat_maps_successfully.png">
 <meta property="article:published_time" content="2021-03-27T02:37:33.000Z">
 <meta property="article:modified_time" content="2021-04-06T12:17:24.147Z">
 <meta property="article:author" content="Garen Wang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/riscv.png">
+<meta name="twitter:image" content="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/riscv.png">
 
 <link rel="canonical" href="http://garen-wang.cn/2021/03/27/First-Presentation-in-Kap0k/">
 
@@ -267,7 +267,7 @@
 <p>去年华为专场的那场CTF就有挺多RISC-V方面的pwn题，了解了不亏。</p>
 <p>RISC-V是大势所趋（逃</p>
 <p><a target="_blank" rel="noopener" href="https://metalcode.eu/2019-12-06-rv32i.html">RISC-V Cheat Sheet</a></p>
-<h3 id="RISC-V的寄存器"><a href="#RISC-V的寄存器" class="headerlink" title="RISC-V的寄存器"></a>RISC-V的寄存器</h3><img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/riscv.png">
+<h3 id="RISC-V的寄存器"><a href="#RISC-V的寄存器" class="headerlink" title="RISC-V的寄存器"></a>RISC-V的寄存器</h3><img data-src="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/riscv.png">
 <p>RISC-V的寄存器有32个，从<code>x0</code>到<code>x31</code>。根据官方的调用规范，各寄存器有以下的性质：</p>
 <ul>
 <li><p><code>zero(x0)</code>是特殊的寄存器，任何时候值都为0。</p>
@@ -295,7 +295,7 @@
 <p>如何实现函数调用时的跳转？有两条汇编指令非常常用：</p>
 <script type="math/tex; mode=display">{jal \qquad r_d,\quad  imm[20:1]}</script><script type="math/tex; mode=display">{jalr \quad r_d, \quad (imm[11:0])r_s}</script><p>作用是在$r_d$上保存下当前栈帧的<code>ra</code>，然后<code>pc</code>会跳转到与<code>pc</code>或者$r_s$的offset为$imm$的地址处。</p>
 <p>而当函数要跳转回来时，相似地有<code>ret</code>的伪指令，这条指令会被认为是<code>jalr x0, 0(x1)</code>。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/prologue_and_epilogue.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/prologue_and_epilogue.png">
 <p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/64211181/whats-the-difference-between-caller-saved-and-callee-saved-in-risc-v">关于caller saved和callee saved的细节讨论</a></p>
 <p>找到<a target="_blank" rel="noopener" href="https://web.eecs.utk.edu/~smarz1/courses/ece356/notes/assembly/">一篇不错的文章</a>，不懂的时候查一查就可以了。</p>
 <h3 id="RISC-V实例"><a href="#RISC-V实例" class="headerlink" title="RISC-V实例"></a>RISC-V实例</h3><p>随便写了个类似helloworld的东西，拿到的<code>helloworld.s</code>，可以分析一下：</p>
@@ -308,14 +308,14 @@
 <p>意思就是过滤了RISC-V的syscall指令，只剩下这几个让你用，没有<code>execve</code>。</p>
 <p>checksec一下<code>main</code>文件，保护几乎都关了，ASLR也没有。是静态链接的二进制文件。</p>
 <p>反编译打开，搜一下跟”flag”有关的字符串，定位main函数。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/you_are.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/you_are.png">
 <p>结果发现符号表没了，不能正常地得到编译结果，只能看到汇编。</p>
 <p>在博客上找到一种解决方法：</p>
 <blockquote>
 <p>反编译出现 unknown error 时得手动改 gp 为 0x6f178（ctrl-A → ctrl-R → 找到gp寄存器并修改）(感谢@X1do0发现的解决方案)</p>
 </blockquote>
 <p>在哪里找得到？在0x101ec可以看见：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/get_gp.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/get_gp.png">
 <p>得到的主函数反编译结果：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">undefined8 <span class="title">UndefinedFunction_00010400</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">  ulonglong uVar1;</span><br><span class="line">  longlong lVar2;</span><br><span class="line">  undefined auStack488 [<span class="number">192</span>];</span><br><span class="line">  undefined auStack296 [<span class="number">256</span>];</span><br><span class="line">  ulonglong uStack40;</span><br><span class="line">  longlong lStack32;</span><br><span class="line">  <span class="keyword">int</span> iStack20;<span class="comment">// cnt</span></span><br><span class="line">  </span><br><span class="line">  FUN_00017d74(PTR_DAT_0006ea28,<span class="number">0</span>);<span class="comment">// setvbuf</span></span><br><span class="line">  FUN_00017d74(PTR_DAT_0006ea20,<span class="number">0</span>);<span class="comment">// setvbuf</span></span><br><span class="line">  FUN_00017d74(PTR_DAT_0006ea18,<span class="number">0</span>);<span class="comment">// setvbuf</span></span><br><span class="line">  FUN_0001605a(<span class="string">&quot;Input the flag: &quot;</span>);<span class="comment">// output</span></span><br><span class="line">  FUN_00016a5a(auStack296);<span class="comment">// read your input</span></span><br><span class="line">  uVar1 = FUN_000204e4(auStack296);<span class="comment">// get string</span></span><br><span class="line">  <span class="keyword">if</span> (uVar1 == ((longlong)(iRam000000000006e9dc + iRam000000000006e9d8) &amp; <span class="number">0xffffffff</span>U)) &#123;</span><br><span class="line">    lStack32 = FUN_00020386(auStack296 + ((longlong)iRam000000000006e9d8 &amp; <span class="number">0xffffffff</span>));</span><br><span class="line">    FUN_0001118a(auStack488,<span class="string">&quot;tzgkwukglbslrmfjsrwimtwyyrkejqzo&quot;</span>,<span class="string">&quot;oaeqjfhclrqk&quot;</span>,<span class="number">0x80</span>);</span><br><span class="line">    FUN_000111ea(auStack488,auStack296,iRam000000000006e9d8);</span><br><span class="line">    lVar2 = FUN_00020e2a(auStack296,&amp;DAT_0006d000,iRam000000000006e9d8);</span><br><span class="line">    <span class="keyword">if</span> (lVar2 == <span class="number">0</span>) &#123;</span><br><span class="line">      uStack40 = FUN_000204e4(lStack32);</span><br><span class="line">      iStack20 = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">while</span>( <span class="literal">true</span> ) &#123;</span><br><span class="line">        <span class="keyword">if</span> (uStack40 &gt;&gt; <span class="number">3</span> &lt;= (ulonglong)(longlong)iStack20) &#123;</span><br><span class="line">          FUN_00016bc8(<span class="string">&quot;You are right :D&quot;</span>);<span class="comment">// output</span></span><br><span class="line">          gp = (undefined *)<span class="number">0x6f178</span>;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        FUN_000102ae(iStack20 * <span class="number">8</span> + lStack32,&amp;DAT_0006d060);</span><br><span class="line">        lVar2 = FUN_00020e2a(iStack20 * <span class="number">8</span> + lStack32,(longlong)(iStack20 * <span class="number">8</span>) + <span class="number">0x6d030</span>,<span class="number">8</span>);</span><br><span class="line">        <span class="keyword">if</span> (lVar2 != <span class="number">0</span>) <span class="keyword">break</span>;</span><br><span class="line">        iStack20 = iStack20 + <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  FUN_00016bc8(<span class="string">&quot;You are wrong ._.&quot;</span>);<span class="comment">// output</span></span><br><span class="line">  gp = (undefined *)<span class="number">0x6f178</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>其实读入部分就是一个栈溢出，就有很多解法，既可以写shellcode，也可以写ROP。</p>
@@ -337,13 +337,13 @@
 <p>经过测试，从qemu-user的沙箱里面，基本可以向qemu执行的程序之外的一定内存空间做任意地址读、任意地址写。</p>
 <p>同样是利用上一题栈溢出的漏洞为基础继续做，只不过这次不读取<code>flag</code>，读取<code>/proc/self/maps</code>，查看内存情况。</p>
 <p>本来想在gdb里面调试看内存的，结果看不见前面的内存。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/vmmap1.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/vmmap1.png">
 <p>msk师傅告诉我这是虚拟地址，确实是这样。</p>
 <p>可以通过访问<code>/proc/self/maps</code>看到当前内存布局，结果发现看了个寂寞：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/cat_maps_failed.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/cat_maps_failed.png">
 <p>有师傅去看了qemu的源码分析，发现原来是qemu塞了个假的内存分布信息给你。（你被骗了</p>
 <p>师傅们有很多的解法，其中一种是改成<code>/./proc/self/maps</code>，就能得到正确的内存分布情况。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/First-Presentation-in-Kap0k/cat_maps_successfully.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/First-Presentation-in-Kap0k/cat_maps_successfully.png">
 <p>剩下的内容就是pwn的常规操作：</p>
 <ol>
 <li>通过实际内存分布信息，找到qemu的基地址和libc的基地址。</li>

