@@ -19,13 +19,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"garen-wang.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"garen-wang.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="axb_2019_fmt3232位格式化字符串漏洞，有几个特点需要注意：  测偏移的时候会发现没有完整四位四位的偏移，此时需要在最开始多补一位，这样保证后面都是从8的偏移开始。 用格式化字符串漏洞泄露libc的时候用%s，然后第一个4位是got.plt表上的地址，第二个4位才是真正的地址。 fmtstr_payload填了四个参数，其中注意numbwritten参数，意思是格式化字符串中前面已有的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Writeup for Second Week">
-<meta property="og:url" content="http://garen-wang.cn/2021/01/22/Writeup-for-Second-Week/index.html">
+<meta property="og:url" content="http://garen-wang.top/2021/01/22/Writeup-for-Second-Week/index.html">
 <meta property="og:site_name" content="Garen Wang&#39;s Blog">
 <meta property="og:description" content="axb_2019_fmt3232位格式化字符串漏洞，有几个特点需要注意：  测偏移的时候会发现没有完整四位四位的偏移，此时需要在最开始多补一位，这样保证后面都是从8的偏移开始。 用格式化字符串漏洞泄露libc的时候用%s，然后第一个4位是got.plt表上的地址，第二个4位才是真正的地址。 fmtstr_payload填了四个参数，其中注意numbwritten参数，意思是格式化字符串中前面已有的">
 <meta property="og:locale" content="en_US">
@@ -35,7 +35,7 @@
 <meta property="article:tag" content="pwn">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://garen-wang.cn/2021/01/22/Writeup-for-Second-Week/">
+<link rel="canonical" href="http://garen-wang.top/2021/01/22/Writeup-for-Second-Week/">
 
 
 <script id="page-configurations">
@@ -188,7 +188,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://garen-wang.cn/2021/01/22/Writeup-for-Second-Week/">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.top/2021/01/22/Writeup-for-Second-Week/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -222,27 +222,6 @@
               </span>
 
           
-            <span id="/2021/01/22/Writeup-for-Second-Week/" class="post-meta-item leancloud_visitors" data-flag-title="Writeup for Second Week" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/01/22/Writeup-for-Second-Week/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/22/Writeup-for-Second-Week/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
 
         </div>
       </header>
@@ -275,6 +254,23 @@
     
     
     
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Garen Wang
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="http://garen-wang.top/2021/01/22/Writeup-for-Second-Week/" title="Writeup for Second Week">http://garen-wang.top/2021/01/22/Writeup-for-Second-Week/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
 
       <footer class="post-footer">
           
@@ -307,7 +303,7 @@
 
           </div>
           
-    <div class="comments" id="valine-comments"></div>
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -385,7 +381,7 @@
         <a href="https://github.com/Garen-Wang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Garen-Wang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:garen-wang@qq.com" title="E-Mail → mailto:garen-wang@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+        <a href="mailto:g4r3nwang@gmail.com" title="E-Mail → mailto:g4r3nwang@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
   </div>
 
@@ -407,7 +403,7 @@
         
 
         
-  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">粤ICP备2021003110号 </a>
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">粤ICP备2022012256号 </a>
       <img src="/images/beian.png" style="display: inline-block;">
   </div>
 
@@ -538,32 +534,23 @@
 
   
 
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
 
 <script>
-NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
-  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
-    var GUEST = ['nick', 'mail', 'link'];
-    var guest = 'nick,mail,link';
-    guest = guest.split(',').filter(item => {
-      return GUEST.includes(item);
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'b42ce29f20441cf61284',
+      clientSecret: 'b0d31bcee62d16ebbabf153616a692f84cba5e27',
+      repo        : 'garen-wang.github.io',
+      owner       : 'Garen-Wang',
+      admin       : ['Garen-Wang'],
+      id          : '9accef3f863d04aa5addfb81afd45f78',
+        language: 'zh-CN',
+      distractionFreeMode: false
     });
-    new Valine({
-      el         : '#valine-comments',
-      verify     : false,
-      notify     : true,
-      appId      : 'wMExYSieDga8BTVjfcUnCRh1-gzGzoHsz',
-      appKey     : 'pYUGXalVN490u6EsT2HJA4Rj',
-      placeholder: "Just go go",
-      avatar     : 'mm',
-      meta       : guest,
-      pageSize   : '10' || 10,
-      visitor    : true,
-      lang       : 'zh-cn' || 'zh-cn',
-      path       : location.pathname,
-      recordIP   : false,
-      serverURLs : ''
-    });
-  }, window.Valine);
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
 });
 </script>
 
