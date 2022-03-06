@@ -19,15 +19,15 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"garen-wang.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"garen-wang.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="今天顺带把attack lab做完了，算是小小地复习了下栈溢出和ROP吧。 使用方法最开始我甚至都不知道这个lab要怎么开始做起，跑都跑不起来 hex2raw读入以空格作为分隔的一个个字节，编码成一个个机器码。就跟pwntools里面的u32、u64差不多的作用。不然直接输入是没有用的。 直接运行ctarget或rtarget会没办法运行，报了个Running on an illegal host">
+  <meta name="description" content="今天顺带把attack lab做完了，算是小小地复习了下栈溢出和ROP吧。  使用方法 最开始我甚至都不知道这个lab要怎么开始做起，跑都跑不起来  hex2raw读入以空格作为分隔的一个个字节，编码成一个个机器码。就跟pwntools里面的u32、u64差不多的作用。不然直接输入是没有用的。  直接运行ctarget或rtarget会没办法运行，报了个Running on an illegal">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CSAPP Attack Lab Writeup">
 <meta property="og:url" content="http://garen-wang.top/2021/01/17/CSAPP-Attack-Lab-Writeup/index.html">
 <meta property="og:site_name" content="Garen Wang&#39;s Blog">
-<meta property="og:description" content="今天顺带把attack lab做完了，算是小小地复习了下栈溢出和ROP吧。 使用方法最开始我甚至都不知道这个lab要怎么开始做起，跑都跑不起来 hex2raw读入以空格作为分隔的一个个字节，编码成一个个机器码。就跟pwntools里面的u32、u64差不多的作用。不然直接输入是没有用的。 直接运行ctarget或rtarget会没办法运行，报了个Running on an illegal host">
+<meta property="og:description" content="今天顺带把attack lab做完了，算是小小地复习了下栈溢出和ROP吧。  使用方法 最开始我甚至都不知道这个lab要怎么开始做起，跑都跑不起来  hex2raw读入以空格作为分隔的一个个字节，编码成一个个机器码。就跟pwntools里面的u32、u64差不多的作用。不然直接输入是没有用的。  直接运行ctarget或rtarget会没办法运行，报了个Running on an illegal">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://qiniu.garen-wang.top/static/images/CSAPP-Attack-Lab-Writeup/success1.png">
 <meta property="og:image" content="http://qiniu.garen-wang.top/static/images/CSAPP-Attack-Lab-Writeup/level2.png">
@@ -493,6 +493,7 @@
   <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
   <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 

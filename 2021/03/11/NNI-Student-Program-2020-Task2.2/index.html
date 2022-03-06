@@ -19,15 +19,15 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"garen-wang.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"garen-wang.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Task2.2 实验报告超参调优NNI支持通过配置搜索空间自定义搜索结构，不仅能够运用SOTA的高效率算法进行自动超参调优，更能够在多个模型与超参中选择出性能更优的组合，从而提高模型准确率。 搜索空间配置文件如下： 12345&amp;#123;    &quot;lr&quot;:&amp;#123;&quot;_type&quot;:&quot;choice&quot;, &quot;_value&quot;">
+  <meta name="description" content="Task2.2 实验报告 超参调优 NNI支持通过配置搜索空间自定义搜索结构，不仅能够运用SOTA的高效率算法进行自动超参调优，更能够在多个模型与超参中选择出性能更优的组合，从而提高模型准确率。  搜索空间配置文件如下：  1 2 3 4 5   {     &quot;lr&quot;:{&quot;_type&quot;:&quot;choice&quot;, &quot;_value&quot;:[0.01, 0.001]},     &quot;optimizer&quot;:{&quot;_ty">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NNI Student Program 2020 Task2.2">
 <meta property="og:url" content="http://garen-wang.top/2021/03/11/NNI-Student-Program-2020-Task2.2/index.html">
 <meta property="og:site_name" content="Garen Wang&#39;s Blog">
-<meta property="og:description" content="Task2.2 实验报告超参调优NNI支持通过配置搜索空间自定义搜索结构，不仅能够运用SOTA的高效率算法进行自动超参调优，更能够在多个模型与超参中选择出性能更优的组合，从而提高模型准确率。 搜索空间配置文件如下： 12345&amp;#123;    &quot;lr&quot;:&amp;#123;&quot;_type&quot;:&quot;choice&quot;, &quot;_value&quot;">
+<meta property="og:description" content="Task2.2 实验报告 超参调优 NNI支持通过配置搜索空间自定义搜索结构，不仅能够运用SOTA的高效率算法进行自动超参调优，更能够在多个模型与超参中选择出性能更优的组合，从而提高模型准确率。  搜索空间配置文件如下：  1 2 3 4 5   {     &quot;lr&quot;:{&quot;_type&quot;:&quot;choice&quot;, &quot;_value&quot;:[0.01, 0.001]},     &quot;optimizer&quot;:{&quot;_ty">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task2.2/capture.png">
 <meta property="og:image" content="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task2.2/capture2.png">
@@ -473,6 +473,7 @@
   <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
   <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
