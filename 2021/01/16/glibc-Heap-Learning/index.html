@@ -30,7 +30,7 @@
 <meta property="og:description" content="学了好几天的堆，今晚把已经看过的堆的知识记录一下。  什么是堆 系统用堆(Heap)来动态管理内存，堆从低地址向高地址生长。  一直听到堆栈的说法，其实堆跟栈区别真的很大的好吧：比如栈从高地址向低地址生长，内存较为固定，地址一直是0x7ffff...开头的，不能跟堆混为一谈吧。  堆的实现就是时间与空间达到权衡(trade off)的生动案例。后面我们会体会到。  堆想要效率高，就应该提高单次分配">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-01-16T14:18:04.000Z">
-<meta property="article:modified_time" content="2021-03-18T13:26:59.899Z">
+<meta property="article:modified_time" content="2022-03-04T22:43:40.813Z">
 <meta property="article:author" content="Garen Wang">
 <meta property="article:tag" content="pwn">
 <meta name="twitter:card" content="summary">
@@ -218,7 +218,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
+                <time title="Modified: 2022-03-05 06:43:40" itemprop="dateModified" datetime="2022-03-05T06:43:40+08:00">2022-03-05</time>
               </span>
 
           
@@ -238,6 +238,7 @@
 <p>堆的实现就是时间与空间达到权衡(trade off)的生动案例。后面我们会体会到。</p>
 <p>堆想要效率高，就应该提高单次分配和释放的速率，同时也要减少内存空间利用的碎片化。</p>
 <p>glibc中堆的管理器是ptmalloc2。我们在pwn学堆的时候，就学习ptmalloc2的堆管理。</p>
+<a id="more"></a>
 <h2 id="堆的两个C语言高级函数"><a href="#堆的两个C语言高级函数" class="headerlink" title="堆的两个C语言高级函数"></a>堆的两个C语言高级函数</h2><p>在C++里面是<code>new</code>跟<code>delete</code>，而在C语言里面是<code>malloc</code>跟<code>free</code>。</p>
 <h3 id="malloc"><a href="#malloc" class="headerlink" title="malloc"></a>malloc</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">void* malloc(size_t n);</span><br><span class="line">return a pointer to the newly-allocated chunk.</span><br></pre></td></tr></table></figure>
 <h3 id="free"><a href="#free" class="headerlink" title="free"></a>free</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">void free(void* p);</span><br><span class="line">release the chunk pointed by the pointer p</span><br></pre></td></tr></table></figure>
@@ -421,7 +422,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

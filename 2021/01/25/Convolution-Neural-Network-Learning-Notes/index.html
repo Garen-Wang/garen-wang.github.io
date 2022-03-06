@@ -30,7 +30,7 @@
 <meta property="og:description" content="Definition of Convolution Neural Network Definition in Discrete Mathematics:  Two-dimensional Definition(I: image, K: kernal, cross-correlation):  However, our convolution here does not reverse kernal">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-01-25T05:00:29.000Z">
-<meta property="article:modified_time" content="2021-03-18T13:26:59.899Z">
+<meta property="article:modified_time" content="2022-03-04T22:41:32.034Z">
 <meta property="article:author" content="Garen Wang">
 <meta property="article:tag" content="Deep-Learning">
 <meta name="twitter:card" content="summary">
@@ -218,7 +218,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
+                <time title="Modified: 2022-03-05 06:41:32" itemprop="dateModified" datetime="2022-03-05T06:41:32+08:00">2022-03-05</time>
               </span>
 
           
@@ -236,6 +236,7 @@
 <script type="math/tex; mode=display">h(x) = (f*g)(x) = \sum_{t=-\infty}^{\infty} f(t)g(x-t)</script><p>Two-dimensional Definition(I: image, K: kernal, cross-correlation):</p>
 <script type="math/tex; mode=display">h(i,j) = (I*K)(i,j) = \sum_m \sum_n I(i-m,j-n)K(m,n)</script><p>However, our convolution here does not reverse kernal, which means actually:</p>
 <script type="math/tex; mode=display">h(i,j) = (I*K)(i,j) = \sum_m \sum_n I(i+m,j+n)K(m,n)</script><p>Without reversed kernal, the operation is exactly the matrix dot multiplication.</p>
+<a id="more"></a>
 <h2 id="Relevant-Concepts"><a href="#Relevant-Concepts" class="headerlink" title="Relevant Concepts"></a>Relevant Concepts</h2><p>A kernal is a square matrix responsible for extracting a feature from input. When using multiple kernal, we can extract multiple features from the same picture sample.</p>
 <p>The size of kernal is commonly an odd number, and especially there exists 1*1 kernal.</p>
 <p>The set of convolution kernals is called Filter. The number of kernal in a filter is usually euqal to that of input channels. For example, when processing RGB pictures, we usually use three kernals to calculate with corresponding channels, and these three kernals can be included in a filter.</p>
@@ -376,7 +377,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

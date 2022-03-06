@@ -32,7 +32,7 @@
 <meta property="og:image" content="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task2.2/capture.png">
 <meta property="og:image" content="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task2.2/capture2.png">
 <meta property="article:published_time" content="2021-03-11T12:08:57.000Z">
-<meta property="article:modified_time" content="2021-03-18T13:26:59.899Z">
+<meta property="article:modified_time" content="2022-03-04T22:46:00.796Z">
 <meta property="article:author" content="Garen Wang">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://qiniu.garen-wang.top/static/images/NNI-Student-Program-2020-Task2.2/capture.png">
@@ -220,7 +220,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
+                <time title="Modified: 2022-03-05 06:46:00" itemprop="dateModified" datetime="2022-03-05T06:46:00+08:00">2022-03-05</time>
               </span>
 
           
@@ -238,6 +238,7 @@
 <p>搜索空间配置文件如下：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;lr&quot;</span>:&#123;<span class="attr">&quot;_type&quot;</span>:<span class="string">&quot;choice&quot;</span>, <span class="attr">&quot;_value&quot;</span>:[<span class="number">0.01</span>, <span class="number">0.001</span>]&#125;,</span><br><span class="line">    <span class="attr">&quot;optimizer&quot;</span>:&#123;<span class="attr">&quot;_type&quot;</span>:<span class="string">&quot;choice&quot;</span>, <span class="attr">&quot;_value&quot;</span>:[<span class="string">&quot;Adadelta&quot;</span>, <span class="string">&quot;Adagrad&quot;</span>, <span class="string">&quot;Adam&quot;</span>, <span class="string">&quot;Adamax&quot;</span>]&#125;,</span><br><span class="line">    <span class="attr">&quot;model&quot;</span>:&#123;<span class="attr">&quot;_type&quot;</span>:<span class="string">&quot;choice&quot;</span>, <span class="attr">&quot;_value&quot;</span>:[<span class="string">&quot;vgg&quot;</span>, <span class="string">&quot;resnet18&quot;</span>, <span class="string">&quot;googlenet&quot;</span>, <span class="string">&quot;densenet121&quot;</span>, <span class="string">&quot;mobilenet&quot;</span>, <span class="string">&quot;dpn92&quot;</span>, <span class="string">&quot;shufflenetg2&quot;</span>,<span class="string">&quot;senet18&quot;</span>]&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在代码中，当前trial的超参组合可从<code>nni.get_next_parameter()</code>获得，并以dict的形式保存。</p>
+<a id="more"></a>
 <h3 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h3><p>由于设备性能有限，在进行NNI的HPO实验时每个trial的epoch数并没能设定得足够多，这极有可能会导致最终的实验结果与retrain的性能不相符。我们训练了HPO实验中metric最优的超参组合，后续效果却不尽人意。反而是在非最优的超参组合中，我们训练出了较好的效果。</p>
 <p>最终我们选定了学习率为0.01，优化器为Adamax，神经网络模型为mobilenet的组合，并在重训练了200个epoch后取得了96.66%的准确率。</p>
 <h2 id="Classic-NAS"><a href="#Classic-NAS" class="headerlink" title="Classic NAS"></a>Classic NAS</h2><p>通过上一步得到的模型与参数的组合，我们尝试在搜索空间上定义随机结构，测试模型的性能。</p>
@@ -402,7 +403,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

@@ -30,7 +30,7 @@
 <meta property="og:description" content="未完成任务 Task 2.2 -[] HPO -[] 在搜索空间中选择随机结构，并验证性能 -[] NAS  Task 3.1 -[] 跑通NNI Feature Engineering Sample  Task 3.2 Task 3.2.1 Task 3.2.2 Task 4 HPO 超参调优在NNI中比较好实现，只要有参数和模型的搜索空间，就可以利用NNI自带的tuner来做调参工作。  As">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-01-23T15:19:35.000Z">
-<meta property="article:modified_time" content="2021-03-18T13:26:59.899Z">
+<meta property="article:modified_time" content="2022-03-04T22:45:43.456Z">
 <meta property="article:author" content="Garen Wang">
 <meta property="article:tag" content="NNI">
 <meta name="twitter:card" content="summary">
@@ -218,7 +218,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-18 21:26:59" itemprop="dateModified" datetime="2021-03-18T21:26:59+08:00">2021-03-18</time>
+                <time title="Modified: 2022-03-05 06:45:43" itemprop="dateModified" datetime="2022-03-05T06:45:43+08:00">2022-03-05</time>
               </span>
 
           
@@ -234,7 +234,8 @@
       
         <h2 id="未完成任务"><a href="#未完成任务" class="headerlink" title="未完成任务"></a>未完成任务</h2><h3 id="Task-2-2"><a href="#Task-2-2" class="headerlink" title="Task 2.2"></a>Task 2.2</h3><p>-[] HPO<br>-[] 在搜索空间中选择随机结构，并验证性能<br>-[] NAS</p>
 <h3 id="Task-3-1"><a href="#Task-3-1" class="headerlink" title="Task 3.1"></a>Task 3.1</h3><p>-[] 跑通NNI Feature Engineering Sample</p>
-<h3 id="Task-3-2"><a href="#Task-3-2" class="headerlink" title="Task 3.2"></a>Task 3.2</h3><h4 id="Task-3-2-1"><a href="#Task-3-2-1" class="headerlink" title="Task 3.2.1"></a>Task 3.2.1</h4><h4 id="Task-3-2-2"><a href="#Task-3-2-2" class="headerlink" title="Task 3.2.2"></a>Task 3.2.2</h4><h3 id="Task-4"><a href="#Task-4" class="headerlink" title="Task 4"></a>Task 4</h3><h2 id="HPO"><a href="#HPO" class="headerlink" title="HPO"></a>HPO</h2><p>超参调优在NNI中比较好实现，只要有参数和模型的搜索空间，就可以利用NNI自带的tuner来做调参工作。</p>
+<h3 id="Task-3-2"><a href="#Task-3-2" class="headerlink" title="Task 3.2"></a>Task 3.2</h3><h4 id="Task-3-2-1"><a href="#Task-3-2-1" class="headerlink" title="Task 3.2.1"></a>Task 3.2.1</h4><h4 id="Task-3-2-2"><a href="#Task-3-2-2" class="headerlink" title="Task 3.2.2"></a>Task 3.2.2</h4><h3 id="Task-4"><a href="#Task-4" class="headerlink" title="Task 4"></a>Task 4</h3><a id="more"></a>
+<h2 id="HPO"><a href="#HPO" class="headerlink" title="HPO"></a>HPO</h2><p>超参调优在NNI中比较好实现，只要有参数和模型的搜索空间，就可以利用NNI自带的tuner来做调参工作。</p>
 <h3 id="Assessor"><a href="#Assessor" class="headerlink" title="Assessor"></a>Assessor</h3><p>在数据量较大的情况下，一般一个trial普遍会比较久，NNI支持Assessor，实现在调优过程中类似“剪枝”的功能，提供了提前终止某些trial的策略以节省实验时间。</p>
 <p>需要添加assessor时只需在<code>config.yml</code>中添加，这里以Curvefitting为例：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">assessor:</span></span><br><span class="line">  <span class="attr">builtinAssessorName:</span> <span class="string">Curvefitting</span></span><br><span class="line">  <span class="attr">classArgs:</span></span><br><span class="line">    <span class="attr">epoch_num:</span> <span class="number">10</span></span><br><span class="line">    <span class="attr">threshold:</span> <span class="number">0.9</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
@@ -360,7 +361,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
