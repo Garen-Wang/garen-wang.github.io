@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Noto Serif SC:300,300italic,400,400italic,700,700italic|Fira Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"garen-wang.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="醉里挑灯看剑，梦回吹角连营了属于是  带上下界的网络流 我们之前接触的网络流所涉及的问题一般就局限在最大流（最小割）、费用流之类的问题，但是现在有一类对流量有所限制的网络流模型需要考虑。  假如现在对一条边$e:(u\to v)$，需要保证这条边的流量有上下界$l(e) \leq c(e) \leq u(e)$，同时需要保证除了网络流图中除了源点与汇点之外的所有中间节点流量平衡，即流入流量等于其流">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Advanced Network Flow (with bounds)">
+<meta property="og:url" content="http://garen-wang.top/2022/03/15/Advanced-Network-Flow-with-bounds/index.html">
+<meta property="og:site_name" content="Garen Wang&#39;s Blog">
+<meta property="og:description" content="醉里挑灯看剑，梦回吹角连营了属于是  带上下界的网络流 我们之前接触的网络流所涉及的问题一般就局限在最大流（最小割）、费用流之类的问题，但是现在有一类对流量有所限制的网络流模型需要考虑。  假如现在对一条边$e:(u\to v)$，需要保证这条边的流量有上下界$l(e) \leq c(e) \leq u(e)$，同时需要保证除了网络流图中除了源点与汇点之外的所有中间节点流量平衡，即流入流量等于其流">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-03-15T13:02:16.000Z">
+<meta property="article:modified_time" content="2022-03-15T17:13:18.565Z">
+<meta property="article:author" content="Garen Wang">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://garen-wang.top/2022/03/15/Advanced-Network-Flow-with-bounds/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Advanced Network Flow (with bounds) | Garen Wang's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Garen Wang's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.top/2022/03/15/Advanced-Network-Flow-with-bounds/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Advanced Network Flow (with bounds)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-03-15 21:02:16" itemprop="dateCreated datePublished" datetime="2022-03-15T21:02:16+08:00">2022-03-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-03-16 01:13:18" itemprop="dateModified" datetime="2022-03-16T01:13:18+08:00">2022-03-16</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><del>醉里挑灯看剑，梦回吹角连营了属于是</del></p>
+<h2 id="带上下界的网络流"><a href="#带上下界的网络流" class="headerlink" title="带上下界的网络流"></a>带上下界的网络流</h2><p>我们之前接触的网络流所涉及的问题一般就局限在最大流（最小割）、费用流之类的问题，但是现在有一类对流量有所限制的网络流模型需要考虑。</p>
+<p>假如现在对一条边$e:(u\to v)$，需要保证这条边的流量有上下界$l(e) \leq c(e) \leq u(e)$，同时需要保证除了网络流图中除了源点与汇点之外的所有中间节点流量平衡，即流入流量等于其流出流量。</p>
+<h3 id="没有源点汇点的上下界可行流"><a href="#没有源点汇点的上下界可行流" class="headerlink" title="没有源点汇点的上下界可行流"></a>没有源点汇点的上下界可行流</h3><p>给你一个没有源点和汇点的流量网络，想知道有没有一种可行的分配每条边流量的方式，使得每条边的流量均满足上下界约束并保证中间节点流量平衡。</p>
+<p>因为每条边至少都要达到$l(e)$的流量，干脆初始状态的流量就设为这个下界。但是全部由下界所建成的流量网络明显做不到流量平衡，有的流入大于流出，也有的流出大于流入。</p>
+<p>为了解决这个问题，我们加边，在初始流的基础上添加附加流。</p>
+<p>设$d(i)$为在初始流量网络中，编号为$i$的中间节点流入量与流出量之差，即$d(i) = f_{i_0}(u) - f_{o_0}(u)$。明显大于0就说明流入大于流出，小于0说明流出大于流入，等于0就平衡啦。</p>
+<p>在流量不平衡的节点$u$要想最终构建成流量平衡，那就要保证</p>
+<script type="math/tex; mode=display">f_{i_0}(u) + f_{i_1}(u) = f_{o_0}(u) + f_{o_1}(u)</script><ul>
+<li>当$d(i) &gt;0$, $f_{o_1}(u) = f_{i_1}(u) + d(i)$，附加流流出量比流入量更多，我们从没有源点汇点的流量网络中是没法改变的，办法是建立超级源点，从超级源点给节点$u$一个$d(i)$的流量作为补偿。</li>
+<li>当$d(i) &lt;0$, $f_{i_1}(u) = f_{o_1}(u) + (-d(i))$，附加流流入量比流出量更多，我们同样没法从内部改变，于是对应地建立超级汇点，从节点$u$到超级汇点给一个$-d(i)$的流量作为补偿。</li>
+</ul>
+<p><del>从世界之外，我们取得否定世界的力量</del></p>
+<p>但是问题是引入了补偿之后怎么确保方案可行？其实只需要判断一下从超级源点连出去的所有的附加边都能够满流即可，因为一个节点的附加边满流恰好说明该节点流量平衡。</p>
+<p>所以我们最后从超级源点为起点，跑最大流算法，只要确保所有附加边满流即可得到一个可行流。我们这里求得的可行流是针对满足下界的可行流。</p>
+<h3 id="例题：LOJ115"><a href="#例题：LOJ115" class="headerlink" title="例题：LOJ115"></a>例题：LOJ115</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Edge</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> next, to, capacity, idx;</span><br><span class="line">&#125; e[maxm &lt;&lt; <span class="number">2</span>];</span><br><span class="line"><span class="keyword">int</span> head[maxn];</span><br><span class="line"><span class="keyword">int</span> tot = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> d[maxn];</span><br><span class="line"><span class="keyword">int</span> low[maxm];</span><br><span class="line"><span class="keyword">int</span> ans[maxm];</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> h[maxn];</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> n, m, S, T;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">link</span><span class="params">(<span class="keyword">int</span> u, <span class="keyword">int</span> v, <span class="keyword">int</span> lower, <span class="keyword">int</span> upper, <span class="keyword">int</span> idx)</span> </span>&#123;</span><br><span class="line">    e[++tot] = &#123;head[u], v, upper - lower, idx&#125;;</span><br><span class="line">    head[u] = tot;</span><br><span class="line">    e[++tot] = &#123;head[v], u, <span class="number">0</span>, <span class="number">0</span>&#125;;</span><br><span class="line">    head[v] = tot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">bfs</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(h, <span class="number">0</span>, <span class="keyword">sizeof</span>(h));</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">queue</span>&lt;<span class="keyword">int</span>&gt; q;</span><br><span class="line">    q.push(S); h[S] = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span> (!q.empty()) &#123;</span><br><span class="line">        <span class="keyword">int</span> u = q.front(); q.pop();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = head[u]; i; i = e[i].next) &#123;</span><br><span class="line">            <span class="keyword">int</span> v = e[i].to;</span><br><span class="line">            <span class="keyword">if</span> (!h[v] &amp;&amp; e[i].capacity &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                h[v] = h[u] + <span class="number">1</span>;</span><br><span class="line">                q.push(v);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> h[T];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">maxflow</span><span class="params">(<span class="keyword">int</span> u, <span class="keyword">int</span> flow)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (u == T) <span class="keyword">return</span> flow;</span><br><span class="line">    <span class="keyword">int</span> s = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = head[u]; i; i = e[i].next) &#123;</span><br><span class="line">        <span class="keyword">int</span> v = e[i].to;</span><br><span class="line">        <span class="keyword">if</span> (h[v] == h[u] + <span class="number">1</span> &amp;&amp; e[i].capacity &gt; <span class="number">0</span> &amp;&amp; s &lt; flow) &#123;</span><br><span class="line">            <span class="keyword">int</span> t = maxflow(v, <span class="built_in">std</span>::min(e[i].capacity, flow - s));</span><br><span class="line">            e[i].capacity -= t; e[i ^ <span class="number">1</span>].capacity += t;</span><br><span class="line">            s += t;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (s == <span class="number">0</span>) h[u] = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> s;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dinic</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (bfs()) &#123;</span><br><span class="line">        <span class="keyword">int</span> t = maxflow(S, <span class="number">0x7fffffff</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d %d&quot;</span>, &amp;n, &amp;m);</span><br><span class="line">    <span class="keyword">int</span> u, v, lower, upper;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= m; i++) &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d %d %d %d&quot;</span>, &amp;u, &amp;v, &amp;lower, &amp;upper);</span><br><span class="line">        link(u, v, lower, upper, i);</span><br><span class="line">        d[u] -= lower; d[v] += lower; </span><br><span class="line">        low[i] = lower;</span><br><span class="line">    &#125;</span><br><span class="line">    S = n + <span class="number">1</span>;</span><br><span class="line">    T = S + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> temp_tot = tot;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (d[i] &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            link(S, i, <span class="number">0</span>, d[i], <span class="number">0</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (d[i] &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            link(i, T, d[i], <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    dinic();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">bool</span> flag = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = head[S]; i; i = e[i].next) &#123;</span><br><span class="line">        <span class="keyword">if</span> (e[i].capacity &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            flag = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (flag) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= temp_tot; i += <span class="number">2</span>) &#123;</span><br><span class="line">            ans[e[i].idx] = e[i ^ <span class="number">1</span>].capacity;</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;YES\n&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= m; i++) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, ans[i] + low[i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;NO\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="有源点汇点的上下界可行流"><a href="#有源点汇点的上下界可行流" class="headerlink" title="有源点汇点的上下界可行流"></a>有源点汇点的上下界可行流</h3><p>给定一个有源点汇点的流量网络，想要求一个所有边满足对应上下界的可行流。</p>
+<p>我们尝试一下能不能转换为上一个我们已经知道解法的没有源点汇点的上下界可行流问题。（经典化未知为已知）</p>
+<p>事实上真的可以，对于源点$s$和汇点$t$，我们其实可以从$t$到$s$建立一条边，下界为$0$，上界为$\infty$，原先$s$跟$t$这两个点是游离于流量平衡规则之外的，现在我们通过一个上下界无比宽广的边来约束它们，使它们遵循流量平衡规则的同时不改变原有答案。</p>
+<p>现在已经获得了一个裸的无源点汇点的流量网络，接下来就是前面的步骤了，诸如建立超级源点和超级汇点，平衡所有中间节点的流量（包含$s$和$t$）。</p>
+<p>从超级源点开跑最大流，判是否可行的方法还是类似。</p>
+<p>如果判断了可行，那么$s$到$t$的可行流流量就等于$t$到$s$的附加边流量。（由流量平衡可得）</p>
+<p>但是具体是怎么看流量大小的呢？跑完最大流之后，一条边的流量大小需要看它的伴生边的流量大小。（除非一开始就对容量已经有记录了，那就可以在原来的边上直接相减得到了）</p>
+<h3 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h3><p>没有例题。。。</p>
+<h2 id="有源点汇点的上下界最大流"><a href="#有源点汇点的上下界最大流" class="headerlink" title="有源点汇点的上下界最大流"></a>有源点汇点的上下界最大流</h2><p>给定一个有源点汇点的流量网络，想要求一个所有边满足对应上下界的最大流。</p>
+<p>我们尝试一下能不能转换为上一个我们已经知道解法的没有源点汇点的上下界可行流问题，在可行的基础上保证最大流。</p>
+<p>事实上只要跑两次最大流就可以了。</p>
+<p>我们通过有源点汇点的上下界可行流，通过最大流算法并验证得到一个可行方案，并查看可行流流量，这些的具体细节不再重复。</p>
+<p>但是还没结束！从超级源点开始跑完最大流之后，原图中还有残余的自由流！我们现在需要做的是抛弃掉超级源点与超级汇和与其有关的边，然后从$s$到$t$再跑一遍最大流，两边最大流的答案相加才是最终的答案。</p>
+<h3 id="例题：LOJ116"><a href="#例题：LOJ116" class="headerlink" title="例题：LOJ116"></a>例题：LOJ116</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> n, m, s, t;</span><br><span class="line"><span class="keyword">int</span> S, T;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Edge</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> next, to, capacity, idx;</span><br><span class="line">&#125; e[maxm &lt;&lt; <span class="number">2</span>];</span><br><span class="line"><span class="keyword">int</span> tot = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> head[maxn];</span><br><span class="line"><span class="keyword">int</span> d[maxn];</span><br><span class="line"><span class="keyword">int</span> h[maxn];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">link</span><span class="params">(<span class="keyword">int</span> u, <span class="keyword">int</span> v, <span class="keyword">int</span> c, <span class="keyword">int</span> idx)</span> </span>&#123;</span><br><span class="line">    e[++tot] = &#123;head[u], v, c, idx&#125;;</span><br><span class="line">    head[u] = tot;</span><br><span class="line">    e[++tot] = &#123;head[v], u, <span class="number">0</span>, <span class="number">0</span>&#125;;</span><br><span class="line">    head[v] = tot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">bfs</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(h, <span class="number">0</span>, <span class="keyword">sizeof</span>(h));</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">queue</span>&lt;<span class="keyword">int</span>&gt; q;</span><br><span class="line">    q.push(S); h[S] = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span> (!q.empty()) &#123;</span><br><span class="line">        <span class="keyword">int</span> u = q.front(); q.pop();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = head[u]; i; i = e[i].next) &#123;</span><br><span class="line">            <span class="keyword">int</span> v = e[i].to;</span><br><span class="line">            <span class="keyword">if</span> (!h[v] &amp;&amp; e[i].capacity &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                h[v] = h[u] + <span class="number">1</span>;</span><br><span class="line">                q.push(v);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> h[T];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">maxflow</span><span class="params">(<span class="keyword">int</span> u, <span class="keyword">int</span> flow)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (u == T) <span class="keyword">return</span> flow;</span><br><span class="line">    <span class="keyword">int</span> s = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = head[u]; i; i = e[i].next) &#123;</span><br><span class="line">        <span class="keyword">int</span> v = e[i].to;</span><br><span class="line">        <span class="keyword">if</span> (h[v] == h[u] + <span class="number">1</span> &amp;&amp; e[i].capacity &gt; <span class="number">0</span> &amp;&amp; s &lt; flow) &#123;</span><br><span class="line">            <span class="keyword">int</span> t = maxflow(v, <span class="built_in">std</span>::min(e[i].capacity, flow - s));</span><br><span class="line">            e[i].capacity -= t; e[i ^ <span class="number">1</span>].capacity += t;</span><br><span class="line">            s += t;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (s == <span class="number">0</span>) h[u] = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> s;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dinic</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> ans = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (bfs()) &#123;</span><br><span class="line">        ans += maxflow(S, <span class="number">0x3f3f3f3f</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    n = read(), m = read(), s = read(), t = read();</span><br><span class="line">    <span class="keyword">int</span> u, v, lower, upper;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= m; i++) &#123;</span><br><span class="line">        u = read() ,v = read(), lower = read(), upper = read();</span><br><span class="line">        link(u, v, upper - lower, i);</span><br><span class="line">        d[u] -= lower; d[v] += lower;</span><br><span class="line">    &#125;</span><br><span class="line">    S = n + <span class="number">1</span>; T = S + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (d[i] &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            link(S, i, d[i], <span class="number">0</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (d[i] &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            link(i, T, -d[i], <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    link(t, s, <span class="number">0x3f3f3f3f</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">int</span> sum = dinic();</span><br><span class="line">    <span class="comment">// printf(&quot;sum = %d\n&quot;, sum);</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">bool</span> flag = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = head[S]; i; i = e[i].next) &#123;</span><br><span class="line">        <span class="keyword">if</span> (e[i].capacity &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            flag = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!flag) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;please go home to sleep\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// printf(&quot;%d %d %d %d\n&quot;, e[head[s]].capacity, e[head[s] ^ 1].capacity, e[head[t]].capacity, e[head[t] ^ 1].capacity);</span></span><br><span class="line">    <span class="keyword">int</span> ans = e[head[t] ^ <span class="number">1</span>].capacity;</span><br><span class="line">    <span class="comment">// printf(&quot;ans: %d\n&quot;, ans);</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= tot; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (e[i].idx == <span class="number">0</span>) &#123;</span><br><span class="line">            e[i].capacity = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    head[S] = head[T] = <span class="number">0</span>;</span><br><span class="line">    S = s, T = t;</span><br><span class="line">    <span class="keyword">int</span> res = dinic();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, ans + res);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="有源点汇点的上下界最小流"><a href="#有源点汇点的上下界最小流" class="headerlink" title="有源点汇点的上下界最小流"></a>有源点汇点的上下界最小流</h2><h3 id="第一个做法"><a href="#第一个做法" class="headerlink" title="第一个做法"></a>第一个做法</h3><p>同样建立在有源点汇点的上下界可行流的基础上来做。</p>
+<p>通过那一套步骤算出可行流流量之后，我们知道残量网络里面还有自由流，我们不能拿可行流流量直接当做最小流，因为残量网络里面有一些流量是不必要的，我们可以退掉，并且只要尽可能退掉越多，我们就离最小流的答案越接近。</p>
+<p>但是怎么退呢？这是一个好问题。</p>
+<p>事实上我们只要反过来想就可以了，在残量网络中的反向边就是来让你反悔的，我们如果想要最大程度上地退掉流量，就可以增广反向边，即在以$t$为源点，$s$为汇点的反向流量网络上跑最大流，最大流多少我们就能退多少！</p>
+<p>所以最终的答案就是前面求出的可行流大小减掉反向流量网络的最大流。</p>
+<h4 id="第二个做法"><a href="#第二个做法" class="headerlink" title="第二个做法"></a>第二个做法</h4><blockquote>
+<p>做法2：（其实我觉得做法1更容易理解）</p>
+<p>建立超级源和超级汇之后呢。</p>
+<p>先跑一次最大流。</p>
+<p>然后t到s连一条无穷大的边。</p>
+<p>再跑一次最大流。</p>
+<p>最后的答案就是无穷大的边流过的流量。</p>
+<p>有点难理解。</p>
+<p>首先因为整个图满足流量平衡。</p>
+<p>所以说t点流入的流量等于流出的流量。</p>
+<p>那么他流出的流量只有那一条无穷大的边而已。</p>
+<p>所以说最小流就是求那条边（无穷边）流过的流量尽量小而已。</p>
+<p>所以说第一次流最大流的时候已经满足下界。那么满足下界能流的边已经流满。</p>
+<p>所以残量网络剩下的最大流就会尽可能的小了。</p>
+<p>版权声明：本文为CSDN博主「Hanks_o」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。</p>
+<p>原文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/Hanks_o/article/details/77995557">https://blog.csdn.net/Hanks_o/article/details/77995557</a></p>
+</blockquote>
+<p>其实不好理解，建议大家还是着重理解第一种解法吧。</p>
+<h3 id="例题：LOJ117"><a href="#例题：LOJ117" class="headerlink" title="例题：LOJ117"></a>例题：LOJ117</h3><p>懒得再写一遍第一种方法的实现了，开摆</p>
+<h2 id="有源点汇点的上下界最小费用流"><a href="#有源点汇点的上下界最小费用流" class="headerlink" title="有源点汇点的上下界最小费用流"></a>有源点汇点的上下界最小费用流</h2><p>其实建图部分的思想都是共通的，包括</p>
+<ul>
+<li>建立超级源点与超级汇点，与原图节点连边（费用为0）</li>
+<li>从$t$到$s$连容量为$\infty$，费用为0的的边</li>
+</ul>
+<p>获得答案就容易的多了，只需要在超级源点处开跑最小费用最大流，并加上所有下界流量所造成的费用即是答案。</p>
+<blockquote>
+<p>其实讲到这里，最后的这个问题反倒可以一语带过了，所以学东西还是要有层次地学好呀！</p>
+</blockquote>
+<h3 id="例题：洛谷P4043-支线剧情"><a href="#例题：洛谷P4043-支线剧情" class="headerlink" title="例题：洛谷P4043 支线剧情"></a>例题：洛谷P4043 支线剧情</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Edge</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> next, to, capacity, cost;</span><br><span class="line">&#125; e[maxm &lt;&lt; <span class="number">2</span>];</span><br><span class="line"><span class="keyword">int</span> head[maxn];</span><br><span class="line"><span class="keyword">int</span> tot = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> d[maxn];</span><br><span class="line"><span class="keyword">int</span> low[maxm];</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> h[maxn];</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> n, m, s, t, S, T;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> ans;</span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> vis[maxn];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">link</span><span class="params">(<span class="keyword">int</span> u, <span class="keyword">int</span> v, <span class="keyword">int</span> lower, <span class="keyword">int</span> upper, <span class="keyword">int</span> cost)</span> </span>&#123;</span><br><span class="line">    e[++tot] = &#123;head[u], v, upper - lower, cost&#125;;</span><br><span class="line">    head[u] = tot;</span><br><span class="line">    e[++tot] = &#123;head[v], u, <span class="number">0</span>, -cost&#125;;</span><br><span class="line">    head[v] = tot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">spfa</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(h, <span class="number">-1</span>, <span class="keyword">sizeof</span>(h));</span><br><span class="line">    <span class="built_in">memset</span>(vis, <span class="literal">false</span>, <span class="keyword">sizeof</span>(vis));</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">queue</span>&lt;<span class="keyword">int</span>&gt; q;</span><br><span class="line">    q.push(T); h[T] = <span class="number">0</span>; vis[T] = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">while</span> (!q.empty()) &#123;</span><br><span class="line">        <span class="keyword">int</span> u = q.front(); q.pop(); vis[u] = <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = head[u]; i; i = e[i].next) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!e[i ^ <span class="number">1</span>].capacity) <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">int</span> v = e[i].to, c = e[i].cost;</span><br><span class="line">            <span class="keyword">if</span> (h[v] == <span class="number">-1</span> || h[v] &gt; h[u] - c) &#123;</span><br><span class="line">                h[v] = h[u] - c;</span><br><span class="line">                <span class="keyword">if</span> (!vis[v]) &#123;</span><br><span class="line">                    vis[v] = <span class="literal">true</span>;</span><br><span class="line">                    q.push(v);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> h[S] != <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> u, <span class="keyword">int</span> flow)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (u == T) &#123;</span><br><span class="line">        vis[T] = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">return</span> flow;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> f = <span class="number">0</span>;</span><br><span class="line">    vis[u] = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = head[u]; i; i = e[i].next) &#123;</span><br><span class="line">        <span class="keyword">int</span> v = e[i].to, c = e[i].cost;</span><br><span class="line">        <span class="keyword">if</span> (h[v] == h[u] - c &amp;&amp; e[i].capacity &gt; <span class="number">0</span> &amp;&amp; !vis[v]) &#123;</span><br><span class="line">            <span class="keyword">int</span> temp = dfs(v, <span class="built_in">std</span>::min(flow, e[i].capacity));</span><br><span class="line">            <span class="keyword">if</span> (temp) &#123;</span><br><span class="line">                f += temp; flow -= temp;</span><br><span class="line">                ans += temp * e[i].cost;</span><br><span class="line">                e[i].capacity -= temp; e[i ^ <span class="number">1</span>].capacity += temp;</span><br><span class="line">                <span class="keyword">if</span> (flow == <span class="number">0</span>) <span class="keyword">return</span> f;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">costflow</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> res = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (spfa()) &#123;</span><br><span class="line">        vis[T] = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">while</span> (vis[T]) &#123;</span><br><span class="line">            <span class="built_in">memset</span>(vis, <span class="literal">false</span>, <span class="keyword">sizeof</span>(vis));</span><br><span class="line">            res += dfs(S, inf);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    n = read();</span><br><span class="line">    <span class="keyword">int</span> temp, v, tim;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> u = <span class="number">1</span>; u &lt;= n; u++) &#123;</span><br><span class="line">        temp = read();</span><br><span class="line">        <span class="keyword">while</span> (temp--) &#123;</span><br><span class="line">            v = read(), tim = read();</span><br><span class="line">            link(u, v, <span class="number">1</span>, inf, tim);</span><br><span class="line">            d[u]--, d[v]++;</span><br><span class="line">            ans += tim;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    s = <span class="number">1</span>, t = n + <span class="number">1</span>;</span><br><span class="line">    S = n + <span class="number">2</span>, T = n + <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= n; i++) &#123;</span><br><span class="line">        link(i, t, <span class="number">1</span>, inf, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    link(t, s, <span class="number">0</span>, inf, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (d[i] &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            link(S, i, <span class="number">0</span>, d[i], <span class="number">0</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (d[i] &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            link(i, T, d[i], <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    costflow();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, ans);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Hanks_o/article/details/77970978">https://blog.csdn.net/Hanks_o/article/details/77970978</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Hanks_o/article/details/77984623">https://blog.csdn.net/Hanks_o/article/details/77984623</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Hanks_o/article/details/77995557">https://blog.csdn.net/Hanks_o/article/details/77995557</a></li>
+<li><a target="_blank" rel="noopener" href="https://oi-wiki.org/graph/flow/bound/">https://oi-wiki.org/graph/flow/bound/</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Garen Wang
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="http://garen-wang.top/2022/03/15/Advanced-Network-Flow-with-bounds/" title="Advanced Network Flow (with bounds)">http://garen-wang.top/2022/03/15/Advanced-Network-Flow-with-bounds/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/05/Crowd-Simulation-as-Course-Design/" rel="prev" title="Crowd Simulation as Course Design">
+      <i class="fa fa-chevron-left"></i> Crowd Simulation as Course Design
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%A6%E4%B8%8A%E4%B8%8B%E7%95%8C%E7%9A%84%E7%BD%91%E7%BB%9C%E6%B5%81"><span class="nav-number">1.</span> <span class="nav-text">带上下界的网络流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B2%A1%E6%9C%89%E6%BA%90%E7%82%B9%E6%B1%87%E7%82%B9%E7%9A%84%E4%B8%8A%E4%B8%8B%E7%95%8C%E5%8F%AF%E8%A1%8C%E6%B5%81"><span class="nav-number">1.1.</span> <span class="nav-text">没有源点汇点的上下界可行流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98%EF%BC%9ALOJ115"><span class="nav-number">1.2.</span> <span class="nav-text">例题：LOJ115</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E6%BA%90%E7%82%B9%E6%B1%87%E7%82%B9%E7%9A%84%E4%B8%8A%E4%B8%8B%E7%95%8C%E5%8F%AF%E8%A1%8C%E6%B5%81"><span class="nav-number">1.3.</span> <span class="nav-text">有源点汇点的上下界可行流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98"><span class="nav-number">1.4.</span> <span class="nav-text">例题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E6%BA%90%E7%82%B9%E6%B1%87%E7%82%B9%E7%9A%84%E4%B8%8A%E4%B8%8B%E7%95%8C%E6%9C%80%E5%A4%A7%E6%B5%81"><span class="nav-number">2.</span> <span class="nav-text">有源点汇点的上下界最大流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98%EF%BC%9ALOJ116"><span class="nav-number">2.1.</span> <span class="nav-text">例题：LOJ116</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E6%BA%90%E7%82%B9%E6%B1%87%E7%82%B9%E7%9A%84%E4%B8%8A%E4%B8%8B%E7%95%8C%E6%9C%80%E5%B0%8F%E6%B5%81"><span class="nav-number">3.</span> <span class="nav-text">有源点汇点的上下界最小流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%81%9A%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">第一个做法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E4%B8%AA%E5%81%9A%E6%B3%95"><span class="nav-number">3.1.1.</span> <span class="nav-text">第二个做法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98%EF%BC%9ALOJ117"><span class="nav-number">3.2.</span> <span class="nav-text">例题：LOJ117</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E6%BA%90%E7%82%B9%E6%B1%87%E7%82%B9%E7%9A%84%E4%B8%8A%E4%B8%8B%E7%95%8C%E6%9C%80%E5%B0%8F%E8%B4%B9%E7%94%A8%E6%B5%81"><span class="nav-number">4.</span> <span class="nav-text">有源点汇点的上下界最小费用流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98%EF%BC%9A%E6%B4%9B%E8%B0%B7P4043-%E6%94%AF%E7%BA%BF%E5%89%A7%E6%83%85"><span class="nav-number">4.1.</span> <span class="nav-text">例题：洛谷P4043 支线剧情</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">5.</span> <span class="nav-text">References</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Garen Wang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Garen Wang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Garen-Wang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Garen-Wang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:g4r3nwang@gmail.com" title="E-Mail → mailto:g4r3nwang@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">粤ICP备2022012256号 </a>
+      <img src="/images/beian.png" style="display: inline-block;">
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Garen Wang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'b42ce29f20441cf61284',
+      clientSecret: 'b0d31bcee62d16ebbabf153616a692f84cba5e27',
+      repo        : 'garen-wang.github.io',
+      owner       : 'Garen-Wang',
+      admin       : ['Garen-Wang'],
+      id          : '8292343971ff36c358016bb58eedb848',
+        language: 'zh-CN',
+      distractionFreeMode: false
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+
+  <!-- script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.2.2/js/live2dcubismcore.js"></script -->
+  <!-- script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.2.2/js/bundle.js"></script -->
+
+  <canvas id="live2d" width="400" height="400" style="position: fixed; opacity: 1; left: -110px; bottom: -135px; z-index: 99999;"></canvas>
+  <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/live2dcubismcore.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@vv0.1.1/js/bundle.js"></script>
+  <script>
+    var resourcesPath = 'https://cdn.jsdelivr.net/gh/Garen-Wang/live2d-moc3@v0.1.0/';
+    var backImageName = '';
+    var modelDir = ['jiaran4'];
+    initDefine(resourcesPath, backImageName, modelDir);
+  </script>
+
+</body>
+</html>
