@@ -182,182 +182,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://garen-wang.top/2021/08/30/PHP%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E9%A2%98%E5%9E%8B%E8%AE%B0%E5%BD%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/30/PHP%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E9%A2%98%E5%9E%8B%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">PHP文件上传题型记录</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-08-30 17:59:34" itemprop="dateCreated datePublished" datetime="2021-08-30T17:59:34+08:00">2021-08-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-03-05 06:46:57" itemprop="dateModified" datetime="2022-03-05T06:46:57+08:00">2022-03-05</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          常规思路
-常规思路是上传一句话木马上去，然后用中国蚁剑拿个webshell。
-
-直接传php文件传不了，就尝试其他也能执行php代码的格式，如：php3, php4, php5, phtml, pht等。
-
-如果都不行，就尝试上传图片木马，在开头添加一个GIF的magic number骗一下，同时POST过去的时候用bp抓个包，把filename改成php代码后缀。
-
-再不行可以尝试上传.user.ini，具体的做法如下：
-
-不抓包修改后缀名，把图片木马直接上传，这一步应该是正常的。
-
-然后再上传一个.user.ini文件，在里面写：
-
-1
-2
-
-
-GIF89a
-auto_prepend_fi
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/30/PHP%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E9%A2%98%E5%9E%8B%E8%AE%B0%E5%BD%95/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://garen-wang.top/2021/08/30/Web-Protocols/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Garen Wang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Garen Wang's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/30/Web-Protocols/" class="post-title-link" itemprop="url">Web Protocols</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-08-30 16:40:47" itemprop="dateCreated datePublished" datetime="2021-08-30T16:40:47+08:00">2021-08-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-03-05 06:48:35" itemprop="dateModified" datetime="2022-03-05T06:48:35+08:00">2022-03-05</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          Common Web Protocols
-HTTP & HTTPS
-HTTP与HTTPS就是在浏览器中访问互联网网页所用到的协议。
-
-HTTP就是应用最广泛的网络协议，数据在传输的过程中都是明文，所以运用HTTP协议来传输一些隐私数据就不安全。
-
-HTTPS可以理解为安全版的HTTP协议，核心是加入了SSL(Secure Sockets Layer)，通过SSL协议完成对所传输内容的加密。
-
-HTTP是无状态的，通过抓包修改包头通常能够实现身份的伪造，而HTTPS需要身份验证，相对更加安全。
-
-FILE
-FILE协议是用来访问本地文件的，可以访问文件夹。
-
-FTP
-FTP协议经常用在局域网中，
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/30/Web-Protocols/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://garen-wang.top/2021/07/27/Concepts-about-Hyperledger-Fabric-v2-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -744,7 +568,7 @@ NULL、0、”0”、false
 17
 
 
-<?php
+php
     var_dump(0=="0"); // bool(true)
     var_dump(0==NULL); // bool(true)
     var_dump(0==false); // bool(true)
@@ -1027,6 +851,160 @@ RISC-V的寄存器有32个，从x0到x31。根据官方的调用规范，各寄�
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.top/2021/03/23/CodeQL-Learning-Notes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/23/CodeQL-Learning-Notes/" class="post-title-link" itemprop="url">CodeQL Learning Notes</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-23 23:25:23" itemprop="dateCreated datePublished" datetime="2021-03-23T23:25:23+08:00">2021-03-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-03-05 06:41:06" itemprop="dateModified" datetime="2022-03-05T06:41:06+08:00">2022-03-05</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          beginning
+Why do I need to learn CodeQL? Emm… It’s all about SRP.
+
+CodeQL is a query tool that powers security researchers, which consists of code scanning, vulnerbilities discovering, etc.
+
+As for the reason, one of the requirements of SRP is to use CodeQL to develop a vulnerbilities scanning progr
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/23/CodeQL-Learning-Notes/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://garen-wang.top/2021/03/15/NNI-Student-Program-2020-Task3.2.1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Garen Wang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Garen Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/15/NNI-Student-Program-2020-Task3.2.1/" class="post-title-link" itemprop="url">NNI Student Program Task3.2.1</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-15 19:20:00" itemprop="dateCreated datePublished" datetime="2021-03-15T19:20:00+08:00">2021-03-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-03-05 06:46:27" itemprop="dateModified" datetime="2022-03-05T06:46:27+08:00">2022-03-05</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          Task 3.2.1 表格型数据的进阶任务
+电影票房预测：TMDB Box Office Prediction
+特征处理
+首先，可以发现belongs-to-collection，homepage等特征存在缺失值，可根据具体数据类型使用不同策略填补缺失值，例如json数据填补'[]'，runtime用中位数填补等等。
+
+其次，数据中存在异常值，需要人工删去异常数据或对异常数据进行填补，在这种时候，箱型图是很重要的工具。budget特征中，前25%的数据均是0，必然是异常数据，解决方案之一是用剩余budget数据的中位数来对其进行填补。runtime特征中存在338分钟的超长电影，打乱了runt
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/15/NNI-Student-Program-2020-Task3.2.1/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
@@ -1098,7 +1076,7 @@ RISC-V的寄存器有32个，从x0到x31。根据官方的调用规范，各寄�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
